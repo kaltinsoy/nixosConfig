@@ -11,7 +11,7 @@
   };
 
   # ── Kernel ────────────────────────────────────────────────────────────
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages;  # LTS kernel (Linux 6.x)
 
   boot.kernelParams = [
     # Intel IOMMU for QEMU passthrough
