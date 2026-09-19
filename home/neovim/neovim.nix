@@ -17,11 +17,10 @@
     # Extra packages available in Neovim's PATH
     extraPackages = with pkgs; [
       # ── LSP servers ─────────────────────────────────────────────────
-      nil                           # Nix LSP
-      nixd                          # alternative Nix LSP (better features)
+      nixd                          # Nix LSP (nixd configured in lspconfig)
       pyright                       # Python
       ruff                          # Python linter + LSP (ruff-lsp merged into ruff)
-      clang-tools                   # clangd (C/C++)
+      clang-tools                   # clangd + clang-format (C/C++)
       lua-language-server           # Lua
       rust-analyzer                 # Rust
       typescript-language-server    # TypeScript/JS
@@ -37,7 +36,6 @@
       stylua                        # Lua
       black                         # Python
       isort                         # Python imports
-      clang-tools                   # clang-format for C/C++
       rustfmt                       # Rust
       prettier                      # JS/TS/HTML/CSS/JSON/YAML/Markdown
 

@@ -32,7 +32,7 @@
     # ── Password / credential ──────────────────────────────────────────
     john                 # John the Ripper
     hashcat
-    hydra                # online password brute-force
+    thc-hydra            # online password brute-force (not hydra CI)
     medusa
     crunch               # wordlist generator
     wordlists            # rockyou, etc.
@@ -81,10 +81,6 @@
     stegseek
     openssl
     age                  # modern encryption
-
-    # ── Containers in cybersec labs ───────────────────────────────────
-    docker-compose
-    lazydocker
 
     # ── Misc tooling ──────────────────────────────────────────────────
     proxychains-ng       # force TCP through proxy

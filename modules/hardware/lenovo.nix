@@ -157,8 +157,7 @@
     networkmanager-openconnect
     networkmanager-openvpn
 
-    # Power
-    powertop
+    # Power / Backlight
     brightnessctl   # backlight control (replaces light)
   ];
 
