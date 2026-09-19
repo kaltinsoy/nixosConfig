@@ -41,7 +41,7 @@
       cursor-theme     = "Bibata-Modern-Ice";
       cursor-size      = 24;
       font-name        = "Inter 11";
-      monospace-font-name = "JetBrainsMono Nerd Font 11";
+      monospace-font-name = "JetBrainsMono Nerd Font Mono 11";
       document-font-name  = "Source Serif Pro 11";
       enable-animations    = true;
       show-battery-percentage = true;

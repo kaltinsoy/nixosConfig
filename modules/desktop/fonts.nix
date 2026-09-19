@@ -35,7 +35,7 @@
 
     fontconfig = {
       defaultFonts = {
-        monospace  = [ "JetBrainsMono Nerd Font" "FiraCode Nerd Font" ];
+        monospace  = [ "JetBrainsMono Nerd Font Mono" "JetBrains Mono" "FiraCode Nerd Font" ];
         sansSerif  = [ "Inter" "Noto Sans" ];
         serif      = [ "Source Serif Pro" "Noto Serif" ];
         emoji      = [ "Noto Color Emoji" ];

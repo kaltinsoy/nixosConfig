@@ -67,7 +67,22 @@
       mpv
       vlc
       calibre        # ebook manager
+
+      # Desktop themes & cursors
+      bibata-cursors
+      papirus-icon-theme
+      adw-gtk3
     ];
+
+    # ── Pointer cursor (consistent across GTK, X11, Wayland) ──────────
+    pointerCursor = {
+      enable     = true;
+      gtk.enable = true;
+      x11.enable = true;
+      package    = pkgs.bibata-cursors;
+      name       = "Bibata-Modern-Ice";
+      size       = 24;
+    };
   };
 
   # ── XDG ───────────────────────────────────────────────────────────────
