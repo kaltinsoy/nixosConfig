@@ -43,6 +43,7 @@
     dive                # inspect Docker layers
     ctop                # container top
     lazydocker
+    distrobox           # containerized Linux distributions (Ubuntu, Arch, Fedora, etc.)
 
     # Network / bridging
     bridge-utils
