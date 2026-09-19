@@ -24,7 +24,10 @@
       CPU_HWP_DYN_BOOST_ON_BAT = 0;
 
       # T480s — single battery (BAT0 only)
-      START_CHARGE_THRESH_BAT0 = 20;
+      # Equivalent to Lenovo Vantage "Battery Conservation Mode":
+      # Stops charging at 80% on AC to prevent battery degradation;
+      # Re-starts charging when plugged in below 75%.
+      START_CHARGE_THRESH_BAT0 = 75;
       STOP_CHARGE_THRESH_BAT0  = 80;
       NATACPI_ENABLE = 1;
       TPACPI_ENABLE  = 1;
