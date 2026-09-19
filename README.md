@@ -182,47 +182,33 @@ ParrotOS Security includes the entire pentesting suite pre-installed and pre-con
 
 ### 8. GNOME Extensions & Desktop Themes
 
-#### Desktop Themes & Visual Styling
-| Component | Setting / Package | Description |
+#### Desktop Themes & Visual Styling (Default GNOME)
+| Component | Setting | Description |
 |---|---|---|
-| **GTK Theme** | `adw-gtk3-dark` | Adapts legacy GTK3 applications to look identical to GNOME's modern Libadwaita dark style, providing a cohesive dark aesthetic across all apps. |
-| **Icon Theme** | `Papirus-Dark` | Crisp, high-contrast SVG icon theme with dark panel tray icons and extensive application icon coverage. |
-| **Cursor Theme** | `Bibata-Modern-Ice` (24px) | Clean, rounded white-and-black cursor theme. Unified across Wayland, XWayland, and GTK via `home.pointerCursor`. |
+| **GTK Theme** | `Adwaita` (Dark) | Native GNOME Libadwaita dark theme; clean, fast, and rock-solid. |
+| **Icon Theme** | `Adwaita` | Default GNOME SVG icon theme. |
+| **Cursor Theme** | `Adwaita` (24px) | Default GNOME cursor theme; consistent across Wayland, XWayland, and GTK. |
 | **Monospace Font** | `JetBrainsMono Nerd Font Mono 11` | Fixed-pitch coding font with programming ligatures and developer icons; strictly fixed-width to avoid terminal column misalignment. |
 | **UI Font** | `Inter 11` | Highly readable, modern sans-serif typography optimized for computer displays. |
 | **Document Font** | `Source Serif Pro 11` | Elegant serif typeface used for document reading and PDF viewers. |
 
-#### GNOME Extensions (Preconfigured via dconf)
+#### GNOME Extensions (Lightweight & Essential)
 | Extension | Role & Configuration |
 |---|---|
-| **Dash to Dock** | Moves the dash out of the overview into a permanent, auto-hiding dock pinned to the **left screen edge** with 36px icons, running app dots, and click-to-minimize. |
-| **Blur my Shell** | Adds frosted-glass blur effects behind the top bar, dock, window overview, and lock screen. |
-| **Pop Shell** | Keyboard-driven auto-tiling window manager (from Pop!_OS). Automatically tiles windows, sets 4px gaps, active window border hints, and shortcuts (`Super` + navigation). |
-| **Just Perfection** | Declutters the shell: hides the redundant "Activities" text button, removes workspace switcher delays, and smooths animations. |
-| **Vitals** | Real-time hardware telemetry in the top bar: CPU temperature & load, RAM usage, battery percentage, fan RPM, and network download/upload speeds. |
+| **Dash to Dock** | Moves the dash out of the overview into a permanent, auto-hiding dock pinned to the **left screen edge** with 40px icons, running app dots, and click-to-minimize. |
 | **AppIndicator Support** | Restores the system tray in the top bar for background apps like Discord/Vesktop, Bitwarden, Steam, Telegram, and Syncthing. |
 | **Caffeine** | One-click top bar toggle to prevent the screen from dimming, sleeping, or locking during long builds, tests, or presentations. |
 | **Clipboard Indicator** | Top bar clipboard history manager with searchable entries, quick paste, and private mode. |
-| **GSConnect** | Complete wireless Android phone integration (KDE Connect protocol): syncs notifications, SMS, battery status, clipboard, and two-way file sharing. |
-| **Rounded Window Corners Reborn** | Enforces consistent, smooth rounded corners on all windows (including legacy GTK3 and Electron apps). |
+| **Just Perfection** | Declutters the shell: hides the redundant "Activities" text button, removes workspace switcher delays, and smooths animations. |
+| **Vitals** | Real-time hardware telemetry in the top bar: CPU temperature & load, RAM usage, battery percentage, fan RPM, and network download/upload speeds. |
 | **Grand Theft Focus** | Eliminates the "Window is ready" notification popup and focuses newly launched applications immediately. |
-| **Night Theme Switcher** | Automates transition between light and dark themes synchronized with local sunrise and sunset. |
-| **User Themes** | Unlocks custom GNOME Shell stylesheet theming. |
-| **Forge** | Lightweight tiling window manager and split-screen organizer for additional layout flexibility. |
 
 ---
 
 ## Hardware Management Reference
 
-### 1. Fingerprint Enrollment
-```bash
-# Enroll a finger
-fprintd-enroll
-
-# Verify enrollment
-fprintd-verify
-```
-*PAM accepts either your fingerprint or password for GDM login, `sudo`, polkit, and screen lock.*
+### 1. Fingerprint Reader Note (Synaptics `06cb:009a`)
+The ThinkPad T480s sensor (`06cb:009a`) is a proprietary "Match-on-Host" device not supported by standard upstream `libfprint`/`fprintd`. Standard `fprintd-enroll` returns `NoSuchDevice`. It has been disabled to prevent PAM authentication delays during `sudo` and login. If you wish to use it, it requires the community flake [ahbnr/nixos-06cb-009a-fingerprint-sensor](https://github.com/ahbnr/nixos-06cb-009a-fingerprint-sensor) with sensor calibration data.
 
 ### 2. SIM Card / Mobile Broadband (WWAN)
 ```bash

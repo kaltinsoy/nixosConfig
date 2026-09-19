@@ -11,30 +11,9 @@
   # ── polkit ────────────────────────────────────────────────────────────
   security.polkit.enable = true;
 
-  # ── PAM — fingerprint + GNOME keyring ────────────────────────────────
+  # ── PAM — GNOME keyring ───────────────────────────────────────────────
   security.pam.services = {
-    # GDM login: fingerprint OR password
-    gdm.enableGnomeKeyring  = true;
-    gdm-fingerprint = {
-      text = ''
-        auth    sufficient  pam_fprintd.so
-        auth    include     gdm
-        account include     gdm
-        password include    gdm
-        session include     gdm
-      '';
-    };
-
-    # sudo: fingerprint OR password (fingerprint checked first)
-    sudo = {
-      fprintAuth = true;
-    };
-
-    # screen lock (GNOME screensaver / gdm-password)
-    gdm-password.fprintAuth = true;
-
-    # polkit / pkexec
-    polkit-1.fprintAuth = true;
+    gdm.enableGnomeKeyring = true;
   };
 
 

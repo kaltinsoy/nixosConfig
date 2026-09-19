@@ -110,15 +110,11 @@
   # power-profiles-daemon conflicts with TLP
   services.power-profiles-daemon.enable = lib.mkForce false;
 
-  # ── Fingerprint reader (Synaptics 06cb:00bd) ──────────────────────────
-  services.fprintd = {
-    enable = true;
-    tod = {
-      enable = true;
-      driver = pkgs.libfprint-2-tod1-goodix;
-      # If goodix doesn't match your sensor: pkgs.libfprint-2-tod1-elan
-    };
-  };
+  # ── Fingerprint reader (Synaptics 06cb:009a) ──────────────────────────
+  # Note: 06cb:009a is a proprietary match-on-host sensor not supported
+  # by standard libfprint/fprintd (requires python-validity / open-fprintd).
+  # Disabled to prevent "No such device" errors and PAM auth delays.
+  services.fprintd.enable = false;
 
   # ── WWAN / LTE SIM ────────────────────────────────────────────────────
   # Correct NixOS option: networking.modemmanager (not services.modemManager)
@@ -145,9 +141,6 @@
     lm_sensors
     i7z
     cpu-x
-
-    # Fingerprint
-    fprintd
 
     # WWAN / SIM
     modemmanager

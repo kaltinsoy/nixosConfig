@@ -1,27 +1,19 @@
 { lib, ... }:
 
 # GNOME extension settings via dconf
-# These are applied at login via home-manager's dconf module.
-# You can find keys by running: dconf dump / | grep -A5 extension-name
+# Lightweight, high-performance configuration without heavy shaders or blur.
 
 {
   dconf.settings = {
     # ── Enable extensions list ─────────────────────────────────────────
     "org/gnome/shell" = {
       enabled-extensions = [
-        "blur-my-shell@aunetx"
-        "user-theme@gnome-shell-extensions.gcampax.github.com"
         "dash-to-dock@micxgx.gmail.com"
         "appindicatorsupport@rgcjonas.gmail.com"
         "caffeine@patapon.info"
         "clipboard-indicator@tudmotu.com"
-        "gsconnect@andyholmes.github.io"
-        "pop-shell@system76.com"
         "just-perfection-desktop@just-perfection"
         "Vitals@CoreCoding.com"
-        "nightthemeswitcher@romainvigier.fr"
-        "rounded-window-corners@fxgn"
-        "forge@jmmaranan.com"
         "grand-theft-focus@zalckos.github.com"
       ];
       favorite-apps = [
@@ -33,20 +25,20 @@
       ];
     };
 
-    # ── GNOME Interface ────────────────────────────────────────────────
+    # ── GNOME Interface (Default Themes) ───────────────────────────────
     "org/gnome/desktop/interface" = {
-      color-scheme     = "prefer-dark";
-      gtk-theme        = "adw-gtk3-dark";
-      icon-theme       = "Papirus-Dark";
-      cursor-theme     = "Bibata-Modern-Ice";
-      cursor-size      = 24;
-      font-name        = "Inter 11";
+      color-scheme        = "prefer-dark";
+      gtk-theme           = "Adwaita";
+      icon-theme          = "Adwaita";
+      cursor-theme        = "Adwaita";
+      cursor-size         = 24;
+      font-name           = "Inter 11";
       monospace-font-name = "JetBrainsMono Nerd Font Mono 11";
       document-font-name  = "Source Serif Pro 11";
-      enable-animations    = true;
+      enable-animations   = true;
       show-battery-percentage = true;
-      clock-show-seconds   = false;
-      clock-show-weekday   = true;
+      clock-show-seconds  = false;
+      clock-show-weekday  = true;
     };
 
     # ── Window manager ─────────────────────────────────────────────────
@@ -81,20 +73,6 @@
       scroll-action            = "cycle-windows";
     };
 
-    # ── Blur My Shell ──────────────────────────────────────────────────
-    "org/gnome/shell/extensions/blur-my-shell" = {
-      sigma             = 30;
-      brightness        = 0.6;
-    };
-    "org/gnome/shell/extensions/blur-my-shell/panel" = {
-      blur             = true;
-      sigma            = 15;
-      brightness       = 0.7;
-    };
-    "org/gnome/shell/extensions/blur-my-shell/overview" = {
-      blur             = true;
-    };
-
     # ── Caffeine ──────────────────────────────────────────────────────
     "org/gnome/shell/extensions/caffeine" = {
       indicator-position = 0;
@@ -110,14 +88,6 @@
       animation         = 2;
     };
 
-    # ── Pop Shell (tiling) ─────────────────────────────────────────────
-    "org/gnome/shell/extensions/pop-shell" = {
-      tile-by-default = false;   # manual tiling; toggle with Super+Y
-      smart-gaps      = true;
-      gap-inner       = 4;
-      gap-outer       = 4;
-    };
-
     # ── Vitals ────────────────────────────────────────────────────────
     "org/gnome/shell/extensions/vitals" = {
       hot-sensors      = [ "_processor_usage_" "_memory_usage_" "__network-rx_max__" ];
@@ -129,17 +99,6 @@
       show-network     = true;
       show-storage     = false;
       position-in-panel = 0;
-    };
-
-    # ── Rounded Window Corners ─────────────────────────────────────────
-    "org/gnome/shell/extensions/rounded-window-corners-reborn" = {
-      global-rounded-corner-settings = "{'padding': <{'left': <uint32 1>, 'right': <uint32 1>, 'top': <uint32 1>, 'bottom': <uint32 1>}>, 'keeping_rounded_corners': <(true, false)>, 'border_radius': <uint32 12>, 'smoothing': <uint32 0>}";
-    };
-
-    # ── Night Theme Switcher ───────────────────────────────────────────
-    "org/gnome/shell/extensions/nightthemeswitcher/time" = {
-      always-enable-ondemand = false;
-      manual-schedule        = false;
     };
 
     # ── Touchpad ──────────────────────────────────────────────────────

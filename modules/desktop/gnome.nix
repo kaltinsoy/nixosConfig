@@ -42,22 +42,14 @@
     gnome-clocks
     gnome-weather
 
-    # GNOME Shell extensions (installed system-wide)
-    gnomeExtensions.blur-my-shell
-    gnomeExtensions.user-themes
+    # GNOME Shell extensions (lightweight, high-performance)
     gnomeExtensions.dash-to-dock
     gnomeExtensions.appindicator
     gnomeExtensions.caffeine
     gnomeExtensions.clipboard-indicator
-    gnomeExtensions.gsconnect
-    gnomeExtensions.pop-shell
     gnomeExtensions.just-perfection
     gnomeExtensions.vitals
-    gnomeExtensions.night-theme-switcher
-    gnomeExtensions.rounded-window-corners-reborn
-    gnomeExtensions.forge
     gnomeExtensions.grand-theft-focus
-    # gnomeExtensions.tailscale-status   # uncomment if you use Tailscale
   ];
 
   # Exclude bloat from GNOME default install
