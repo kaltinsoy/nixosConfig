@@ -201,6 +201,36 @@ Here is a detailed breakdown of every application installed in this system and i
 | **TrackPoint Tuning** | Kernel sysfs rules adjusting sensitivity, speed, and inertia for the red TrackPoint cap. |
 | **ZRAM** | Compressed in-memory swap using `zstd` (50% RAM), sparing NVMe SSD wear. |
 
+### 8. GNOME Extensions & Desktop Themes
+
+#### Desktop Themes & Visual Styling
+| Component | Setting / Package | Description |
+|---|---|---|
+| **GTK Theme** | `adw-gtk3-dark` | Adapts legacy GTK3 applications to look identical to GNOME's modern Libadwaita dark style, providing a cohesive dark aesthetic across all apps. |
+| **Icon Theme** | `Papirus-Dark` | Crisp, high-contrast SVG icon theme with dark panel tray icons and extensive application icon coverage. |
+| **Cursor Theme** | `Bibata-Modern-Ice` (24px) | Clean, rounded white-and-black cursor theme. Unified across Wayland, XWayland, and GTK via `home.pointerCursor`. |
+| **Monospace Font** | `JetBrainsMono Nerd Font Mono 11` | Fixed-pitch coding font with programming ligatures and developer icons; strictly fixed-width to avoid terminal column misalignment. |
+| **UI Font** | `Inter 11` | Highly readable, modern sans-serif typography optimized for computer displays. |
+| **Document Font** | `Source Serif Pro 11` | Elegant serif typeface used for document reading and PDF viewers. |
+
+#### GNOME Extensions (Preconfigured via dconf)
+| Extension | Role & Configuration |
+|---|---|
+| **Dash to Dock** | Moves the dash out of the overview into a permanent, auto-hiding dock pinned to the **left screen edge** with 36px icons, running app dots, and click-to-minimize. |
+| **Blur my Shell** | Adds frosted-glass blur effects behind the top bar, dock, window overview, and lock screen. |
+| **Pop Shell** | Keyboard-driven auto-tiling window manager (from Pop!_OS). Automatically tiles windows, sets 4px gaps, active window border hints, and shortcuts (`Super` + navigation). |
+| **Just Perfection** | Declutters the shell: hides the redundant "Activities" text button, removes workspace switcher delays, and smooths animations. |
+| **Vitals** | Real-time hardware telemetry in the top bar: CPU temperature & load, RAM usage, battery percentage, fan RPM, and network download/upload speeds. |
+| **AppIndicator Support** | Restores the system tray in the top bar for background apps like Discord/Vesktop, Bitwarden, Steam, Telegram, and Syncthing. |
+| **Caffeine** | One-click top bar toggle to prevent the screen from dimming, sleeping, or locking during long builds, tests, or presentations. |
+| **Clipboard Indicator** | Top bar clipboard history manager with searchable entries, quick paste, and private mode. |
+| **GSConnect** | Complete wireless Android phone integration (KDE Connect protocol): syncs notifications, SMS, battery status, clipboard, and two-way file sharing. |
+| **Rounded Window Corners Reborn** | Enforces consistent, smooth rounded corners on all windows (including legacy GTK3 and Electron apps). |
+| **Grand Theft Focus** | Eliminates the "Window is ready" notification popup and focuses newly launched applications immediately. |
+| **Night Theme Switcher** | Automates transition between light and dark themes synchronized with local sunrise and sunset. |
+| **User Themes** | Unlocks custom GNOME Shell stylesheet theming. |
+| **Forge** | Lightweight tiling window manager and split-screen organizer for additional layout flexibility. |
+
 ---
 
 ## Hardware Management Reference
