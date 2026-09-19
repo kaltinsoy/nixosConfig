@@ -143,3 +143,10 @@ vms                    # virsh list --all
 vivado                 # launch Vivado via FHS
 gowin                  # launch Gowin EDA via FHS
 ```
+
+#ERROR
+error: flake 'git+file:///home/koray/nixos-config' does not provide attribute 'packages.x86_64-linux.nixosConfigurations."nixos".config.system.build.nixos-rebuild', 'legacyPackages.x86_64-linux.nixosConfigurations."nixos".config.system.build.nixos-rebuild' or 'nixosConfigurations."nixos".config.system.build.nixos-rebuild'
+Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '/home/koray/nixos-config#nixosConfigurations."nixos".config.system.build.nixos-rebuild' --no-link' returned non-zero exit status 1.
+
+[nix-shell:~/nixos-config]$ 
+
