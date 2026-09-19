@@ -50,7 +50,7 @@
 
       # Password manager
       bitwarden-desktop
-      _1password-gui
+      bitwarden-cli  # `bw` CLI
 
       # Office
       libreoffice
