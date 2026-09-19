@@ -114,10 +114,12 @@
   services.power-profiles-daemon.enable = lib.mkForce false;
 
   # ── Fingerprint reader (Synaptics 06cb:009a) ──────────────────────────
-  # Note: 06cb:009a is a proprietary match-on-host sensor not supported
-  # by standard libfprint/fprintd (requires python-validity / open-fprintd).
-  # Disabled to prevent "No such device" errors and PAM auth delays.
-  services.fprintd.enable = false;
+  # Proprietary Match-on-Host sensor driven by ahbnr/nixos-06cb-009a-fingerprint-sensor flake.
+  # Stage 1: python-validity backend for firmware loading, enrollment & calibration extraction.
+  services."06cb-009a-fingerprint-sensor" = {
+    enable  = true;
+    backend = "python-validity";
+  };
 
   # ── WWAN / LTE SIM ────────────────────────────────────────────────────
   # Correct NixOS option: networking.modemmanager (not services.modemManager)
@@ -193,8 +195,8 @@
       RUN+="${pkgs.coreutils}/bin/chgrp video /sys/class/backlight/%k/brightness", \
       RUN+="${pkgs.coreutils}/bin/chmod g+w   /sys/class/backlight/%k/brightness"
 
-    # Fingerprint reader — Synaptics 06cb:00bd
-    ATTRS{idVendor}=="06cb", ATTRS{idProduct}=="00bd", \
+    # Fingerprint reader — Synaptics 06cb:009a
+    ATTRS{idVendor}=="06cb", ATTRS{idProduct}=="009a", \
       MODE="0660", GROUP="input", TAG+="uaccess"
 
     # Sierra Wireless EM7455 WWAN

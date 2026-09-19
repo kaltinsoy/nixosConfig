@@ -30,9 +30,14 @@
       url = "github:NvChad/starter";
       flake = false;
     };
+
+    # ── Fingerprint reader (Synaptics 06cb:009a) ──────────────────────────
+    nixos-06cb-009a-fingerprint-sensor = {
+      url = "github:ahbnr/nixos-06cb-009a-fingerprint-sensor";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-hardware, zen-browser, spicetify-nix, nvchad-starter, ... } @ inputs:
+  outputs = { self, nixpkgs, home-manager, nixos-hardware, zen-browser, spicetify-nix, nvchad-starter, nixos-06cb-009a-fingerprint-sensor, ... } @ inputs:
     let
       system = "x86_64-linux";
       pkgs   = nixpkgs.legacyPackages.${system};
@@ -50,6 +55,9 @@
         modules = [
           # ThinkPad T480s hardware preset (Intel 8th-gen, dual battery, WWAN slot)
           nixos-hardware.nixosModules.lenovo-thinkpad-t480s
+
+          # Synaptics 06cb:009a Match-on-Host fingerprint reader module
+          nixos-06cb-009a-fingerprint-sensor.nixosModules."06cb-009a-fingerprint-sensor"
 
           ./hosts/default/configuration.nix
 

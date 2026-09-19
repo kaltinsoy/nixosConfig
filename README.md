@@ -207,8 +207,39 @@ ParrotOS Security includes the entire pentesting suite pre-installed and pre-con
 
 ## Hardware Management Reference
 
-### 1. Fingerprint Reader Note (Synaptics `06cb:009a`)
-The ThinkPad T480s sensor (`06cb:009a`) is a proprietary "Match-on-Host" device not supported by standard upstream `libfprint`/`fprintd`. Standard `fprintd-enroll` returns `NoSuchDevice`. It has been disabled to prevent PAM authentication delays during `sudo` and login. If you wish to use it, it requires the community flake [ahbnr/nixos-06cb-009a-fingerprint-sensor](https://github.com/ahbnr/nixos-06cb-009a-fingerprint-sensor) with sensor calibration data.
+### 1. Fingerprint Reader (Synaptics `06cb:009a`)
+The ThinkPad T480s sensor (`06cb:009a`) is a proprietary "Match-on-Host" device managed via the community flake [ahbnr/nixos-06cb-009a-fingerprint-sensor](https://github.com/ahbnr/nixos-06cb-009a-fingerprint-sensor).
+
+#### Stage 1: Enrollment & Calibration Generation
+After rebuilding your system with `sudo nixos-rebuild switch --flake ~/nixos-config#sumatra`:
+```bash
+# 1. Download sensor firmware if required (run as root):
+sudo validity-sensors-firmware
+sudo systemctl restart python3-validity
+
+# 2. Enroll your fingerprint:
+fprintd-enroll
+
+# 3. Verify enrollment:
+fprintd-verify
+```
+
+#### Stage 2: Native libfprint-tod PAM Integration (GDM Login & sudo)
+Enrolling in Stage 1 generates a calibration file at `/var/lib/python-validity/calib-data.bin`.
+To enable native GDM screenlock / login and `sudo` authentication without workarounds:
+```bash
+# Copy calibration file into your nixos-config repository:
+cp /var/lib/python-validity/calib-data.bin ~/nixos-config/modules/hardware/calib-data.bin
+```
+Then in `modules/hardware/lenovo.nix`, switch the backend:
+```nix
+services."06cb-009a-fingerprint-sensor" = {
+  enable = true;
+  backend = "libfprint-tod";
+  calib-data-file = ./calib-data.bin;
+};
+```
+Rebuild (`sudo nixos-rebuild switch --flake ~/nixos-config#sumatra`) and run `fprintd-enroll` once more.
 
 ### 2. SIM Card / Mobile Broadband (WWAN)
 ```bash
@@ -220,14 +251,27 @@ mmcli -m 0
 nmcli connection add type gsm ifname '*' con-name "LTE" apn "internet"
 ```
 
-### 3. Battery Thresholds
-```bash
-# Check battery health and charging status
-tlp-stat -b
+### 3. Battery Thresholds & Full Charging
 
-# Check current charge thresholds (20% start, 80% stop)
+The battery is configured in "Conservation Mode" (starts charging below 75%, stops at 80%) to prolong battery life when plugged into AC for long sessions.
+
+```bash
+# Check battery health, status, and thresholds:
+tlp-stat -b
 cat /sys/class/power_supply/BAT0/charge_control_start_threshold
 cat /sys/class/power_supply/BAT0/charge_control_end_threshold
+
+# ── Force One-Time Full Charge (100%) ──────────────────────────────
+# When preparing for travel or needing full capacity, charge to 100% once:
+sudo tlp fullcharge BAT0
+
+# Or temporarily set thresholds manually to 100%:
+sudo tlp setcharge 96 100 BAT0
+
+# ── Restore Conservation Mode (75% - 80%) ─────────────────────────
+sudo tlp setcharge 75 80 BAT0
+# Or restart TLP service to restore defaults:
+sudo systemctl restart tlp
 ```
 
 ### 4. WireGuard VPN Import (GNOME)
