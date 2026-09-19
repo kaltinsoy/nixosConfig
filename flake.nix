@@ -56,8 +56,9 @@
           home-manager.nixosModules.home-manager
           {
             home-manager = {
-              useGlobalPkgs   = true;
-              useUserPackages = true;
+              useGlobalPkgs       = true;
+              useUserPackages     = true;
+              backupFileExtension = "backup";
               extraSpecialArgs = {
                 inherit inputs username spicetify-nix zen-browser nvchad-starter;
               };
