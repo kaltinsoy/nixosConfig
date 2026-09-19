@@ -42,7 +42,7 @@
     gnome-clocks
     gnome-weather
 
-    # GNOME Shell extensions (lightweight, high-performance)
+    # GNOME Shell extensions
     gnomeExtensions.dash-to-dock
     gnomeExtensions.appindicator
     gnomeExtensions.caffeine
@@ -50,6 +50,8 @@
     gnomeExtensions.just-perfection
     gnomeExtensions.vitals
     gnomeExtensions.grand-theft-focus
+    gnomeExtensions.blur-my-shell
+    gnomeExtensions.forge
   ];
 
   # Exclude bloat from GNOME default install

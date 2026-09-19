@@ -8,20 +8,27 @@
     # ── Enable extensions list ─────────────────────────────────────────
     "org/gnome/shell" = {
       enabled-extensions = [
+        "blur-my-shell@aunetx"
         "dash-to-dock@micxgx.gmail.com"
         "appindicatorsupport@rgcjonas.gmail.com"
         "caffeine@patapon.info"
         "clipboard-indicator@tudmotu.com"
-        "just-perfection-desktop@just-perfection"
         "Vitals@CoreCoding.com"
+        "forge@jmmaranan.com"
         "grand-theft-focus@zalckos.github.com"
+        "just-perfection-desktop@just-perfection"
+      ];
+      disabled-extensions = [
+        "pop-shell@system76.com"
+        "gsconnect@andyholmes.github.io"
+        "nightthemeswitcher@romainvigier.fr"
+        "user-theme@gnome-shell-extensions.gcampax.github.com"
+        "rounded-window-corners@fxgn"
       ];
       favorite-apps = [
-        "zen-browser.desktop"
         "org.gnome.Nautilus.desktop"
-        "dev.zed.Zed.desktop"
-        "virt-manager.desktop"
-        "org.gnome.Terminal.desktop"
+        "org.gnome.Console.desktop"
+        "zen-beta.desktop"
       ];
     };
 
@@ -59,46 +66,98 @@
 
     # ── Dash to Dock ───────────────────────────────────────────────────
     "org/gnome/shell/extensions/dash-to-dock" = {
-      dock-position            = "LEFT";
-      dock-fixed               = true;
-      extend-height            = true;
-      icon-size-fixed          = true;
-      dash-max-icon-size       = 40;
-      show-trash               = false;
-      show-mounts              = false;
-      running-indicator-style  = "DOTS";
-      transparency-mode        = "FIXED";
-      background-opacity       = 0.85;
-      custom-theme-shrink      = true;
-      scroll-action            = "cycle-windows";
+      apply-custom-theme             = true;
+      background-opacity             = 0.85;
+      custom-theme-shrink            = true;
+      dash-max-icon-size             = 48;
+      dock-fixed                     = false;
+      dock-position                  = "BOTTOM";
+      extend-height                  = false;
+      height-fraction                = 0.9;
+      icon-size-fixed                = true;
+      intellihide-mode               = "FOCUS_APPLICATION_WINDOWS";
+      preferred-monitor              = -2;
+      preferred-monitor-by-connector = "eDP-1";
+      preview-size-scale             = 0.0;
+      running-indicator-style        = "DEFAULT";
+      scroll-action                  = "cycle-windows";
+      show-mounts                    = false;
+      show-trash                     = false;
+      transparency-mode              = "DEFAULT";
+    };
+
+    # ── AppIndicator ───────────────────────────────────────────────────
+    "org/gnome/shell/extensions/appindicator" = {
+      icon-brightness = 0.0;
+      icon-contrast   = 0.0;
+      icon-opacity    = 240;
+      icon-saturation = 0.0;
+      icon-size       = 0;
+    };
+
+    # ── Blur My Shell ──────────────────────────────────────────────────
+    "org/gnome/shell/extensions/blur-my-shell" = {
+      rounded-blur-found = false;
+      settings-version   = 2;
+    };
+    "org/gnome/shell/extensions/blur-my-shell/appfolder" = {
+      brightness = 0.6;
+      sigma      = 30;
+    };
+    "org/gnome/shell/extensions/blur-my-shell/dash-to-dock" = {
+      blur               = true;
+      brightness         = 0.6;
+      sigma              = 30;
+      static-blur        = true;
+      style-dash-to-dock = 0;
+    };
+    "org/gnome/shell/extensions/blur-my-shell/overview" = {
+      blur = true;
+    };
+    "org/gnome/shell/extensions/blur-my-shell/panel" = {
+      blur          = true;
+      brightness    = 0.6;
+      corner-radius = 0;
+      sigma         = 30;
+    };
+    "org/gnome/shell/extensions/blur-my-shell/window-list" = {
+      brightness = 0.6;
+      sigma      = 30;
+    };
+
+    # ── Forge ──────────────────────────────────────────────────────────
+    "org/gnome/shell/extensions/forge" = {
+      tiling-mode-enabled = false;
     };
 
     # ── Caffeine ──────────────────────────────────────────────────────
     "org/gnome/shell/extensions/caffeine" = {
-      indicator-position = 0;
-      user-enabled       = false;
+      cli-toggle             = false;
+      indicator-position     = 0;
+      indicator-position-max = 2;
+      user-enabled           = false;
     };
 
     # ── Just Perfection ────────────────────────────────────────────────
     "org/gnome/shell/extensions/just-perfection" = {
-      activities-button = false;
-      app-menu          = false;
-      search            = true;
+      activities-button              = false;
+      animation                      = 2;
+      app-menu                       = false;
+      search                         = true;
       workspace-switcher-should-show = true;
-      animation         = 2;
     };
 
     # ── Vitals ────────────────────────────────────────────────────────
     "org/gnome/shell/extensions/vitals" = {
-      hot-sensors      = [ "_processor_usage_" "_memory_usage_" "__network-rx_max__" ];
-      show-temperature = true;
-      show-voltage     = false;
-      show-fan         = true;
-      show-memory      = true;
-      show-processor   = true;
-      show-network     = true;
-      show-storage     = false;
+      hot-sensors       = [ "_processor_usage_" "_memory_usage_" "__network-rx_max__" ];
       position-in-panel = 0;
+      show-fan          = true;
+      show-memory       = true;
+      show-network      = true;
+      show-processor    = true;
+      show-storage      = false;
+      show-temperature  = true;
+      show-voltage      = false;
     };
 
     # ── Touchpad ──────────────────────────────────────────────────────
