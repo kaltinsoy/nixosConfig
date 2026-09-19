@@ -178,11 +178,7 @@
     "thinkpad_acpi" # ThinkPad extras (fan, hotkeys, LED)
     # kvm-intel already set in boot.nix
   ];
-  # tp_smapi as a kernel module (accessed via linuxPackages)
-  boot.extraModulePackages = with config.boot.kernelPackages; [
-    acpi_call
-    tp_smapi   # ThinkPad battery SMAPI (optional on T480s but harmless)
-  ];
+  # acpi_call is already added to boot.extraModulePackages in boot.nix
 
   # ── TrackPoint tuning ─────────────────────────────────────────────────
   systemd.tmpfiles.rules = [
