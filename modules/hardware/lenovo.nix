@@ -153,7 +153,7 @@
     modemmanager
     libmbim
     libqmi
-    networkmanager-applet
+    networkmanagerapplet
     networkmanager-openconnect
     networkmanager-openvpn
 

@@ -53,7 +53,7 @@
       _1password-gui
 
       # Office
-      libreoffice-fresh
+      libreoffice
 
       # File sync
       syncthing
@@ -110,6 +110,7 @@
   # ── SSH ───────────────────────────────────────────────────────────────
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;
     # HM 26.05+: addKeysToAgent moved into settings, matchBlocks → settings blocks
     settings = {
       "*" = {

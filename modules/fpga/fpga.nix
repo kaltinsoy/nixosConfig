@@ -11,9 +11,9 @@ let
       # C/C++ runtime
       glibc glibc.dev glib gcc-unwrapped.lib
       # Graphics
-      libGL libGLU xorg.libX11 xorg.libXrender xorg.libXtst xorg.libXi
-      xorg.libXext xorg.libxcb xorg.libXft xorg.libXcursor xorg.libXfixes
-      xorg.libXcomposite motif
+      libGL libGLU libx11 libxrender libxtst libxi
+      libxext libxcb libxft libxcursor libxfixes
+      libxcomposite motif
       # Misc
       ncurses5 zlib freetype fontconfig
       coreutils bash which
@@ -38,8 +38,8 @@ let
     name = "gowin-eda";
     targetPkgs = p: with p; [
       glibc glib gcc-unwrapped.lib
-      libGL xorg.libX11 xorg.libXrender xorg.libXtst xorg.libXi
-      xorg.libXext xorg.libxcb ncurses5 zlib
+      libGL libx11 libxrender libxtst libxi
+      libxext libxcb ncurses5 zlib
       coreutils bash which
     ];
     runScript = ''
@@ -61,7 +61,7 @@ in
     enable    = true;
     libraries = with pkgs; [
       glibc glib gcc-unwrapped.lib stdenv.cc.cc
-      libGL xorg.libX11 xorg.libXrender zlib ncurses5
+      libGL libx11 libxrender zlib ncurses5
       openssl libxml2 libxslt
     ];
   };
@@ -70,7 +70,6 @@ in
   environment.systemPackages = with pkgs; [
     # Synthesis
     yosys            # open-source synthesis suite
-    yosys-synlig     # SystemVerilog frontend for yosys
 
     # Place & Route
     nextpnr           # next-generation place & route (iCE40, ECP5, Nexus)
@@ -79,7 +78,6 @@ in
     # Board support
     icestorm          # iCE40 toolchain (programming + bit-stream tools)
     trellis           # ECP5 toolchain
-    prjtrellis        # ECP5 project
 
     # HDL simulation
     ghdl              # VHDL simulator
@@ -87,19 +85,19 @@ in
     iverilog          # Icarus Verilog
 
     # Formal verification
-    symbiyosys        # formal verification front-end
-    yices             # SMT solver (used by symbiyosys)
+    sby               # formal verification front-end (formerly symbiyosys)
+    yices             # SMT solver (used by sby)
     z3                # SMT solver
 
     # Waveform viewer
     gtkwave
 
     # Programming / JTAG
-    openFPGALoader    # universal FPGA programmer (Xilinx, Gowin, Lattice, …)
+    openfpgaloader    # universal FPGA programmer (Xilinx, Gowin, Lattice, …)
     openocd           # JTAG / SWD debugger
 
     # HDL development
-    python3Packages.cocotb        # HDL cosimulation
+    python313Packages.cocotb      # HDL cosimulation (python 3.13)
     python3Packages.migen         # Python-based HDL
     python3Packages.amaranth      # Amaranth HDL
 

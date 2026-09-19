@@ -23,7 +23,7 @@
       cascadia-code
 
       # Emoji
-      noto-fonts-emoji
+      noto-fonts-color-emoji
       twemoji-color-font
 
       # CJK (optional but useful for VM guest OSes in QEMU)

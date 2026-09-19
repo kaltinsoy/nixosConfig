@@ -36,8 +36,7 @@
 
   # ── Udev ─────────────────────────────────────────────────────────────
   services.udev.packages = with pkgs; [
-    android-udev-rules
-    pkgs.openocd           # JTAG / SWD probes
+    openocd                # JTAG / SWD probes
   ];
 
   # ── Firmware update (fwupd) — see lenovo.nix for more ────────────────

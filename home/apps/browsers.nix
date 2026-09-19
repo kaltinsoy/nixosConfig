@@ -1,7 +1,7 @@
 { inputs, zen-browser, pkgs, ... }:
 
 let
-  system = "x86_64-linux";
+  system = pkgs.stdenv.hostPlatform.system;
 in
 {
   home.packages = [
@@ -16,6 +16,7 @@ in
   # ── Firefox hardened profile (via programs.firefox) ───────────────────
   programs.firefox = {
     enable = true;
+    configPath = ".mozilla/firefox";
     profiles.default = {
       isDefault = true;
       settings = {

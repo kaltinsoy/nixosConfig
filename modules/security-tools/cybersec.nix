@@ -46,7 +46,7 @@
     radare2              # RE framework
     iaito                # Ghidra/radare2 GUI
     gdb
-    pwndbg               # GDB plug-in for exploit dev
+    #pwndbg               # GDB plug-in for exploit dev
     pwntools             # Python exploit dev lib
     binwalk              # firmware analysis
     file
@@ -73,7 +73,7 @@
     volatility3          # memory forensics
     foremost             # file carving
     autopsy              # GUI forensics platform
-    bulk-extractor
+    bulk_extractor
     sleuthkit
 
     # ── Crypto / stego ────────────────────────────────────────────────

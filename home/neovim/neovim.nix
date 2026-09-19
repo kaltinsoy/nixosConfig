@@ -33,7 +33,7 @@
       verilator                     # Verilog/SV lint (used by nvim-lint)
 
       # ── Formatters ──────────────────────────────────────────────────
-      nixfmt-rfc-style              # Nix
+      nixfmt                        # Nix
       stylua                        # Lua
       black                         # Python
       isort                         # Python imports

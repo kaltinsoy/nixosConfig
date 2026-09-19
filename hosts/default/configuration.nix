@@ -67,7 +67,7 @@
   environment.systemPackages = with pkgs; [
     # Dev essentials
     git git-lfs curl wget unzip p7zip
-    htop btop neofetch fastfetch
+    htop btop fastfetch
     file tree fd ripgrep bat eza delta
     jq yq-go moreutils
 
@@ -76,7 +76,7 @@
     python3 python3Packages.pip
 
     # Nix tooling
-    nil nixfmt-rfc-style nix-tree nix-diff
+    nil nixfmt nix-tree nix-diff
     nix-output-monitor nvd
 
     # Terminal multiplexer
