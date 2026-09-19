@@ -229,5 +229,122 @@
       command = "virt-manager";
       binding = "<Super><Shift>v";
     };
+
+    # ── App Folders (Tidy Application Grid) ───────────────────────────
+    "org/gnome/desktop/app-folders" = {
+      folder-children = [
+        "Internet"
+        "Development"
+        "Office"
+        "Media"
+        "Utilities"
+        "System"
+      ];
+    };
+
+    "org/gnome/desktop/app-folders/folders/Internet" = {
+      name = "Internet";
+      apps = [
+        "zen-beta.desktop"
+        "zen-browser.desktop"
+        "firefox.desktop"
+        "tor-browser.desktop"
+        "vesktop.desktop"
+        "element-desktop.desktop"
+        "bitwarden.desktop"
+        "org.onionshare.OnionShare.desktop"
+        "syncthing-ui.desktop"
+      ];
+    };
+
+    "org/gnome/desktop/app-folders/folders/Development" = {
+      name = "Development";
+      apps = [
+        "dev.zed.Zed.desktop"
+        "nvim.desktop"
+        "com.mitchellh.ghostty.desktop"
+        "Alacritty.desktop"
+        "org.gnome.Console.desktop"
+        "org.gnome.Terminal.desktop"
+        "ghidra.desktop"
+        "imhex.desktop"
+        "org.radare.iaito.desktop"
+        "gtkwave.desktop"
+        "looking-glass-client.desktop"
+      ];
+    };
+
+    "org/gnome/desktop/app-folders/folders/Office" = {
+      name = "Office";
+      apps = [
+        "startcenter.desktop"
+        "writer.desktop"
+        "calc.desktop"
+        "impress.desktop"
+        "draw.desktop"
+        "math.desktop"
+        "base.desktop"
+        "obsidian.desktop"
+        "calibre-gui.desktop"
+        "calibre-ebook-edit.desktop"
+        "calibre-ebook-viewer.desktop"
+        "calibre-lrfviewer.desktop"
+      ];
+    };
+
+    "org/gnome/desktop/app-folders/folders/Media" = {
+      name = "Media";
+      apps = [
+        "spotify.desktop"
+        "vlc.desktop"
+        "mpv.desktop"
+        "gimp.desktop"
+        "org.inkscape.Inkscape.desktop"
+        "com.obsproject.Studio.desktop"
+        "org.gnome.Showtime.desktop"
+        "org.gnome.eog.desktop"
+        "org.flameshot.Flameshot.desktop"
+      ];
+    };
+
+    "org/gnome/desktop/app-folders/folders/Utilities" = {
+      name = "Utilities";
+      apps = [
+        "org.gnome.Calculator.desktop"
+        "org.gnome.clocks.desktop"
+        "org.gnome.Weather.desktop"
+        "org.gnome.Calendar.desktop"
+        "org.gnome.TextEditor.desktop"
+        "org.gnome.Characters.desktop"
+        "org.gnome.FileRoller.desktop"
+        "org.gnome.Evince.desktop"
+        "org.gnome.SimpleScan.desktop"
+        "org.gnome.Snapshot.desktop"
+        "ca.desrt.dconf-editor.desktop"
+        "com.mattjakeman.ExtensionManager.desktop"
+        "org.gnome.Extensions.desktop"
+        "org.gnome.tweaks.desktop"
+      ];
+    };
+
+    "org/gnome/desktop/app-folders/folders/System" = {
+      name = "System";
+      apps = [
+        "org.gnome.Settings.desktop"
+        "org.gnome.SystemMonitor.desktop"
+        "org.gnome.DiskUtility.desktop"
+        "io.github.thetumultuousunicornofdarkness.cpu-x.desktop"
+        "virt-manager.desktop"
+        "remote-viewer.desktop"
+        "htop.desktop"
+        "btop.desktop"
+        "bottom.desktop"
+        "yazi.desktop"
+        "ranger.desktop"
+        "nm-connection-editor.desktop"
+        "cups.desktop"
+        "xterm.desktop"
+      ];
+    };
   };
 }
