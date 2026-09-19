@@ -110,8 +110,12 @@
     ];
   };
 
-  # power-profiles-daemon conflicts with TLP
+  # power-profiles-daemon conflicts with TLP; use tlp-pd as the D-Bus bridge
+  # so GNOME displays its Performance / Balanced / Power Saver slider in Quick Settings
   services.power-profiles-daemon.enable = lib.mkForce false;
+  systemd.packages = [ pkgs.tlp-pd ];
+  services.dbus.packages = [ pkgs.tlp-pd ];
+  systemd.services.tlp-pd.wantedBy = [ "graphical.target" ];
 
   # ── Fingerprint reader (Synaptics 06cb:009a) ──────────────────────────
   # Proprietary Match-on-Host sensor driven by ahbnr/nixos-06cb-009a-fingerprint-sensor flake.
@@ -157,6 +161,7 @@
 
     # Power / Backlight
     brightnessctl   # backlight control (replaces light)
+    tlp-pd          # tlpctl CLI and D-Bus bridge
   ];
 
   # ── Thermald + fwupd ──────────────────────────────────────────────────
