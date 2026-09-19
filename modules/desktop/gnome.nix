@@ -25,10 +25,12 @@
   # NOTE: in nixpkgs-unstable the gnome.* namespace was removed;
   #       packages are now at the top level (e.g. pkgs.nautilus).
   environment.systemPackages = with pkgs; [
-    # Core GNOME extras
+    # Core GNOME extras & icons
     gnome-tweaks
     gnome-extension-manager
     dconf-editor
+    adwaita-icon-theme
+    hicolor-icon-theme
 
     # System utilities (de-namespaced from pkgs.gnome.*)
     gnome-disk-utility

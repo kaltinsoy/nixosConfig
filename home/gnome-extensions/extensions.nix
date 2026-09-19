@@ -84,6 +84,7 @@
       show-mounts                    = false;
       show-trash                     = false;
       transparency-mode              = "DEFAULT";
+      hot-keys                       = false; # Prevent dash-to-dock from intercepting Super double-tap
     };
 
     # ── AppIndicator ───────────────────────────────────────────────────
@@ -132,6 +133,9 @@
 
     # ── Caffeine ──────────────────────────────────────────────────────
     "org/gnome/shell/extensions/caffeine" = {
+      show-indicator         = "always"; # Always show coffee cup icon in panel
+      show-toggle            = true;
+      show-notifications     = true;
       cli-toggle             = false;
       indicator-position     = 0;
       indicator-position-max = 2;
@@ -145,16 +149,24 @@
       app-menu                       = false;
       search                         = true;
       workspace-switcher-should-show = true;
+      double-super-to-appgrid        = true; # Double tap Super to open App Grid
+      overlay-key                    = true;
+    };
+
+    # ── Mutter ─────────────────────────────────────────────────────────
+    "org/gnome/mutter" = {
+      overlay-key = "Super_L";
     };
 
     # ── Vitals ────────────────────────────────────────────────────────
     "org/gnome/shell/extensions/vitals" = {
-      hot-sensors       = [ "_processor_usage_" "_memory_usage_" "__network-rx_max__" ];
+      hot-sensors       = [ "_processor_usage_" "_system_load_1m_" "_memory_usage_" "__network-rx_max__" ];
       position-in-panel = 0;
       show-fan          = true;
       show-memory       = true;
       show-network      = true;
       show-processor    = true;
+      show-system       = true; # Show system load averages
       show-storage      = false;
       show-temperature  = true;
       show-voltage      = false;
