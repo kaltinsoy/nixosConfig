@@ -11,9 +11,30 @@
   # ── polkit ────────────────────────────────────────────────────────────
   security.polkit.enable = true;
 
-  # ── PAM — GNOME keyring ───────────────────────────────────────────────
+  # ── PAM — Biometrics & Keyring ────────────────────────────────────────
   security.pam.services = {
     gdm.enableGnomeKeyring = true;
+
+    # Bitwarden uses Polkit for biometric unlock on Linux
+    polkit-1 = {
+      howdy.enable  = true;
+      howdy.control = "sufficient";
+      fprintAuth    = true;
+    };
+
+    # Sudo authentication with biometrics
+    sudo = {
+      howdy.enable  = true;
+      howdy.control = "sufficient";
+      fprintAuth    = true;
+    };
+
+    # GDM password / login / lockscreen with biometrics
+    gdm-password = {
+      howdy.enable  = true;
+      howdy.control = "sufficient";
+      fprintAuth    = true;
+    };
   };
 
 

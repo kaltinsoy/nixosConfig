@@ -241,7 +241,34 @@ services."06cb-009a-fingerprint-sensor" = {
 ```
 Rebuild (`sudo nixos-rebuild switch --flake ~/nixos-config#sumatra`) and run `fprintd-enroll` once more.
 
-### 2. SIM Card / Mobile Broadband (WWAN)
+### 2. IR Camera Facial Recognition (Howdy / Windows Hello style)
+The ThinkPad T480s SunplusIT Integrated IR Camera (`5986:2123`) is configured with `howdy` and `linux-enable-ir-emitter` for instant facial recognition.
+
+#### Enrolling Your Face:
+```bash
+# Add your face model (look directly at the camera / IR emitter):
+sudo howdy add
+
+# Test facial recognition:
+sudo howdy test
+
+# List enrolled face models:
+sudo howdy list
+```
+*When prompted for authentication (`sudo`, GDM login, or Bitwarden), Howdy will automatically activate the IR camera and authenticate you immediately with zero typing.*
+
+### 3. Bitwarden Biometric Unlock (Fingerprint & Face)
+Bitwarden Desktop uses **Polkit** (`polkit-1`) for biometrics on Linux. We have configured `polkit-1` with `sufficient` rules for both `howdy` (face) and `fprintd` (fingerprint).
+
+#### How to Enable in Bitwarden:
+1. Open **Bitwarden Desktop** and log in with your master password.
+2. Go to **Settings** &rarr; **Security** &rarr; check **"Unlock with biometrics"**.
+3. When prompted by the system Polkit dialog, glance at the IR camera or swipe your enrolled finger.
+4. *(Optional)* In your browser extension (e.g. Zen / Firefox / Chrome):
+   - In Bitwarden Desktop: Check **"Enable browser integration"**.
+   - In Bitwarden Browser Extension Settings: Check **"Unlock with biometrics"**.
+
+### 4. SIM Card / Mobile Broadband (WWAN)
 ```bash
 # Check modem status
 mmcli -L

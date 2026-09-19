@@ -125,6 +125,31 @@
     backend = "python-validity";
   };
 
+  # ── IR Camera Facial Recognition (Howdy) ──────────────────────────────
+  services.howdy = {
+    enable  = true;
+    control = "sufficient";
+    settings = {
+      video = {
+        # ThinkPad T480s Integrated IR Camera (5986:2123)
+        device_path    = "/dev/v4l/by-path/pci-0000:00:14.0-usb-0:5:1.0-video-index0";
+        dark_threshold = 60;
+        certainty      = 3.5;
+      };
+      core = {
+        no_confirmation     = true; # Authenticate immediately upon face match
+        abort_if_lid_closed = true;
+        abort_if_ssh        = true;
+      };
+    };
+  };
+
+  # ── IR Emitter driver ─────────────────────────────────────────────────
+  services.linux-enable-ir-emitter = {
+    enable = true;
+    device = "video0";
+  };
+
   # ── WWAN / LTE SIM ────────────────────────────────────────────────────
   # Correct NixOS option: networking.modemmanager (not services.modemManager)
   networking.modemmanager = {
