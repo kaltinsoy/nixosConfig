@@ -88,6 +88,12 @@
       createDirectories   = true;
       setSessionVariables = false;   # new default in HM 26.05+
     };
+
+    # Link Caffeine icons so St.IconTheme and GNOME Shell load the proper coffee cup
+    dataFile."icons/hicolor/scalable/actions/my-caffeine-off-symbolic.svg".source =
+      "${pkgs.gnomeExtensions.caffeine}/share/gnome-shell/extensions/caffeine@patapon.info/icons/hicolor/scalable/actions/my-caffeine-off-symbolic.svg";
+    dataFile."icons/hicolor/scalable/actions/my-caffeine-on-symbolic.svg".source =
+      "${pkgs.gnomeExtensions.caffeine}/share/gnome-shell/extensions/caffeine@patapon.info/icons/hicolor/scalable/actions/my-caffeine-on-symbolic.svg";
   };
 
   # ── Git ───────────────────────────────────────────────────────────────

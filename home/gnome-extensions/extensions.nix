@@ -56,12 +56,25 @@
     };
 
     "org/gnome/desktop/wm/keybindings" = {
-      switch-to-workspace-1 = [ "<Super>1" ];
-      switch-to-workspace-2 = [ "<Super>2" ];
-      switch-to-workspace-3 = [ "<Super>3" ];
-      switch-to-workspace-4 = [ "<Super>4" ];
-      switch-to-workspace-5 = [ "<Super>5" ];
-      switch-to-workspace-6 = [ "<Super>6" ];
+      switch-to-workspace-1 = [ "<Super><Alt>1" ];
+      switch-to-workspace-2 = [ "<Super><Alt>2" ];
+      switch-to-workspace-3 = [ "<Super><Alt>3" ];
+      switch-to-workspace-4 = [ "<Super><Alt>4" ];
+      switch-to-workspace-5 = [ "<Super><Alt>5" ];
+      switch-to-workspace-6 = [ "<Super><Alt>6" ];
+    };
+
+    # ── Shell Keybindings (Super+1..9 opens dock/toolbar apps) ─────────
+    "org/gnome/shell/keybindings" = {
+      switch-to-application-1 = [ "<Super>1" ];
+      switch-to-application-2 = [ "<Super>2" ];
+      switch-to-application-3 = [ "<Super>3" ];
+      switch-to-application-4 = [ "<Super>4" ];
+      switch-to-application-5 = [ "<Super>5" ];
+      switch-to-application-6 = [ "<Super>6" ];
+      switch-to-application-7 = [ "<Super>7" ];
+      switch-to-application-8 = [ "<Super>8" ];
+      switch-to-application-9 = [ "<Super>9" ];
     };
 
     # ── Dash to Dock ───────────────────────────────────────────────────
@@ -84,7 +97,9 @@
       show-mounts                    = false;
       show-trash                     = false;
       transparency-mode              = "DEFAULT";
-      hot-keys                       = false; # Prevent dash-to-dock from intercepting Super double-tap
+      hot-keys                       = true;
+      hotkeys-overlay                = false;
+      hotkeys-show-dock              = false;
     };
 
     # ── AppIndicator ───────────────────────────────────────────────────
@@ -133,8 +148,8 @@
 
     # ── Caffeine ──────────────────────────────────────────────────────
     "org/gnome/shell/extensions/caffeine" = {
-      show-indicator         = "always"; # Always show coffee cup icon in panel
-      show-toggle            = true;
+      show-indicator         = "only-active"; # Only show in panel when enabled (active)
+      show-toggle            = true;          # Keep toggle in Quick Settings
       show-notifications     = true;
       cli-toggle             = false;
       indicator-position     = 0;
