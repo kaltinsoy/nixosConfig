@@ -119,59 +119,38 @@ Here is a detailed breakdown of every application installed in this system and i
 | **Lazydocker & Ctop** | Interactive terminal UIs for managing Docker containers, images, and resource usage. |
 | **Looking Glass Client** | Ultra-low latency KVM frame-relay display client for GPU passthrough setups. |
 
-### 5. Cybersecurity & Penetration Testing
+### 5. Cybersecurity & Penetration Testing (ParrotOS Lab)
 
-#### Network Reconnaissance & Traffic Analysis
-| Tool | Purpose |
-|---|---|
-| **Nmap, Masscan, Rustscan** | Comprehensive port scanners ranging from fast network discovery to deep service enumeration. |
-| **Wireshark, Tshark, Termshark** | Packet capture and protocol analyzers across GUI, CLI, and TUI interfaces. |
-| **Mitmproxy** | Interactive SSL/TLS-capable intercepting HTTP proxy for debugging and pentesting. |
-| **Bettercap & Ettercap** | Frameworks for network reconnaissance, ARP spoofing, and Man-in-the-Middle testing. |
-| **Tcpdump & Tcpflow** | Network traffic packet capture and TCP stream reconstruction tools. |
+All security testing, penetration testing, reverse engineering, and forensics tools are run inside **ParrotOS** rather than directly on the host NixOS system. This keeps the NixOS host clean, eliminates dependency bloat, and provides a fully isolated testing environment.
 
-#### Web Application Pentesting
-| Tool | Purpose |
-|---|---|
-| **Burp Suite** | Leading web vulnerability scanner and proxy framework. |
-| **SQLmap** | Automated SQL injection detection and database takeover tool. |
-| **FFuF & Gobuster & Feroxbuster** | High-speed web directory, DNS, and virtual-host fuzzers. |
-| **Nikto & Wfuzz** | Web server vulnerability scanner and flexible web application fuzzer. |
+#### Running ParrotOS
 
-#### Password Recovery & Exploitation
-| Tool | Purpose |
-|---|---|
-| **THC-Hydra & Medusa** | Fast network login brute-force tools supporting SSH, FTP, HTTP, RDP, and more. |
-| **John the Ripper & Hashcat** | World-class offline password hash crackers utilizing CPU and GPU acceleration. |
-| **Crunch & Wordlists** | Custom wordlist generator and curated security wordlists (including RockYou). |
-| **Metasploit Framework** | Industry-standard penetration testing and exploit development platform. |
+**Option A: Distrobox Container (Instant, shares GUI & home dir)**
+```bash
+# Create a persistent ParrotOS Security container with full GUI and network access
+distrobox create -i parrotsec/security:latest -n parrot
 
-#### Reverse Engineering & Binary Exploitation
-| Tool | Purpose |
-|---|---|
-| **Ghidra** | NSA's software reverse engineering suite with decompiler and disassembly. |
-| **Radare2 & Iaito** | Command-line reverse engineering framework and its official GUI frontend. |
-| **GDB & Pwntools** | GNU debugger and Python library dedicated to rapid exploit prototyping. |
-| **Binwalk** | Firmware analysis tool for extracting embedded filesystem images. |
-| **ImHex & Hexyl** | Advanced interactive hex editor and colored terminal hex viewer. |
-| **Checksec & Yara** | Binary mitigation checker (ASLR, NX, PIE, Canaries) and pattern-matching engine. |
+# Enter the container (all ParrotOS tools available inside)
+distrobox enter parrot
 
-#### Digital Forensics & OSINT
-| Tool | Purpose |
-|---|---|
-| **Volatility 3** | Advanced memory forensics framework for analyzing RAM dumps. |
-| **Autopsy & Sleuthkit** | Digital forensics platform and disk image investigation library. |
-| **Bulk Extractor & Foremost** | High-speed data carving tools for recovering deleted files from raw disk images. |
-| **Maltego, TheHarvester, Amass** | Open-source intelligence (OSINT) mapping and attack surface reconnaissance. |
+# Export any Parrot GUI app (e.g. Burp Suite, Wireshark) directly to your GNOME app launcher:
+distrobox-export --app burpsuite
+distrobox-export --app wireshark
+```
 
-#### Privacy & Tunneling
-| Tool | Purpose |
-|---|---|
-| **WireGuard & `wireguard-tools`** | Modern, fast VPN protocol with full GNOME Settings GUI integration (import `.conf` files). |
-| **OpenVPN & OpenConnect** | Enterprise VPN clients integrated directly into NetworkManager. |
-| **Tor, Torsocks, OnionShare** | Anonymity network routing, application torification, and secure file sharing. |
-| **Proxychains-NG** | Forces any TCP connection through user-defined SOCKS4/5 or HTTP proxies. |
-| **Age, Steghide, Stegseek** | Modern encryption tool and steganography detection/cracking utilities. |
+**Option B: Full QEMU/KVM Virtual Machine (Isolated network & kernel)**
+1. Download the [Parrot Security ISO](https://parrotsec.org/download/).
+2. Open **Virt-Manager** (`Super` + search "Virtual Machine Manager").
+3. Create a new VM with VirtIO drivers and hardware acceleration for near-native performance.
+
+#### Tools Provided by ParrotOS
+ParrotOS Security includes the entire pentesting suite pre-installed and pre-configured:
+- **Network Scanning & MITM**: Nmap, Masscan, Rustscan, Wireshark, Tshark, Termshark, Mitmproxy, Bettercap, Ettercap, Tcpdump.
+- **Web Application Pentesting**: Burp Suite, SQLmap, FFuF, Gobuster, Feroxbuster, Nikto, Wfuzz.
+- **Password Recovery & Cracking**: THC-Hydra, John the Ripper, Hashcat, Medusa, Crunch, RockYou wordlists.
+- **Exploitation & RE**: Metasploit Framework, Ghidra, Radare2, GDB, Pwntools, Binwalk, ImHex, Checksec, Yara.
+- **Wireless, Forensics & OSINT**: Aircrack-ng, Volatility 3, Autopsy, Sleuthkit, Bulk Extractor, Maltego, TheHarvester, Amass.
+- **Privacy & Anonymity**: AnonSurf (system-wide Tor proxy), Tor, Torsocks, Proxychains-NG, OnionShare.
 
 ### 6. FPGA Development & Hardware Design
 

@@ -54,11 +54,10 @@
       "networkmanager"
       "libvirtd"      # QEMU/KVM
       "kvm"
-      "wireshark"     # capture without root
       "docker"
       "dialout"       # USB/JTAG serial
       "plugdev"       # USB devices (openFPGALoader, Gowin)
-      "video"         # backlight control via `light`
+      "video"         # backlight control via brightnessctl
       "input"         # fingerprint reader udev access
     ];
   };
