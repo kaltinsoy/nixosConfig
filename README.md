@@ -1,209 +1,262 @@
-# NixOS Config — Cybersec / FPGA / Desktop
+# ThinkPad T480s — NixOS Workstation Configuration
 
-Modular NixOS flake for a Lenovo ThinkPad running GNOME on Wayland.
-Covers cybersecurity research, FPGA development (Xilinx Vivado + Gowin + OSS chain),
-QEMU/KVM virtualization, and a polished desktop experience.
+A modular, production-ready NixOS flake configuration tailored for the **Lenovo ThinkPad T480s** running **GNOME on Wayland**.
+
+Engineered for:
+- **Cybersecurity Research & Penetration Testing**
+- **FPGA Development & Hardware Design** (Open-source tools + Vivado/Gowin FHS wrappers)
+- **Virtualization & Container Labs** (QEMU/KVM, Docker, Distrobox)
+- **High-Performance Daily Driving** (NvChad, Zen Browser, Bitwarden, polished GNOME desktop)
+
+---
 
 ## Quick Start
 
 ```bash
-# 1. Clone to your home dir
+# 1. Clone repository
 git clone <this-repo> ~/nixos-config
+cd ~/nixos-config
 
-# 2. Generate real hardware config and replace the placeholder
-sudo nixos-generate-config --show-hardware-config \
-  > ~/nixos-config/hosts/default/hardware-configuration.nix
+# 2. Generate actual hardware configuration (if setting up a fresh install)
+sudo nixos-generate-config --show-hardware-config > hosts/default/hardware-configuration.nix
 
-# 3. Edit the two variables at the top of flake.nix
-#    username = "koray"   ← already set
-#    hostname = "nixos"   ← change if needed
-
-# 4. Edit your email in home/home.nix (git.userEmail)
-
-# 5. Apply
-sudo nixos-rebuild switch --flake ~/nixos-config#nixos
-
-# 6. Home Manager (first time or user-only changes)
-home-manager switch --flake ~/nixos-config#nixos
+# 3. Apply the system configuration (hostname: sumatra)
+sudo nixos-rebuild switch --flake ~/nixos-config#sumatra
 ```
-
-## File Tree
-
-```
-nixos-config/
-├── flake.nix
-├── hosts/default/
-│   ├── configuration.nix        # Top-level imports
-│   └── hardware-configuration.nix  # REPLACE with nixos-generate-config output
-└── modules/
-    ├── system/    boot · networking · locale · security · services
-    ├── desktop/   gnome · fonts
-    ├── hardware/  lenovo  (TLP · throttled · thinkfan · fwupd)
-    ├── virt/      qemu-kvm  (libvirtd · docker · virt-manager)
-    ├── fpga/      fpga  (yosys · nextpnr · Vivado FHS · Gowin FHS · openFPGALoader)
-    └── security-tools/  cybersec  (nmap · ghidra · metasploit · wireshark · …)
-home/
-├── home.nix
-├── neovim/   NvChad + LSP + formatters
-├── shell/    starship + aliases
-├── apps/     zen-browser · spicetify-spotify · firefox
-└── gnome-extensions/  dconf settings for all extensions
-```
-
-## Notable Features
-
-| Area | Tools |
-|---|---|
-| **Desktop** | GNOME + Wayland, Dash-to-Dock, Blur-my-Shell, Pop-Shell tiling, Vitals |
-| **Editor** | NvChad (Neovim) with LSP for Nix, C/C++, Python, Rust, Verilog, TS |
-| **Browser** | Zen Browser + Firefox (hardened) + Tor Browser |
-| **Music** | Spicetify (Catppuccin Mocha theme, ad-block, lyrics, full-screen) |
-| **Cybersec** | nmap · masscan · Wireshark · Burp Suite · Ghidra · Metasploit · Hashcat · Volatility |
-| **Virt** | QEMU/KVM · libvirtd · virt-manager · Docker · OVMF/UEFI · SPICE · Looking Glass |
-| **FPGA OSS** | Yosys · nextpnr · Icestorm · Trellis · GHDL · Verilator · GTKWave · SymbiYosys |
-| **FPGA Prop.** | Vivado FHS wrapper (`/opt/Xilinx`) · Gowin EDA FHS wrapper (`/opt/gowin`) |
-| **T480s HW** | TLP (single BAT0) · throttled · thinkfan · fwupd · acpi_call · zram |
-| **Fingerprint** | fprintd (Synaptics 06cb:00bd) — PAM: sudo / GDM / polkit / lock screen |
-| **SIM / WWAN** | ModemManager + libqmi/libmbim — Sierra EM7455 & Fibocom L850-GL FCC unlock |
-| **Backlight** | `light` — no sudo, `video` group, TrackPoint sensitivity tuned via tmpfiles |
-| **Shell** | Bash + Starship + fzf + zoxide + direnv |
 
 ---
 
-## T480s Hardware Setup
+## File Structure
 
-### Fingerprint reader
-```bash
-# First enroll (do this after nixos-rebuild switch)
-fprintd-enroll        # or alias: fp-enroll
-# Enroll each finger you want, then test:
-fp-verify
 ```
-PAM is pre-configured to accept fingerprint **or** password at:
-- GDM login
-- `sudo` prompts
-- Screen lock
-- `pkexec` / polkit dialogs
+nixos-config/
+├── flake.nix                       # Flake inputs (nixpkgs, home-manager, nixos-hardware, zen-browser, spicetify)
+├── hosts/
+│   └── default/
+│       ├── configuration.nix       # Base host configuration, system packages & users
+│       └── hardware-configuration.nix # T480s hardware configuration (Intel CPU, NVMe, graphics)
+├── modules/
+│   ├── system/
+│   │   ├── boot.nix                # systemd-boot, latest Linux kernel, IOMMU, tmpfs
+│   │   ├── networking.nix          # NetworkManager, WireGuard, firewall, SSH, Avahi
+│   │   ├── locale.nix              # Timezone (Europe/Istanbul), UTF-8, Turkish Q keyboard
+│   │   ├── security.nix            # PAM (fingerprint authentication), sudo, polkit, sysctl
+│   │   └── services.nix            # PipeWire audio, Bluetooth, CUPS printing, fwupd, Flatpak
+│   ├── desktop/
+│   │   ├── gnome.nix               # GNOME Wayland desktop, GDM, core utilities, bloat exclusion
+│   │   └── fonts.nix               # Nerd Fonts (JetBrainsMono, FiraCode), Inter, Noto Color Emoji
+│   ├── hardware/
+│   │   └── lenovo.nix              # TLP power management, throttled undervolt, thinkfan, fprintd, WWAN
+│   ├── virt/
+│   │   └── qemu-kvm.nix            # Libvirt/QEMU, UEFI/OVMF, swtpm, Docker, Distrobox, Looking Glass
+│   ├── fpga/
+│   │   └── fpga.nix                # OSS FPGA suite (Yosys, Nextpnr, Verilator), Vivado & Gowin FHS wrappers
+│   └── security-tools/
+│       └── cybersec.nix            # Penetration testing, RE, binary exploitation & forensics suite
+└── home/
+    ├── home.nix                    # Home Manager root: desktop apps, Git, SSH, pointers & themes
+    ├── neovim/
+    │   └── neovim.nix              # NvChad (pinned starter) + LSP servers + formatters + linters
+    ├── apps/
+    │   ├── browsers.nix            # Zen Browser, hardened Firefox profile, Tor Browser
+    │   └── media.nix               # Spicetify (Catppuccin Mocha theme + Spotify extensions)
+    └── gnome-extensions/
+        └── extensions.nix          # dconf declarative settings for 14 GNOME Shell extensions
+```
 
-### SIM card / WWAN (LTE)
+---
+
+## Complete Application & Tool Directory
+
+Here is a detailed breakdown of every application installed in this system and its exact role:
+
+### 1. Core Desktop & Terminal Emulators
+
+| Application | Purpose |
+|---|---|
+| **GNOME 48 (Wayland)** | Clean, modern desktop environment with full Wayland session and fractional scaling. |
+| **Ghostty** | Ultra-fast, GPU-accelerated terminal emulator with native Wayland support and tabs. |
+| **Alacritty** | Minimalist, blazing-fast GPU terminal emulator used as a lightweight fallback. |
+| **Tmux & Zellij** | Terminal multiplexers for session persistence, split panes, and detachable workspaces. |
+| **Fastfetch & Btop** | Fast system info splash tool and modern interactive terminal resource monitor. |
+| **Bat & Eza** | Modern replacements for `cat` (with syntax highlighting) and `ls` (with tree/icons). |
+| **Ripgrep (`rg`) & Fd** | High-performance search tools replacing `grep` and `find`. |
+| **Delta & Difftastic** | Structural syntax-highlighting pagers for Git diffs and code review. |
+
+### 2. Editor & IDE (NvChad Neovim)
+
+| Component | Purpose |
+|---|---|
+| **Neovim (NvChad)** | Fast, extensible modal text editor configured with the Catppuccin Mocha theme. |
+| **LSP Servers** | In-editor autocompletion and diagnostics: `nixd` (Nix), `pyright` (Python), `clang-tools` (C/C++), `rust-analyzer` (Rust), `typescript-language-server` (TS/JS), `bash-language-server` (Bash), `yaml-language-server` (YAML), `taplo` (TOML), `marksman` (Markdown). |
+| **Linters & Formatters** | Automatic code formatting on save: `nixfmt` (Nix), `stylua` (Lua), `black` & `isort` (Python), `ruff` (Python linter), `rustfmt` (Rust), `prettier` (Web/JSON), `verilator` (Verilog/SystemVerilog linting). |
+
+### 3. Web Browsers & Daily Drivers
+
+| Application | Purpose |
+|---|---|
+| **Zen Browser** | Fast, privacy-centric Firefox fork featuring vertical tabs and split-view workspaces. |
+| **Firefox** | Hardened secondary browser with strict tracking protection and telemetry disabled. |
+| **Tor Browser** | Anonymous web browsing routing traffic through the onion network. |
+| **Bitwarden (`bitwarden-desktop` + `bitwarden-cli`)** | Open-source password manager with desktop app and terminal CLI (`bw`). |
+| **Obsidian** | Markdown knowledge base and note-taking application. |
+| **LibreOffice** | Complete office productivity suite (Writer, Calc, Impress). |
+| **GIMP & Inkscape** | Raster image editor and vector graphics design application. |
+| **MPV & VLC** | High-performance video and media players with broad codec support. |
+| **Spotify (Spicetify)** | Spotify client customized with Catppuccin Mocha theme, ad-block, and lyrics extensions. |
+| **Vesktop & Element** | Discord client (with Vencord plugin) and Matrix encrypted messaging client. |
+| **Syncthing & Rclone** | Continuous peer-to-peer file synchronization and multi-cloud sync CLI. |
+
+### 4. Virtualization & Container Labs
+
+| Tool | Purpose |
+|---|---|
+| **QEMU / KVM** | Hardware-accelerated hypervisor for near-native VM performance. |
+| **Virt-Manager** | Desktop GUI for creating, configuring, and managing KVM virtual machines. |
+| **OVMF (UEFI) & swtpm** | UEFI firmware and software TPM 2.0 emulation (enables running Windows 11 VMs). |
+| **Docker & Docker Compose** | Container engine and multi-container orchestration platform. |
+| **Distrobox** | Run any Linux distribution (Ubuntu, Arch, Fedora, Kali) inside a container with full GUI and home directory integration. |
+| **Lazydocker & Ctop** | Interactive terminal UIs for managing Docker containers, images, and resource usage. |
+| **Looking Glass Client** | Ultra-low latency KVM frame-relay display client for GPU passthrough setups. |
+
+### 5. Cybersecurity & Penetration Testing
+
+#### Network Reconnaissance & Traffic Analysis
+| Tool | Purpose |
+|---|---|
+| **Nmap, Masscan, Rustscan** | Comprehensive port scanners ranging from fast network discovery to deep service enumeration. |
+| **Wireshark, Tshark, Termshark** | Packet capture and protocol analyzers across GUI, CLI, and TUI interfaces. |
+| **Mitmproxy** | Interactive SSL/TLS-capable intercepting HTTP proxy for debugging and pentesting. |
+| **Bettercap & Ettercap** | Frameworks for network reconnaissance, ARP spoofing, and Man-in-the-Middle testing. |
+| **Tcpdump & Tcpflow** | Network traffic packet capture and TCP stream reconstruction tools. |
+
+#### Web Application Pentesting
+| Tool | Purpose |
+|---|---|
+| **Burp Suite** | Leading web vulnerability scanner and proxy framework. |
+| **SQLmap** | Automated SQL injection detection and database takeover tool. |
+| **FFuF & Gobuster & Feroxbuster** | High-speed web directory, DNS, and virtual-host fuzzers. |
+| **Nikto & Wfuzz** | Web server vulnerability scanner and flexible web application fuzzer. |
+
+#### Password Recovery & Exploitation
+| Tool | Purpose |
+|---|---|
+| **THC-Hydra & Medusa** | Fast network login brute-force tools supporting SSH, FTP, HTTP, RDP, and more. |
+| **John the Ripper & Hashcat** | World-class offline password hash crackers utilizing CPU and GPU acceleration. |
+| **Crunch & Wordlists** | Custom wordlist generator and curated security wordlists (including RockYou). |
+| **Metasploit Framework** | Industry-standard penetration testing and exploit development platform. |
+
+#### Reverse Engineering & Binary Exploitation
+| Tool | Purpose |
+|---|---|
+| **Ghidra** | NSA's software reverse engineering suite with decompiler and disassembly. |
+| **Radare2 & Iaito** | Command-line reverse engineering framework and its official GUI frontend. |
+| **GDB & Pwntools** | GNU debugger and Python library dedicated to rapid exploit prototyping. |
+| **Binwalk** | Firmware analysis tool for extracting embedded filesystem images. |
+| **ImHex & Hexyl** | Advanced interactive hex editor and colored terminal hex viewer. |
+| **Checksec & Yara** | Binary mitigation checker (ASLR, NX, PIE, Canaries) and pattern-matching engine. |
+
+#### Digital Forensics & OSINT
+| Tool | Purpose |
+|---|---|
+| **Volatility 3** | Advanced memory forensics framework for analyzing RAM dumps. |
+| **Autopsy & Sleuthkit** | Digital forensics platform and disk image investigation library. |
+| **Bulk Extractor & Foremost** | High-speed data carving tools for recovering deleted files from raw disk images. |
+| **Maltego, TheHarvester, Amass** | Open-source intelligence (OSINT) mapping and attack surface reconnaissance. |
+
+#### Privacy & Tunneling
+| Tool | Purpose |
+|---|---|
+| **WireGuard & `wireguard-tools`** | Modern, fast VPN protocol with full GNOME Settings GUI integration (import `.conf` files). |
+| **OpenVPN & OpenConnect** | Enterprise VPN clients integrated directly into NetworkManager. |
+| **Tor, Torsocks, OnionShare** | Anonymity network routing, application torification, and secure file sharing. |
+| **Proxychains-NG** | Forces any TCP connection through user-defined SOCKS4/5 or HTTP proxies. |
+| **Age, Steghide, Stegseek** | Modern encryption tool and steganography detection/cracking utilities. |
+
+### 6. FPGA Development & Hardware Design
+
+| Tool | Purpose |
+|---|---|
+| **Yosys** | Open-source synthesis suite for Verilog and SystemVerilog. |
+| **Nextpnr** | Timing-driven place-and-route tool supporting iCE40, ECP5, and Nexus FPGAs. |
+| **Icestorm & Trellis** | Open-source bitstream generation and documentation for Lattice FPGAs. |
+| **GHDL, Verilator, Iverilog** | VHDL simulator, high-speed C++ Verilog simulator, and Icarus Verilog compiler. |
+| **Sby (SymbiYosys), Yices, Z3** | Formal verification frontend paired with SMT solvers for hardware assertion proofs. |
+| **GTKWave** | Graphical waveform viewer for inspecting VCD simulation dump files. |
+| **OpenFPGALoader & OpenOCD** | Universal programmer for FPGA boards (Xilinx, Gowin, Digilent) and JTAG debuggers. |
+| **Cocotb, Migen, Amaranth** | Python-based HDL cosimulation testbenches and modern hardware description languages. |
+| **Vivado FHS Wrapper** | Bubblewrap/chroot environment allowing proprietary Xilinx Vivado to run seamlessly on NixOS. |
+| **Gowin EDA FHS Wrapper** | Bubblewrap/chroot environment allowing Gowin IDE (`gw_ide`) to run on NixOS. |
+
+### 7. ThinkPad T480s Hardware Management
+
+| Tool | Purpose |
+|---|---|
+| **TLP** | Advanced Linux power management optimized for single battery (`BAT0`) charge thresholds (20% start, 80% stop). |
+| **Throttled** | Intel CPU voltage and thermal throttling controller (undervolts CPU core/cache to reduce heat). |
+| **Thinkfan** | Custom fan-speed curve daemon monitoring temperature sensors via ACPI. |
+| **Fprintd** | Synaptics `06cb:00bd` fingerprint reader service integrated into PAM for login, sudo, and polkit. |
+| **ModemManager & libqmi** | Cellular modem daemon managing Sierra EM7455 and Fibocom L850-GL with automated FCC unlock. |
+| **Brightnessctl** | Safe, permission-free backlight and keyboard backlight brightness control. |
+| **TrackPoint Tuning** | Kernel sysfs rules adjusting sensitivity, speed, and inertia for the red TrackPoint cap. |
+| **ZRAM** | Compressed in-memory swap using `zstd` (50% RAM), sparing NVMe SSD wear. |
+
+---
+
+## Hardware Management Reference
+
+### 1. Fingerprint Enrollment
 ```bash
-# Check if modem is detected
+# Enroll a finger
+fprintd-enroll
+
+# Verify enrollment
+fprintd-verify
+```
+*PAM accepts either your fingerprint or password for GDM login, `sudo`, polkit, and screen lock.*
+
+### 2. SIM Card / Mobile Broadband (WWAN)
+```bash
+# Check modem status
 mmcli -L
-# Modem details + signal
-wwan-status           # alias for: mmcli -m 0
-# SIM card info (IMSI, ICCID)
-sim-info
-# Enable mobile data via NetworkManager (or GNOME Settings → Network)
+mmcli -m 0
+
+# Connect mobile data (or connect via GNOME Settings → Network)
 nmcli connection add type gsm ifname '*' con-name "LTE" apn "internet"
 ```
 
-> **FCC Unlock**: Some Sierra EM7455 units are carrier-locked at firmware level.
-> The `fccUnlockScripts` in `lenovo.nix` handles this automatically on boot.
-
-### Battery
+### 3. Battery Thresholds
 ```bash
-bat-status   # show BAT0 status and charge thresholds
-bat0-thresh  # show current start/stop thresholds
-# Thresholds are set in lenovo.nix (START=20, STOP=80 by default)
+# Check battery health and charging status
+tlp-stat -b
+
+# Check current charge thresholds (20% start, 80% stop)
+cat /sys/class/power_supply/BAT0/charge_control_start_threshold
+cat /sys/class/power_supply/BAT0/charge_control_end_threshold
 ```
 
-### IR Camera
-The T480s IR camera (`04f2:b615`) appears as a standard V4L2 device but does **not** support Windows Hello–style face unlock on Linux. Use the fingerprint reader instead.
+### 4. WireGuard VPN Import (GNOME)
+1. Open **GNOME Settings** &rarr; **Network**.
+2. Click **`+`** next to **VPN**.
+3. Select **"Import from file..."** and pick your `.conf` configuration file.
+4. Toggle VPN on/off anytime from the top-right GNOME Quick Settings menu.
 
+### 5. Vivado & Gowin EDA
+- **Vivado**: Install to `/opt/Xilinx` &rarr; launch simply by running `vivado`.
+- **Gowin EDA**: Extract to `/opt/gowin` &rarr; launch by running `gowin-eda`.
 
-## Proprietary Tools Setup
+---
 
-### Vivado
-1. Download installer from xilinx.com
-2. Run: `sudo ./Xilinx_Unified_<ver>_Linux_x64.bin`
-3. Install to `/opt/Xilinx` (the FHS wrapper expects this)
-4. Run with: `vivado` (uses the FHS wrapper in PATH)
-
-### Gowin EDA
-1. Download from gowin-semi.com (requires registration)
-2. Extract to `/opt/gowin`
-3. Run with: `gowin-eda`
-
-### Lenovo CPU note
-- **Intel** (default): `throttled` undervolting is enabled. Adjust `[UNDERVOLT]` values in `lenovo.nix`
-- **AMD**: Comment out `services.throttled` and add `ryzenadj` instead
-
-### ThinkPad model preset
-Uncomment the matching line in `flake.nix`:
-```nix
-nixos-hardware.nixosModules.lenovo-thinkpad-x1-carbon-gen12
-```
-
-## Useful Aliases
+## Helpful Commands
 
 ```bash
-nixos-rebuild-switch   # rebuild + switch
-nix-clean              # garbage collect
-vms                    # virsh list --all
-vivado                 # launch Vivado via FHS
-gowin                  # launch Gowin EDA via FHS
+# System rebuild
+sudo nixos-rebuild switch --flake ~/nixos-config#sumatra
+
+# Clean old generations & garbage collect
+nix-collect-garbage -d
+sudo /run/current-system/bin/switch-to-configuration boot
+
+# Check active virtual machines
+virsh list --all
 ```
-
-#ERROR
-[nix-shell:~/nixos-config]$ sudo nixos-rebuild switch --flake ~/nixos-config#sumatra
-evaluating derivation 'git+file:///home/koray/nixos-config#nixosConfigurations."
-building the system configuration...
-evaluation warning: 'system' has been renamed to/replaced by 'stdenv.hostPlatform.system'
-evaluation warning: nixfmt-rfc-style is now the same as pkgs.nixfmt which should be used instead.
-evaluation warning: LibreOffice upstream has changed the versioning, please use `libreoffice-stable` or just `libreoffice`
-evaluation warning: koray profile: `programs.ssh` default values will be removed in the future.
-                    Consider setting `programs.ssh.enableDefaultConfig` to false,
-                    and manually set the default values you want to keep at
-                    `programs.ssh.settings."*"`.
-evaluation warning: koray profile: The default value of `programs.firefox.configPath` has changed from `".mozilla/firefox"` to `"${config.xdg.configHome}/mozilla/firefox"`.
-                    You are currently using the legacy default (`".mozilla/firefox"`) because `home.stateVersion` is less than "26.05".
-                    To silence this warning and keep legacy behavior, set:
-                      programs.firefox.configPath = ".mozilla/firefox";
-                    To adopt the new default behavior, set:
-                      programs.firefox.configPath = "${config.xdg.configHome}/mozilla/firefox";
-
-                    To migrate to the XDG path, move `~/.mozilla/firefox` to
-                    `$XDG_CONFIG_HOME/mozilla/firefox` and remove the old directory.
-                    Native messaging hosts are not moved by this option change.
-error:
-       … while calling the 'head' builtin
-         at «github:NixOS/nixpkgs/20b1ddd1aa5ace70c9468305030aa4f9ef79671b?narHash=sha256-B44WL6h0XoLjJ41bUPJk0X5SDinLCII//6EcBLXKiJ0%3D»/lib/attrsets.nix:1729:13:
-         1728|           if length values == 1 || pred here (elemAt values 1) (head values) then
-         1729|             head values
-             |             ^
-         1730|           else
-
-       … while evaluating the attribute 'value'
-         at «github:NixOS/nixpkgs/20b1ddd1aa5ace70c9468305030aa4f9ef79671b?narHash=sha256-B44WL6h0XoLjJ41bUPJk0X5SDinLCII//6EcBLXKiJ0%3D»/lib/modules.nix:1181:7:
-         1180|     // {
-         1181|       value = addErrorContext "while evaluating the option `${showOption loc}':" (
-             |       ^
-         1182|         # Apply the 'apply' function to the merged value. This allows options to
-
-       … while evaluating the option `system.build.toplevel':
-
-       … while evaluating definitions from `/nix/store/hqplg5bh73ijq5g6xpwsxsgvz4fj6v2r-source/nixos/modules/system/activation/top-level.nix':
-
-       … while evaluating the option `system.systemBuilderArgs':
-
-       … while evaluating definitions from `/nix/store/hqplg5bh73ijq5g6xpwsxsgvz4fj6v2r-source/nixos/modules/system/activation/top-level.nix':
-
-       … while evaluating the option `environment.sessionVariables':
-
-       … while evaluating definitions from `/nix/store/hqplg5bh73ijq5g6xpwsxsgvz4fj6v2r-source/nixos/modules/services/desktop-managers/gnome.nix':
-
-       … while evaluating the option `environment.systemPackages':
-
-       … while evaluating definitions from `/nix/store/fvzcdvw37ghdds6rs1k25wdzgw58d3gm-source/modules/security-tools/cybersec.nix':
-
-       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
-
-       error: undefined variable 'pwndbg'
-       at /home/koray/nixos-config/modules/security-tools/cybersec.nix:49:5:
-           48|     gdb
-           49|     pwndbg               # GDB plug-in for exploit dev
-             |     ^
-           50|     pwntools             # Python exploit dev lib
-Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '/home/koray/nixos-config#nixosConfigurations."sumatra".config.system.build.toplevel' --no-link' returned non-zero exit status 1.
-
-[nix-shell:~/nixos-config]$ 
