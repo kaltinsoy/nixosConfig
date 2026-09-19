@@ -145,8 +145,65 @@ gowin                  # launch Gowin EDA via FHS
 ```
 
 #ERROR
-error: flake 'git+file:///home/koray/nixos-config' does not provide attribute 'packages.x86_64-linux.nixosConfigurations."nixos".config.system.build.nixos-rebuild', 'legacyPackages.x86_64-linux.nixosConfigurations."nixos".config.system.build.nixos-rebuild' or 'nixosConfigurations."nixos".config.system.build.nixos-rebuild'
-Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '/home/koray/nixos-config#nixosConfigurations."nixos".config.system.build.nixos-rebuild' --no-link' returned non-zero exit status 1.
+[nix-shell:~/nixos-config]$ sudo nixos-rebuild switch --flake ~/nixos-config#sumatra
+evaluating derivation 'git+file:///home/koray/nixos-config#nixosConfigurations."
+building the system configuration...
+evaluation warning: 'system' has been renamed to/replaced by 'stdenv.hostPlatform.system'
+evaluation warning: nixfmt-rfc-style is now the same as pkgs.nixfmt which should be used instead.
+evaluation warning: LibreOffice upstream has changed the versioning, please use `libreoffice-stable` or just `libreoffice`
+evaluation warning: koray profile: `programs.ssh` default values will be removed in the future.
+                    Consider setting `programs.ssh.enableDefaultConfig` to false,
+                    and manually set the default values you want to keep at
+                    `programs.ssh.settings."*"`.
+evaluation warning: koray profile: The default value of `programs.firefox.configPath` has changed from `".mozilla/firefox"` to `"${config.xdg.configHome}/mozilla/firefox"`.
+                    You are currently using the legacy default (`".mozilla/firefox"`) because `home.stateVersion` is less than "26.05".
+                    To silence this warning and keep legacy behavior, set:
+                      programs.firefox.configPath = ".mozilla/firefox";
+                    To adopt the new default behavior, set:
+                      programs.firefox.configPath = "${config.xdg.configHome}/mozilla/firefox";
+
+                    To migrate to the XDG path, move `~/.mozilla/firefox` to
+                    `$XDG_CONFIG_HOME/mozilla/firefox` and remove the old directory.
+                    Native messaging hosts are not moved by this option change.
+error:
+       … while calling the 'head' builtin
+         at «github:NixOS/nixpkgs/20b1ddd1aa5ace70c9468305030aa4f9ef79671b?narHash=sha256-B44WL6h0XoLjJ41bUPJk0X5SDinLCII//6EcBLXKiJ0%3D»/lib/attrsets.nix:1729:13:
+         1728|           if length values == 1 || pred here (elemAt values 1) (head values) then
+         1729|             head values
+             |             ^
+         1730|           else
+
+       … while evaluating the attribute 'value'
+         at «github:NixOS/nixpkgs/20b1ddd1aa5ace70c9468305030aa4f9ef79671b?narHash=sha256-B44WL6h0XoLjJ41bUPJk0X5SDinLCII//6EcBLXKiJ0%3D»/lib/modules.nix:1181:7:
+         1180|     // {
+         1181|       value = addErrorContext "while evaluating the option `${showOption loc}':" (
+             |       ^
+         1182|         # Apply the 'apply' function to the merged value. This allows options to
+
+       … while evaluating the option `system.build.toplevel':
+
+       … while evaluating definitions from `/nix/store/hqplg5bh73ijq5g6xpwsxsgvz4fj6v2r-source/nixos/modules/system/activation/top-level.nix':
+
+       … while evaluating the option `system.systemBuilderArgs':
+
+       … while evaluating definitions from `/nix/store/hqplg5bh73ijq5g6xpwsxsgvz4fj6v2r-source/nixos/modules/system/activation/top-level.nix':
+
+       … while evaluating the option `environment.sessionVariables':
+
+       … while evaluating definitions from `/nix/store/hqplg5bh73ijq5g6xpwsxsgvz4fj6v2r-source/nixos/modules/services/desktop-managers/gnome.nix':
+
+       … while evaluating the option `environment.systemPackages':
+
+       … while evaluating definitions from `/nix/store/fvzcdvw37ghdds6rs1k25wdzgw58d3gm-source/modules/security-tools/cybersec.nix':
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: undefined variable 'pwndbg'
+       at /home/koray/nixos-config/modules/security-tools/cybersec.nix:49:5:
+           48|     gdb
+           49|     pwndbg               # GDB plug-in for exploit dev
+             |     ^
+           50|     pwntools             # Python exploit dev lib
+Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '/home/koray/nixos-config#nixosConfigurations."sumatra".config.system.build.toplevel' --no-link' returned non-zero exit status 1.
 
 [nix-shell:~/nixos-config]$ 
-
