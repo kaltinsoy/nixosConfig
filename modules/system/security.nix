@@ -49,7 +49,7 @@
     "kernel.dmesg_restrict"         = 1;
     "kernel.kptr_restrict"          = 2;
     "net.core.bpf_jit_harden"       = 2;
-    "net.ipv4.conf.all.rp_filter"   = 1;
+    "net.ipv4.conf.all.rp_filter"   = 2;  # 2 (loose) required for WireGuard & VPNs
     "net.ipv4.tcp_syncookies"        = 1;
     "kernel.unprivileged_userns_clone" = 1;  # needed by Nix sandbox & containers
   };

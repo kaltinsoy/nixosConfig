@@ -4,18 +4,32 @@
   networking = {
     hostName = "nixos";   # override in configuration.nix via hostname var if desired
 
-    networkmanager.enable = true;
+    networkmanager = {
+      enable = true;
+      plugins = with pkgs; [
+        networkmanager-openvpn
+        networkmanager-openconnect
+      ];
+    };
 
     # Firewall — open only what you need
     firewall = {
       enable          = true;
       allowedTCPPorts = [ 22 ];   # SSH
-      # allowedUDPPorts = [];
+      # WireGuard and VPN connections require loose reverse path filtering;
+      # strict (1) drops return traffic when routes/gateways change
+      checkReversePath = "loose";
     };
-
-    # Bridge for libvirt (virbr0 is managed by libvirtd; keep this for manual bridges)
-    # bridges.br0.interfaces = [ "enp0s31f6" ];
   };
+
+  # ── WireGuard kernel module ───────────────────────────────────────────
+  boot.kernelModules = [ "wireguard" ];
+
+  # ── WireGuard & Network management tools ──────────────────────────────
+  environment.systemPackages = with pkgs; [
+    wireguard-tools       # wg, wg-quick (CLI & WireGuard config parsing)
+    networkmanagerapplet  # nm-connection-editor (GUI connection & VPN editor)
+  ];
 
   # SSH daemon (good for remote management / VM access)
   services.openssh = {
