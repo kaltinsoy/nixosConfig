@@ -242,4 +242,33 @@
   # ── Ambient light sensor ──────────────────────────────────────────────
   # hardware.sensor.iio is provided by nixos-hardware lenovo-thinkpad-t480s preset
   # No need to set it here; the preset enables it automatically.
+
+  # ── WirePlumber Camera Priority ───────────────────────────────────────
+  # Prioritize the RGB webcam (0x2113) over the IR facial recognition camera (0x2123)
+  services.pipewire.wireplumber.extraConfig = {
+    "10-camera-priority" = {
+      "monitor.v4l2.rules" = [
+        {
+          matches = [
+            { "device.product.id" = "0x2123"; } # SunplusIT Integrated IR Camera
+          ];
+          actions = {
+            update-props = {
+              "priority.session" = 500;
+            };
+          };
+        }
+        {
+          matches = [
+            { "device.product.id" = "0x2113"; } # SunplusIT Integrated RGB Camera
+          ];
+          actions = {
+            update-props = {
+              "priority.session" = 1500;
+            };
+          };
+        }
+      ];
+    };
+  };
 }
