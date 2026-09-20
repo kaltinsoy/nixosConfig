@@ -148,5 +148,16 @@
     startInBackground = true;
   };
 
+  # ── Bash shell configuration ──────────────────────────────────────────
+  programs.bash = {
+    enable = true;
+    initExtra = ''
+      # Automatically update window size on terminal resize (prevents typing wrap glitches)
+      shopt -s checkwinsize
+      # Ensure terminal auto-wrap mode is active
+      [ -t 1 ] && tput smam 2>/dev/null || true
+    '';
+  };
+
   programs.home-manager.enable = true;
 }
