@@ -11,7 +11,10 @@
     };
 
     # ── Hardware ──────────────────────────────────────────────────────────
-    nixos-hardware.url = "github:NixOS/nixos-hardware";
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # ── Browsers ──────────────────────────────────────────────────────────
     zen-browser = {
@@ -34,6 +37,7 @@
     # ── Fingerprint reader (Synaptics 06cb:009a) ──────────────────────────
     nixos-06cb-009a-fingerprint-sensor = {
       url = "github:ahbnr/nixos-06cb-009a-fingerprint-sensor";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # ── Antigravity IDE ───────────────────────────────────────────────────

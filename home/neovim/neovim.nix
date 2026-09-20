@@ -22,12 +22,15 @@
       # HDL
       verilator                     # Verilog/SV lint (used by nvim-lint)
 
-      # ── Formatters ──────────────────────────────────────────────────
+      # ── Formatters & Linters ────────────────────────────────────────
       nixfmt                        # Nix
       stylua                        # Lua
       black                         # Python
       isort                         # Python imports
       rustfmt                       # Rust
+      clang-tools                   # C/C++ (clang-format)
+      shfmt                         # Shell script formatting
+      shellcheck                    # Shell script linting
       prettier                      # JS/TS/HTML/CSS/JSON/YAML/Markdown
 
       # ── Runtime deps ────────────────────────────────────────────────

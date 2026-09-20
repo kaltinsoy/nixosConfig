@@ -180,9 +180,6 @@
     modemmanager
     libmbim
     libqmi
-    networkmanagerapplet
-    networkmanager-openconnect
-    networkmanager-openvpn
 
     # Power / Backlight
     brightnessctl   # backlight control (replaces light)
@@ -208,17 +205,13 @@
   ];
   # acpi_call is already added to boot.extraModulePackages in boot.nix
 
-  # ── TrackPoint tuning & Howdy symlink ─────────────────────────────────
+  # ── Howdy symlink ─────────────────────────────────────────────────────
   systemd.tmpfiles.rules = [
-    "w /sys/devices/platform/i8042/serio1/serio2/sensitivity - - - - 200"
-    "w /sys/devices/platform/i8042/serio1/serio2/speed       - - - - 97"
-    "w /sys/devices/platform/i8042/serio1/serio2/inertia     - - - - 6"
-
     # Ensure /etc/howdy points to /etc/static/howdy for Howdy CLI and PAM
     "L+ /etc/howdy - - - - /etc/static/howdy"
   ];
 
-  # ── Backlight + udev ──────────────────────────────────────────────────
+  # ── Backlight, Fingerprint, TrackPoint + udev ─────────────────────────
   # programs.light was removed from nixpkgs; use brightnessctl instead
   # brightnessctl respects the video group without udev rules
 
@@ -232,6 +225,10 @@
     ATTRS{idVendor}=="06cb", ATTRS{idProduct}=="009a", \
       MODE="0660", GROUP="input", TAG+="uaccess", \
       TEST=="power/control", ATTR{power/control}="on"
+
+    # TrackPoint tuning — matched by driver, not by serio path (survives renumbering & boot races)
+    ACTION=="add|change", SUBSYSTEM=="serio", DRIVERS=="psmouse", \
+      ATTR{sensitivity}="200", ATTR{speed}="97", ATTR{inertia}="6"
 
     # Sierra Wireless EM7455 WWAN
     ATTRS{idVendor}=="1199", ATTRS{idProduct}=="9079", \
