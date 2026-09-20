@@ -126,16 +126,21 @@
     calib-data-file = ./calib-data.bin;
   };
 
-  # ── Facial Recognition (Howdy) ────────────────────────────────────────
-  # Uses the 720p Integrated Camera (5986:2115) for high-accuracy face recognition.
+  # ── Facial Recognition (Howdy) & IR Emitter ───────────────────────────
+  # Uses the ThinkPad T480s dedicated IR Camera (Port 5 / SPCA2085)
+  services.linux-enable-ir-emitter.enable = true;
+
   services.howdy = {
     enable  = true;
     control = "sufficient";
     settings = {
       video = {
-        device_path    = "/dev/v4l/by-path/pci-0000:00:14.0-usb-0:8:1.0-video-index0";
+        # ThinkPad T480s SunplusIT IR Camera (Port 5)
+        device_path    = "/dev/v4l/by-path/pci-0000:00:14.0-usb-0:5:1.0-video-index0";
         dark_threshold = 60;
         certainty      = 3.5;
+        frame_width    = 400;
+        frame_height   = 400;
       };
       core = {
         no_confirmation     = true; # Authenticate immediately upon face match

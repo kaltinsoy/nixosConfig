@@ -43,6 +43,8 @@
       font-name           = "Inter 11";
       monospace-font-name = "JetBrainsMono Nerd Font Mono 11";
       document-font-name  = "Source Serif Pro 11";
+      font-antialiasing   = "grayscale"; # Eliminates color fringing and blur on fractional scaling
+      font-hinting        = "slight";
       enable-animations   = true;
       show-battery-percentage = true;
       clock-show-seconds  = false;

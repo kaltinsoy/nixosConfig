@@ -45,7 +45,7 @@
         enable = true;
         style  = "slight";
       };
-      subpixel.rgba = "rgb";
+      subpixel.rgba = "none"; # Grayscale antialiasing for fractional scaling and high DPI screens
     };
   };
 }
