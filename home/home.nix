@@ -41,6 +41,7 @@
       # Productivity
       obsidian       # note-taking
       xournalpp      # handwriting, note-taking & PDF annotation
+      anki           # flashcards & spaced repetition
 
       # Screenshots / recording
       flameshot
