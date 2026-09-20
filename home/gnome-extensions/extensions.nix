@@ -265,6 +265,7 @@
       name = "Development";
       apps = [
         "dev.zed.Zed.desktop"
+        "antigravity.desktop"
         "nvim.desktop"
         "com.mitchellh.ghostty.desktop"
         "Alacritty.desktop"

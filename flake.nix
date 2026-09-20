@@ -35,9 +35,15 @@
     nixos-06cb-009a-fingerprint-sensor = {
       url = "github:ahbnr/nixos-06cb-009a-fingerprint-sensor";
     };
+
+    # ── Antigravity IDE ───────────────────────────────────────────────────
+    antigravity-nix = {
+      url = "github:jacopone/antigravity-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-hardware, zen-browser, spicetify-nix, nvchad-starter, nixos-06cb-009a-fingerprint-sensor, ... } @ inputs:
+  outputs = { self, nixpkgs, home-manager, nixos-hardware, zen-browser, spicetify-nix, nvchad-starter, nixos-06cb-009a-fingerprint-sensor, antigravity-nix, ... } @ inputs:
     let
       system = "x86_64-linux";
       pkgs   = nixpkgs.legacyPackages.${system};
@@ -68,7 +74,7 @@
               useUserPackages     = true;
               backupFileExtension = "backup";
               extraSpecialArgs = {
-                inherit inputs username spicetify-nix zen-browser nvchad-starter;
+                inherit inputs username spicetify-nix zen-browser nvchad-starter antigravity-nix;
               };
               users.${username} = import ./home/home.nix;
             };

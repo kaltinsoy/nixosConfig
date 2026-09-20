@@ -33,9 +33,9 @@
       TPACPI_ENABLE  = 1;
       TPSMAPI_ENABLE = 0;   # T480s uses ACPI, not SMAPI
 
-      # USB — keep WWAN modem from being autosuspended
+      # USB — keep WWAN modem and fingerprint reader from being autosuspended
       USB_AUTOSUSPEND = 1;
-      USB_DENYLIST    = "1199:9079 1199:9041 2cb7:0104";
+      USB_DENYLIST    = "1199:9079 1199:9041 2cb7:0104 06cb:009a";
 
       PCIE_ASPM_ON_BAT      = "powersupersave";
       DISK_DEVICES          = "nvme0n1";
@@ -226,9 +226,10 @@
       RUN+="${pkgs.coreutils}/bin/chgrp video /sys/class/backlight/%k/brightness", \
       RUN+="${pkgs.coreutils}/bin/chmod g+w   /sys/class/backlight/%k/brightness"
 
-    # Fingerprint reader — Synaptics 06cb:009a
+    # Fingerprint reader — Synaptics 06cb:009a (disable USB autosuspend)
     ATTRS{idVendor}=="06cb", ATTRS{idProduct}=="009a", \
-      MODE="0660", GROUP="input", TAG+="uaccess"
+      MODE="0660", GROUP="input", TAG+="uaccess", \
+      TEST=="power/control", ATTR{power/control}="on"
 
     # Sierra Wireless EM7455 WWAN
     ATTRS{idVendor}=="1199", ATTRS{idProduct}=="9079", \

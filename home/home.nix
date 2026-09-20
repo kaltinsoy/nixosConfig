@@ -1,4 +1,4 @@
-{ inputs, username, spicetify-nix, zen-browser, nvchad-starter, pkgs, lib, config, ... }:
+{ inputs, username, spicetify-nix, zen-browser, nvchad-starter, antigravity-nix, pkgs, lib, config, ... }:
 
 {
   imports = [
@@ -18,7 +18,8 @@
 
     # ── Common home packages ──────────────────────────────────────────
     packages = with pkgs; [
-      # Dev tools
+      # Dev tools & IDEs
+      antigravity-nix.packages.${pkgs.system}.default
       gh             # GitHub CLI
       git-credential-oauth
       lazygit
