@@ -98,9 +98,12 @@
     gcc gnumake cmake pkg-config ninja meson
     python3 python3Packages.pip
 
-    # Nix tooling
+    # Nix tooling & rebuild scripts
     nil nixfmt nix-tree nix-diff
     nix-output-monitor nvd
+    (writeShellScriptBin "nrs" ''exec sudo nixos-rebuild switch --flake /home/koray/nixos-config#sumatra "$@"'')
+    (writeShellScriptBin "nrb" ''exec sudo nixos-rebuild boot --flake /home/koray/nixos-config#sumatra "$@"'')
+    (writeShellScriptBin "nrt" ''exec sudo nixos-rebuild test --flake /home/koray/nixos-config#sumatra "$@"'')
 
     # Terminal multiplexer
     tmux zellij
