@@ -16,18 +16,9 @@
 
     # Extra packages available in Neovim's PATH
     extraPackages = with pkgs; [
-      # ── LSP servers ─────────────────────────────────────────────────
-      nixd                          # Nix LSP (nixd configured in lspconfig)
-      pyright                       # Python
-      ruff                          # Python linter + LSP (ruff-lsp merged into ruff)
-      clang-tools                   # clangd + clang-format (C/C++)
-      lua-language-server           # Lua
-      rust-analyzer                 # Rust
-      typescript-language-server    # TypeScript/JS
-      bash-language-server          # Bash
-      yaml-language-server          # YAML
-      taplo                         # TOML LSP
-      marksman                      # Markdown LSP
+      # ── LSP servers (Disabled) ──────────────────────────────────────
+      # nixd, pyright, ruff, clang-tools, lua-ls, rust-analyzer, etc. disabled
+
       # HDL
       verilator                     # Verilog/SV lint (used by nvim-lint)
 
@@ -109,12 +100,10 @@
           opts  = require "configs.conform",
         },
 
-        -- ── LSP ──────────────────────────────────────────────────────
+        -- ── LSP (Disabled) ───────────────────────────────────────────
         {
           "neovim/nvim-lspconfig",
-          config = function()
-            require "configs.lspconfig"
-          end,
+          enabled = false,
         },
 
         -- ── Linting ──────────────────────────────────────────────────
@@ -172,50 +161,9 @@
       }
     '';
 
-    # LSP configuration
+    # LSP configuration (Disabled)
     "nvim/lua/configs/lspconfig.lua".text = ''
-      require("nvchad.configs.lspconfig").defaults()
-
-      local lspconfig = require "lspconfig"
-      local nvlsp = require "nvchad.configs.lspconfig"
-
-      local servers = {
-        "nixd",
-        "pyright",
-        "ruff",
-        "rust_analyzer",
-        "ts_ls",
-        "bashls",
-        "yamlls",
-        "taplo",
-        "marksman",
-      }
-
-      for _, lsp in ipairs(servers) do
-        lspconfig[lsp].setup {
-          on_attach    = nvlsp.on_attach,
-          on_init      = nvlsp.on_init,
-          capabilities = nvlsp.capabilities,
-        }
-      end
-
-      lspconfig.clangd.setup {
-        on_attach    = nvlsp.on_attach,
-        on_init      = nvlsp.on_init,
-        capabilities = nvlsp.capabilities,
-        cmd          = { "clangd", "--background-index", "--clang-tidy", "--header-insertion=iwyu" },
-      }
-
-      lspconfig.lua_ls.setup {
-        on_attach    = nvlsp.on_attach,
-        on_init      = nvlsp.on_init,
-        capabilities = nvlsp.capabilities,
-        settings     = {
-          Lua = {
-            diagnostics = { globals = { "vim" } },
-          },
-        },
-      }
+      -- All language servers disabled
     '';
 
     # Formatting
