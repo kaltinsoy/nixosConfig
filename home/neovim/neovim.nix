@@ -51,63 +51,69 @@
     ];
   };
 
-  # ── NvChad config — managed via xdg.configFile ───────────────────────
+  # ── NvChad v2.5 config — managed via xdg.configFile ───────────────────
   # NvChad's starter is pinned in flake inputs (nvchad-starter).
-  # We copy the starter into ~/.config/nvim and overlay our custom/ layer.
-  # On first launch, NvChad/lazy.nvim will pull plugins (needs internet).
+  # We link the starter files (init.lua, options, autocmds, lazy config)
+  # and provide user custom configurations (chadrc, plugins, lsp, formatting).
   xdg.configFile = {
-    # Base NvChad starter (read-only symlink from nix store)
-    # We use a writable copy approach: link each subdirectory except custom/
-    # so the user can add lazy-lock.json etc without permission issues.
-    "nvim/init.lua".source = "${nvchad-starter}/init.lua";
+    # Base NvChad starter files
+    "nvim/init.lua".source          = "${nvchad-starter}/init.lua";
+    "nvim/lua/options.lua".source   = "${nvchad-starter}/lua/options.lua";
+    "nvim/lua/autocmds.lua".source  = "${nvchad-starter}/lua/autocmds.lua";
+    "nvim/lua/configs/lazy.lua".source = "${nvchad-starter}/lua/configs/lazy.lua";
 
-    # Our custom layer overrides
-    "nvim/lua/custom/chadrc.lua".text = ''
-      -- NvChad custom config
+    # NvChad theme & UI overrides
+    "nvim/lua/chadrc.lua".text = ''
       ---@type ChadrcConfig
       local M = {}
 
-      M.ui = {
-        theme            = "catppuccin",
-        theme_toggle     = { "catppuccin", "one_light" },
-        transparency     = false,
-        statusline       = { theme = "default" },
-        tabufline        = { enabled = true },
-        cmp              = { style = "flat_dark" },
-        telescope        = { style = "bordered" },
-        lsp_semantic_tokens = true,
+      M.base46 = {
+        theme = "catppuccin",
+        transparency = false,
+        hl_override = {
+          Comment = { italic = true },
+          ["@comment"] = { italic = true },
+        },
       }
 
-      M.plugins = "custom.plugins"
-      M.mappings = "custom.mappings"
+      M.ui = {
+        tabufline = {
+          enabled = true,
+          lazyload = false,
+        },
+        statusline = {
+          theme = "default",
+        },
+        telescope = {
+          style = "bordered",
+        },
+        cmp = {
+          style = "flat_dark",
+        },
+      }
+
+      M.nvdash = {
+        load_on_startup = true,
+      }
 
       return M
     '';
 
-    "nvim/lua/custom/plugins/init.lua".text = ''
+    # Additional plugins
+    "nvim/lua/plugins/init.lua".text = ''
       return {
-        -- ── Theme ────────────────────────────────────────────────────
+        -- ── Formatting ───────────────────────────────────────────────
         {
-          "catppuccin/nvim",
-          name     = "catppuccin",
-          priority = 1000,
-          opts = { flavour = "mocha" },
+          "stevearc/conform.nvim",
+          event = "BufWritePre",
+          opts  = require "configs.conform",
         },
 
         -- ── LSP ──────────────────────────────────────────────────────
         {
           "neovim/nvim-lspconfig",
           config = function()
-            require "custom.configs.lspconfig"
-          end,
-        },
-
-        -- ── Formatting ───────────────────────────────────────────────
-        {
-          "stevearc/conform.nvim",
-          event = "BufWritePre",
-          config = function()
-            require "custom.configs.conform"
+            require "configs.lspconfig"
           end,
         },
 
@@ -116,7 +122,7 @@
           "mfussenegger/nvim-lint",
           event = { "BufReadPost", "BufWritePost" },
           config = function()
-            require "custom.configs.lint"
+            require "configs.lint"
           end,
         },
 
@@ -149,12 +155,13 @@
           "folke/trouble.nvim",
           lazy = true,
           cmd  = "Trouble",
+          opts = {},
         },
 
         -- ── HDL / FPGA ───────────────────────────────────────────────
         {
-          "suoto/hdl_checker",    -- HDL (VHDL/Verilog) language server integration
-          ft  = { "vhdl", "verilog", "systemverilog" },
+          "suoto/hdl_checker",
+          ft = { "vhdl", "verilog", "systemverilog" },
         },
 
         -- ── Nix ──────────────────────────────────────────────────────
@@ -165,55 +172,61 @@
       }
     '';
 
-    "nvim/lua/custom/configs/lspconfig.lua".text = ''
-      local on_attach = require("plugins.configs.lspconfig").on_attach
-      local capabilities = require("plugins.configs.lspconfig").capabilities
+    # LSP configuration
+    "nvim/lua/configs/lspconfig.lua".text = ''
+      require("nvchad.configs.lspconfig").defaults()
 
       local lspconfig = require "lspconfig"
+      local nvlsp = require "nvchad.configs.lspconfig"
 
       local servers = {
-        -- Nix
-        nixd        = {},
-        -- Python
-        pyright     = {},
-        ruff_lsp    = {},
-        -- C/C++
-        clangd      = {
-          cmd = { "clangd", "--background-index", "--clang-tidy", "--header-insertion=iwyu" },
-        },
-        -- Lua
-        lua_ls      = {
-          settings = { Lua = { diagnostics = { globals = { "vim" } } } },
-        },
-        -- Rust
-        rust_analyzer = {},
-        -- TypeScript
-        ts_ls       = {},
-        -- Bash
-        bashls      = {},
-        -- YAML
-        yamlls      = {},
-        -- TOML
-        taplo       = {},
-        -- Markdown
-        marksman    = {},
+        "nixd",
+        "pyright",
+        "ruff",
+        "rust_analyzer",
+        "ts_ls",
+        "bashls",
+        "yamlls",
+        "taplo",
+        "marksman",
       }
 
-      for name, opts in pairs(servers) do
-        opts.on_attach    = on_attach
-        opts.capabilities = capabilities
-        lspconfig[name].setup(opts)
+      for _, lsp in ipairs(servers) do
+        lspconfig[lsp].setup {
+          on_attach    = nvlsp.on_attach,
+          on_init      = nvlsp.on_init,
+          capabilities = nvlsp.capabilities,
+        }
       end
+
+      lspconfig.clangd.setup {
+        on_attach    = nvlsp.on_attach,
+        on_init      = nvlsp.on_init,
+        capabilities = nvlsp.capabilities,
+        cmd          = { "clangd", "--background-index", "--clang-tidy", "--header-insertion=iwyu" },
+      }
+
+      lspconfig.lua_ls.setup {
+        on_attach    = nvlsp.on_attach,
+        on_init      = nvlsp.on_init,
+        capabilities = nvlsp.capabilities,
+        settings     = {
+          Lua = {
+            diagnostics = { globals = { "vim" } },
+          },
+        },
+      }
     '';
 
-    "nvim/lua/custom/configs/conform.lua".text = ''
-      require("conform").setup {
+    # Formatting
+    "nvim/lua/configs/conform.lua".text = ''
+      return {
         formatters_by_ft = {
           nix        = { "nixfmt" },
           lua        = { "stylua" },
           python     = { "isort", "black" },
-          c          = { "clang_format" },
-          cpp        = { "clang_format" },
+          c          = { "clang-format" },
+          cpp        = { "clang-format" },
           rust       = { "rustfmt" },
           javascript = { "prettier" },
           typescript = { "prettier" },
@@ -229,15 +242,16 @@
       }
     '';
 
-    "nvim/lua/custom/configs/lint.lua".text = ''
+    # Linting
+    "nvim/lua/configs/lint.lua".text = ''
       local lint = require "lint"
 
       lint.linters_by_ft = {
-        python     = { "ruff" },
-        verilog    = { "verilator" },
+        python        = { "ruff" },
+        verilog       = { "verilator" },
         systemverilog = { "verilator" },
-        sh         = { "shellcheck" },
-        nix        = { "nix" },
+        sh            = { "shellcheck" },
+        nix           = { "nix" },
       }
 
       vim.api.nvim_create_autocmd({ "BufWritePost" }, {
@@ -247,25 +261,27 @@
       })
     '';
 
-    "nvim/lua/custom/mappings.lua".text = ''
-      ---@type MappingsTable
-      local M = {}
+    # Keymaps
+    "nvim/lua/mappings.lua".text = ''
+      require "nvchad.mappings"
 
-      M.general = {
-        n = {
-          -- LazyGit
-          ["<leader>gg"] = { "<cmd>LazyGit<CR>",           "Open LazyGit" },
-          -- DiffView
-          ["<leader>gd"] = { "<cmd>DiffviewOpen<CR>",       "Open Diffview" },
-          ["<leader>gD"] = { "<cmd>DiffviewClose<CR>",      "Close Diffview" },
-          -- Trouble
-          ["<leader>xx"] = { "<cmd>Trouble diagnostics toggle<CR>", "Diagnostics" },
-          -- File manager (yazi)
-          ["<leader>e"]  = { "<cmd>!yazi<CR>",              "Open Yazi" },
-        },
-      }
+      local map = vim.keymap.set
 
-      return M
+      map("n", ";", ":", { desc = "CMD enter command mode" })
+      map("i", "jk", "<ESC>", { desc = "Escape" })
+
+      -- LazyGit
+      map("n", "<leader>gg", "<cmd>LazyGit<CR>", { desc = "Open LazyGit" })
+
+      -- DiffView
+      map("n", "<leader>gd", "<cmd>DiffviewOpen<CR>", { desc = "Open Diffview" })
+      map("n", "<leader>gD", "<cmd>DiffviewClose<CR>", { desc = "Close Diffview" })
+
+      -- Trouble
+      map("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<CR>", { desc = "Diagnostics (Trouble)" })
+
+      -- File manager (Yazi)
+      map("n", "<leader>e", "<cmd>!yazi<CR>", { desc = "Open Yazi" })
     '';
   };
 }
