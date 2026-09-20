@@ -132,9 +132,10 @@
     control = "sufficient";
     settings = {
       video = {
-        # ThinkPad T480s Integrated IR Camera (5986:2123)
-        device_path    = "/dev/v4l/by-path/pci-0000:00:14.0-usb-0:5:1.0-video-index0";
-        dark_threshold = 60;
+        # ThinkPad T480s Integrated Camera (5986:2113 - RGB webcam)
+        # Reliable in standard room lighting without requiring proprietary IR emitter setup
+        device_path    = "/dev/v4l/by-path/pci-0000:00:14.0-usb-0:8:1.0-video-index0";
+        dark_threshold = 50;
         certainty      = 3.5;
       };
       core = {
