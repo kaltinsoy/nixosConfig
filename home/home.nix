@@ -38,6 +38,7 @@
 
       # Productivity
       obsidian       # note-taking
+      xournalpp      # handwriting, note-taking & PDF annotation
 
       # Screenshots / recording
       flameshot

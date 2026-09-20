@@ -293,6 +293,8 @@
         "calibre-ebook-edit.desktop"
         "calibre-ebook-viewer.desktop"
         "calibre-lrfviewer.desktop"
+        "com.github.xournalpp.xournalpp.desktop"
+        "xournalpp.desktop"
       ];
     };
 
