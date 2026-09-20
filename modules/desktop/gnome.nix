@@ -53,7 +53,6 @@
     gnomeExtensions.vitals
     gnomeExtensions.grand-theft-focus
     gnomeExtensions.blur-my-shell
-    gnomeExtensions.forge
   ];
 
   # Exclude bloat from GNOME default install

@@ -14,11 +14,11 @@
         "caffeine@patapon.info"
         "clipboard-indicator@tudmotu.com"
         "Vitals@CoreCoding.com"
-        "forge@jmmaranan.com"
         "grand-theft-focus@zalckos.github.com"
         "just-perfection-desktop@just-perfection"
       ];
       disabled-extensions = [
+        "forge@jmmaranan.com"
         "pop-shell@system76.com"
         "gsconnect@andyholmes.github.io"
         "nightthemeswitcher@romainvigier.fr"
@@ -141,13 +141,6 @@
       sigma      = 30;
     };
 
-    # ── Forge ──────────────────────────────────────────────────────────
-    "org/gnome/shell/extensions/forge" = {
-      tiling-mode-enabled = false;
-      focus-border-toggle = false;
-      split-border-toggle = false;
-    };
-
     # ── Caffeine ──────────────────────────────────────────────────────
     "org/gnome/shell/extensions/caffeine" = {
       show-indicator         = "only-active"; # Only show in panel when enabled (active)
@@ -216,6 +209,7 @@
 
     # ── Keyboard shortcuts ─────────────────────────────────────────────
     "org/gnome/settings-daemon/plugins/media-keys" = {
+      screensaver = [ "<Super>l" ];
       custom-keybindings = [
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
