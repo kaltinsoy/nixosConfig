@@ -35,9 +35,10 @@
     };
 
     # ── Fingerprint reader (Synaptics 06cb:009a) ──────────────────────────
+    # Pinned to its internal nixos-24.11 input because python-validity
+    # driver requires Python 3.12 setuptools packaging.
     nixos-06cb-009a-fingerprint-sensor = {
       url = "github:ahbnr/nixos-06cb-009a-fingerprint-sensor";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # ── Antigravity IDE ───────────────────────────────────────────────────
