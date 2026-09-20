@@ -313,6 +313,80 @@ sudo systemctl restart tlp
 
 ---
 
+## Package Management & System Updates
+
+### 1. Searching for Applications
+You can search for packages directly in your terminal or online:
+```bash
+# Search using nix cli:
+nix search nixpkgs <app-name>
+
+# Example: search for telegram
+nix search nixpkgs telegram
+```
+You can also browse all available packages with options and descriptions at **[search.nixos.org](https://search.nixos.org/packages)**.
+
+### 2. Installing Applications Permanently
+
+In NixOS, applications are declared in configuration files so they are always reproducible across installs:
+
+* **For User & Desktop Apps (e.g. Discord, Spotify, LibreOffice):**
+  1. Open [`home/home.nix`](file:///home/koray/nixos-config/home/home.nix).
+  2. Add the package name under `home.packages = with pkgs; [ ... ];`.
+  3. Rebuild and apply:
+     ```bash
+     sudo nixos-rebuild switch --flake ~/nixos-config#sumatra
+     ```
+
+* **For System Tools & Daemons (e.g. Wireshark, Docker, CLI utilities):**
+  1. Open [`hosts/default/configuration.nix`](file:///home/koray/nixos-config/hosts/default/configuration.nix) (or the relevant module in `modules/`).
+  2. Add the package name under `environment.systemPackages = with pkgs; [ ... ];`.
+  3. Rebuild and apply:
+     ```bash
+     sudo nixos-rebuild switch --flake ~/nixos-config#sumatra
+     ```
+
+### 3. Trying an App Temporarily (Without Installing)
+If you only need a tool once and don't want it permanently taking up space:
+```bash
+# Run an app immediately without installing:
+nix run nixpkgs#htop
+
+# Or open an isolated shell with the tool available:
+nix-shell -p htop
+# (When you type `exit`, the tool is removed from your PATH)
+```
+
+### 4. Updating Applications & the Entire System
+
+Because this system uses Nix Flakes, updating is atomic, predictable, and safe:
+
+```bash
+# 1. Update all packages and dependencies to their latest versions:
+nix flake update ~/nixos-config
+
+# Or update only nixpkgs (leaving other flakes untouched):
+nix flake lock --update-input nixpkgs ~/nixos-config
+
+# 2. Rebuild and switch to the updated system:
+sudo nixos-rebuild switch --flake ~/nixos-config#sumatra
+```
+
+### 5. Instant Rollback (If an Update Ever Causes an Issue)
+
+NixOS creates a new generation every time you rebuild. If any update ever causes an issue:
+
+```bash
+# Rollback immediately to the previous working generation:
+sudo nixos-rebuild switch --rollback
+
+# List all system generations:
+nixos-rebuild list-generations
+```
+*You can also select any previous working generation directly from the systemd-boot menu upon rebooting!*
+
+---
+
 ## Helpful Commands
 
 ```bash

@@ -66,15 +66,16 @@
 
     # ── Shell Keybindings (Super+1..9 opens dock/toolbar apps) ─────────
     "org/gnome/shell/keybindings" = {
-      switch-to-application-1 = [ "<Super>1" ];
-      switch-to-application-2 = [ "<Super>2" ];
-      switch-to-application-3 = [ "<Super>3" ];
-      switch-to-application-4 = [ "<Super>4" ];
-      switch-to-application-5 = [ "<Super>5" ];
-      switch-to-application-6 = [ "<Super>6" ];
-      switch-to-application-7 = [ "<Super>7" ];
-      switch-to-application-8 = [ "<Super>8" ];
-      switch-to-application-9 = [ "<Super>9" ];
+      switch-to-application-1  = [ "<Super>1" ];
+      switch-to-application-2  = [ "<Super>2" ];
+      switch-to-application-3  = [ "<Super>3" ];
+      switch-to-application-4  = [ "<Super>4" ];
+      switch-to-application-5  = [ "<Super>5" ];
+      switch-to-application-6  = [ "<Super>6" ];
+      switch-to-application-7  = [ "<Super>7" ];
+      switch-to-application-8  = [ "<Super>8" ];
+      switch-to-application-9  = [ "<Super>9" ];
+      toggle-application-view  = [ "<Super>a" ];
     };
 
     # ── Dash to Dock ───────────────────────────────────────────────────
@@ -97,9 +98,7 @@
       show-mounts                    = false;
       show-trash                     = false;
       transparency-mode              = "DEFAULT";
-      hot-keys                       = true;
-      hotkeys-overlay                = false;
-      hotkeys-show-dock              = false;
+      hot-keys                       = false; # Prevent dash-to-dock from intercepting Super double-tap
     };
 
     # ── AppIndicator ───────────────────────────────────────────────────
@@ -160,7 +159,7 @@
     # ── Just Perfection ────────────────────────────────────────────────
     "org/gnome/shell/extensions/just-perfection" = {
       activities-button              = false;
-      animation                      = 2;
+      animation                      = 1; # Standard animation speed for instant double-tap Super
       app-menu                       = false;
       search                         = true;
       workspace-switcher-should-show = true;
@@ -175,13 +174,13 @@
 
     # ── Vitals ────────────────────────────────────────────────────────
     "org/gnome/shell/extensions/vitals" = {
-      hot-sensors       = [ "_processor_usage_" "_system_load_1m_" "_memory_usage_" "__network-rx_max__" ];
+      hot-sensors       = [ "_system_load_1m_" "_memory_usage_" "__network-rx_max__" ];
       position-in-panel = 0;
       show-fan          = true;
       show-memory       = true;
       show-network      = true;
-      show-processor    = true;
-      show-system       = true; # Show system load averages
+      show-processor    = false; # Do not show CPU usage
+      show-system       = true;  # Show system load averages
       show-storage      = false;
       show-temperature  = true;
       show-voltage      = false;
