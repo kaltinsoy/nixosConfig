@@ -119,10 +119,11 @@
 
   # ── Fingerprint reader (Synaptics 06cb:009a) ──────────────────────────
   # Proprietary Match-on-Host sensor driven by ahbnr/nixos-06cb-009a-fingerprint-sensor flake.
-  # Stage 1: python-validity backend for firmware loading, enrollment & calibration extraction.
+  # Stage 2: Native libfprint-tod PAM integration with calibration data
   services."06cb-009a-fingerprint-sensor" = {
-    enable  = true;
-    backend = "python-validity";
+    enable          = true;
+    backend         = "libfprint-tod";
+    calib-data-file = ./calib-data.bin;
   };
 
   # ── IR Camera Facial Recognition (Howdy) ──────────────────────────────
