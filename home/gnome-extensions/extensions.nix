@@ -51,6 +51,11 @@
       clock-show-weekday  = true;
     };
 
+    # ── Sound / Audio ──────────────────────────────────────────────────
+    "org/gnome/desktop/sound" = {
+      allow-volume-above-100-percent = true; # Allows volume boost up to 150% in GNOME
+    };
+
     # ── Window manager ─────────────────────────────────────────────────
     "org/gnome/desktop/wm/preferences" = {
       button-layout    = "appmenu:minimize,maximize,close";

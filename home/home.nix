@@ -159,6 +159,12 @@
     startInBackground = true;
   };
 
+  # ── EasyEffects Audio Enhancement ─────────────────────────────────────
+  # DSP audio effects (EQ, limiter, loudness) for ThinkPad laptop speakers
+  services.easyeffects = {
+    enable = true;
+  };
+
   # ── Bash shell configuration ──────────────────────────────────────────
   programs.bash = {
     enable = true;
