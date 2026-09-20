@@ -1,8 +1,8 @@
-{ pkgs, ... }:
+{ pkgs, hostname, ... }:
 
 {
   networking = {
-    hostName = "nixos";   # override in configuration.nix via hostname var if desired
+    hostName = hostname;
 
     networkmanager = {
       enable = true;
