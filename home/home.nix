@@ -44,9 +44,10 @@
       obs-studio
       ffmpeg
 
-      # Communication
+      # Communication & Sync
       vesktop        # Discord (Vencord)
       element-desktop # Matrix client
+      nextcloud-client
 
       # Password manager
       bitwarden-desktop
@@ -142,6 +143,12 @@
 
   # ── Syncthing ─────────────────────────────────────────────────────────
   services.syncthing.enable = true;
+
+  # ── Nextcloud Client ──────────────────────────────────────────────────
+  services.nextcloud-client = {
+    enable            = true;
+    startInBackground = true;
+  };
 
   programs.home-manager.enable = true;
 }

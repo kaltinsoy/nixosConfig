@@ -253,6 +253,8 @@
         "bitwarden.desktop"
         "org.onionshare.OnionShare.desktop"
         "syncthing-ui.desktop"
+        "com.nextcloud.desktopclient.nextcloud.desktop"
+        "nextcloud.desktop"
       ];
     };
 
