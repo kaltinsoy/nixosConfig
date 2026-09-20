@@ -38,7 +38,24 @@
     gc = {
       automatic = true;
       dates     = "weekly";
-      options   = "--delete-older-than 14d";
+      options   = "--delete-older-than 7d";
+    };
+  };
+
+  # ── Prune old NixOS system generations (keep last 3) ──────────────────
+  systemd.services.nix-prune-generations = {
+    description = "Prune old NixOS system generations (keep last 3)";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.nix}/bin/nix-env --profile /nix/var/nix/profiles/system --delete-generations +3";
+    };
+  };
+  systemd.timers.nix-prune-generations = {
+    description = "Timer to prune old NixOS system generations";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnCalendar = "weekly";
+      Persistent = true;
     };
   };
 
