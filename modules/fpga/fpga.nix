@@ -54,6 +54,28 @@ let
     '';
   };
 
+  # ── RISC-V compatibility aliases ──────────────────────────────────────
+  # Provides riscv32-unknown-elf-*, riscv64-unknown-elf-*, and
+  # riscv-none-embed-* symlinks for build systems that expect those triplets.
+  riscvCompatAliases = pkgs.runCommand "riscv-compat-aliases" { } ''
+    mkdir -p $out/bin
+    for f in ${pkgs.pkgsCross.riscv32-embedded.buildPackages.gcc}/bin/riscv32-none-elf-*; do
+      base=$(basename "$f")
+      ln -s "$f" "$out/bin/''${base/riscv32-none-elf/riscv32-unknown-elf}"
+      ln -s "$f" "$out/bin/''${base/riscv32-none-elf/riscv-none-embed}"
+    done
+    for f in ${pkgs.pkgsCross.riscv64-embedded.buildPackages.gcc}/bin/riscv64-none-elf-*; do
+      base=$(basename "$f")
+      ln -s "$f" "$out/bin/''${base/riscv64-none-elf/riscv64-unknown-elf}"
+    done
+    # Multiarch GDB aliases
+    ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv32-none-elf-gdb
+    ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv32-unknown-elf-gdb
+    ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv64-none-elf-gdb
+    ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv64-unknown-elf-gdb
+    ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv-none-embed-gdb
+  '';
+
 in
 {
   # ── nix-ld — run pre-compiled ELF binaries ────────────────────────────
@@ -100,6 +122,14 @@ in
     python313Packages.cocotb      # HDL cosimulation (python 3.13)
     python3Packages.migen         # Python-based HDL
     python3Packages.amaranth      # Amaranth HDL
+
+    # RISC-V Cross Toolchains (RV32 / RV64 bare-metal & embedded)
+    pkgsCross.riscv32-embedded.buildPackages.gcc       # riscv32-none-elf-gcc, g++, as, ld, etc.
+    pkgsCross.riscv32-embedded.buildPackages.binutils  # riscv32-none-elf-objcopy, objdump, size, strip, etc.
+    pkgsCross.riscv64-embedded.buildPackages.gcc       # riscv64-none-elf-gcc, g++, as, ld, etc.
+    pkgsCross.riscv64-embedded.buildPackages.binutils  # riscv64-none-elf-objcopy, objdump, size, strip, etc.
+    gdb                                                # Multiarch GDB (supports riscv32/riscv64)
+    riscvCompatAliases                                 # riscv{32,64}-unknown-elf-*, riscv-none-embed-*, and gdb aliases
 
     # FHS wrappers for proprietary tools
     vivadoFHS
