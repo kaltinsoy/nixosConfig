@@ -126,16 +126,15 @@
     calib-data-file = ./calib-data.bin;
   };
 
-  # ── IR Camera Facial Recognition (Howdy) ──────────────────────────────
+  # ── Facial Recognition (Howdy) ────────────────────────────────────────
+  # Uses the 720p Integrated Camera (5986:2115) for high-accuracy face recognition.
   services.howdy = {
     enable  = true;
     control = "sufficient";
     settings = {
       video = {
-        # ThinkPad T480s Integrated Camera (5986:2113 - RGB webcam)
-        # Reliable in standard room lighting without requiring proprietary IR emitter setup
         device_path    = "/dev/v4l/by-path/pci-0000:00:14.0-usb-0:8:1.0-video-index0";
-        dark_threshold = 50;
+        dark_threshold = 60;
         certainty      = 3.5;
       };
       core = {
@@ -144,12 +143,6 @@
         abort_if_ssh        = true;
       };
     };
-  };
-
-  # ── IR Emitter driver ─────────────────────────────────────────────────
-  services.linux-enable-ir-emitter = {
-    enable = true;
-    device = "video0";
   };
 
   # ── WWAN / LTE SIM ────────────────────────────────────────────────────

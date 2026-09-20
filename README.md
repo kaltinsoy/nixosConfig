@@ -244,23 +244,23 @@ services."06cb-009a-fingerprint-sensor" = {
 Rebuild (`sudo nixos-rebuild switch --flake ~/nixos-config#sumatra`) and run `fprintd-enroll` once more.
 
 ### 2. Facial Recognition (Howdy / Windows Hello style)
-Howdy is configured to use your ThinkPad T480s camera (`device_path = "/dev/v4l/by-path/pci-0000:00:14.0-usb-0:8:1.0-video-index0"`) for instant biometric login and authentication.
+Howdy is configured to use the 720p Integrated Camera (`/dev/v4l/by-path/pci-0000:00:14.0-usb-0:8:1.0-video-index0`) for high-accuracy face recognition.
 
 #### Enrolling Your Face:
 ```bash
-# Add your face model (look directly at the camera above the screen):
+# 1. Add your face model (look directly at the camera above the screen):
 sudo howdy add
 
-# Test facial recognition live:
+# 2. Test facial recognition live:
 sudo howdy test
 
-# List enrolled face models:
+# 3. List enrolled face models:
 sudo howdy list
 ```
-*When prompted for authentication (`sudo`, GDM login, or Bitwarden), Howdy will automatically activate the camera and authenticate you immediately with zero typing.*
+*When prompted for authentication (`sudo`, lockscreen, or Bitwarden), Howdy will automatically activate the camera and authenticate you immediately.*
 
-> [!TIP]
-> By default, Howdy uses the standard RGB webcam which works reliably in normal room lighting. If you prefer to use the infrared camera (`5986:2123`), run `sudo linux-enable-ir-emitter configure` to calibrate the IR LED emitter first.
+> [!NOTE]
+> **First Login Keyring Unlock**: When logging in on cold boot, logging in with your password automatically unlocks the GNOME Keyring for the session. If you log in via fingerprint or face on cold boot, PAM cannot decrypt your password-protected keyring without your password, so GNOME Keyring will prompt for your password once. Once unlocked, all subsequent lockscreens (`Win + L`), `sudo`, and Bitwarden unlocks use fingerprint or face without any prompts.
 
 ### 3. Bitwarden Biometric Unlock (Fingerprint & Face)
 Bitwarden Desktop uses **Polkit** (`polkit-1`) for biometrics on Linux. We have configured `polkit-1` with `sufficient` rules for both `howdy` (face) and `fprintd` (fingerprint).
