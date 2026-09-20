@@ -11,6 +11,16 @@
   # ── polkit ────────────────────────────────────────────────────────────
   security.polkit.enable = true;
 
+  # Bitwarden Desktop biometrics integration:
+  # 1. System package ensures NixOS links the polkit policy into the system environment
+  # 2. tmpfiles rules link the policy to /usr/share and /etc where Bitwarden checks for it
+  environment.systemPackages = [ pkgs.bitwarden-desktop ];
+
+  systemd.tmpfiles.rules = [
+    "L+ /usr/share/polkit-1/actions/com.bitwarden.Bitwarden.policy - - - - ${pkgs.bitwarden-desktop}/share/polkit-1/actions/com.bitwarden.Bitwarden.policy"
+    "L+ /etc/polkit-1/actions/com.bitwarden.Bitwarden.policy - - - - ${pkgs.bitwarden-desktop}/share/polkit-1/actions/com.bitwarden.Bitwarden.policy"
+  ];
+
   # ── PAM — Biometrics & Keyring ────────────────────────────────────────
   security.pam.services = {
     gdm.enableGnomeKeyring = true;

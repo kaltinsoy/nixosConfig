@@ -50,7 +50,6 @@
       nextcloud-client
 
       # Password manager
-      bitwarden-desktop
       bitwarden-cli  # `bw` CLI
 
       # Office
