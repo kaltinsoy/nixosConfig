@@ -26,9 +26,10 @@
         "rounded-window-corners@fxgn"
       ];
       favorite-apps = [
-        "org.gnome.Nautilus.desktop"
-        "org.gnome.Console.desktop"
         "zen-beta.desktop"
+        "org.gnome.Console.desktop"
+        "org.gnome.Nautilus.desktop"
+        "spotify.desktop"
       ];
     };
 
@@ -143,6 +144,8 @@
     # ── Forge ──────────────────────────────────────────────────────────
     "org/gnome/shell/extensions/forge" = {
       tiling-mode-enabled = false;
+      focus-border-toggle = false;
+      split-border-toggle = false;
     };
 
     # ── Caffeine ──────────────────────────────────────────────────────
