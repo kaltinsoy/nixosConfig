@@ -105,7 +105,9 @@ Here is a detailed breakdown of every application installed in this system and i
 | **MPV & VLC** | High-performance video and media players with broad codec support. |
 | **Spotify (Spicetify)** | Spotify client customized with Catppuccin Mocha theme, ad-block, and lyrics extensions. |
 | **Vesktop & Element** | Discord client (with Vencord plugin) and Matrix encrypted messaging client. |
-| **Syncthing & Rclone** | Continuous peer-to-peer file synchronization and multi-cloud sync CLI. |
+| **Nextcloud Client** | Native background client for Nextcloud file sync. |
+| **QOwnNotes** | Open-source markdown note taking application with Nextcloud integration. |
+| **Xournal++** | Handwriting, PDF annotation, and sketching application. |
 
 ### 4. Virtualization & Container Labs
 
@@ -196,7 +198,7 @@ ParrotOS Security includes the entire pentesting suite pre-installed and pre-con
 | Extension | Role & Configuration |
 |---|---|
 | **Dash to Dock** | Moves the dash out of the overview into a permanent, auto-hiding dock pinned to the **left screen edge** with 40px icons, running app dots, and click-to-minimize. |
-| **AppIndicator Support** | Restores the system tray in the top bar for background apps like Discord/Vesktop, Bitwarden, Steam, Telegram, and Syncthing. |
+| **AppIndicator Support** | Restores the system tray in the top bar for background apps like Discord/Vesktop, Bitwarden, Steam, Telegram, and Nextcloud. |
 | **Caffeine** | One-click top bar toggle to prevent the screen from dimming, sleeping, or locking during long builds, tests, or presentations. |
 | **Clipboard Indicator** | Top bar clipboard history manager with searchable entries, quick paste, and private mode. |
 | **Just Perfection** | Declutters the shell: hides the redundant "Activities" text button, removes workspace switcher delays, and smooths animations. |

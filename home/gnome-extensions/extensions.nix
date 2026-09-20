@@ -249,7 +249,6 @@
         "element-desktop.desktop"
         "bitwarden.desktop"
         "org.onionshare.OnionShare.desktop"
-        "syncthing-ui.desktop"
         "com.nextcloud.desktopclient.nextcloud.desktop"
         "nextcloud.desktop"
       ];
@@ -284,6 +283,8 @@
         "math.desktop"
         "base.desktop"
         "obsidian.desktop"
+        "PBE.QOwnNotes.desktop"
+        "qownnotes.desktop"
         "calibre-gui.desktop"
         "calibre-ebook-edit.desktop"
         "calibre-ebook-viewer.desktop"

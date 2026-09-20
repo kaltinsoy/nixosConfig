@@ -56,10 +56,7 @@
 
       # Office
       libreoffice
-
-      # File sync
-      syncthing
-      rclone
+      qownnotes      # markdown note taking with Nextcloud integration
 
       # Image / design
       gimp
@@ -126,24 +123,24 @@
   };
 
   # ── SSH ───────────────────────────────────────────────────────────────
-  programs.ssh = {
-    enable = true;
-    enableDefaultConfig = false;
-    # HM 26.05+: addKeysToAgent moved into settings, matchBlocks → settings blocks
-    settings = {
-      "*" = {
-        AddKeysToAgent = "yes";
-      };
-      "homelab" = {
-        Hostname     = "192.168.122.100";
-        User         = "root";
-        IdentityFile = "~/.ssh/id_ed25519";
-      };
-    };
-  };
+  # OpenSSH requires ~/.ssh/config to be owned by the user with 0600 permissions.
+  # A direct symlink into /nix/store triggers "Bad owner or permissions" because
+  # the store UID differs. An activation script writes a real file with 0600.
+  home.activation.sshConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p $HOME/.ssh
+    chmod 700 $HOME/.ssh
+    rm -f $HOME/.ssh/config
+    cat << 'EOF' > $HOME/.ssh/config
+    Host homelab
+      Hostname 192.168.122.100
+      IdentityFile ~/.ssh/id_ed25519
+      User root
 
-  # ── Syncthing ─────────────────────────────────────────────────────────
-  services.syncthing.enable = true;
+    Host *
+      AddKeysToAgent yes
+    EOF
+    chmod 600 $HOME/.ssh/config
+  '';
 
   # ── Nextcloud Client ──────────────────────────────────────────────────
   services.nextcloud-client = {
