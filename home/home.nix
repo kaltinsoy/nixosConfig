@@ -162,6 +162,12 @@
   # ── Bash shell configuration ──────────────────────────────────────────
   programs.bash = {
     enable = true;
+    shellAliases = {
+      nrs = "sudo nixos-rebuild switch --flake /home/koray/nixos-config#sumatra";
+      nrb = "sudo nixos-rebuild boot --flake /home/koray/nixos-config#sumatra";
+      nrt = "sudo nixos-rebuild test --flake /home/koray/nixos-config#sumatra";
+      nfu = "nix flake update --flake /home/koray/nixos-config";
+    };
     initExtra = ''
       # Automatically update window size on terminal resize (prevents typing wrap glitches)
       shopt -s checkwinsize

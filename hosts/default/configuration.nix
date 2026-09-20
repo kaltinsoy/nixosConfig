@@ -42,6 +42,13 @@
     };
   };
 
+  # ── Shell Aliases ─────────────────────────────────────────────────────
+  environment.shellAliases = {
+    nrs = "sudo nixos-rebuild switch --flake /home/koray/nixos-config#sumatra";
+    nrb = "sudo nixos-rebuild boot --flake /home/koray/nixos-config#sumatra";
+    nrt = "sudo nixos-rebuild test --flake /home/koray/nixos-config#sumatra";
+  };
+
   # ── Prune old NixOS system generations (keep last 3) ──────────────────
   systemd.services.nix-prune-generations = {
     description = "Prune old NixOS system generations (keep last 3)";
