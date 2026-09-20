@@ -26,6 +26,7 @@
       delta          # better git diff
       difftastic
       pre-commit
+      cloudflared    # Cloudflare Tunnel & SSH Access proxy
 
       # Terminal emulators
       ghostty        # fast GPU terminal
@@ -135,6 +136,15 @@
       Hostname 192.168.122.100
       IdentityFile ~/.ssh/id_ed25519
       User root
+
+    # Cloudflare Access SSH Proxy
+    # Route any *.anilkoray.tr host through Cloudflare Access
+    Host *.anilkoray.tr
+      ProxyCommand cloudflared access ssh --hostname %h
+
+    # Match any Cloudflare Access host pattern (e.g., ssh.yourdomain.com)
+    # Host cf-*
+    #   ProxyCommand cloudflared access ssh --hostname %h
 
     Host *
       AddKeysToAgent yes
