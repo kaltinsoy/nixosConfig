@@ -203,11 +203,14 @@
   ];
   # acpi_call is already added to boot.extraModulePackages in boot.nix
 
-  # ── TrackPoint tuning ─────────────────────────────────────────────────
+  # ── TrackPoint tuning & Howdy symlink ─────────────────────────────────
   systemd.tmpfiles.rules = [
     "w /sys/devices/platform/i8042/serio1/serio2/sensitivity - - - - 200"
     "w /sys/devices/platform/i8042/serio1/serio2/speed       - - - - 97"
     "w /sys/devices/platform/i8042/serio1/serio2/inertia     - - - - 6"
+
+    # Ensure /etc/howdy points to /etc/static/howdy for Howdy CLI and PAM
+    "L+ /etc/howdy - - - - /etc/static/howdy"
   ];
 
   # ── Backlight + udev ──────────────────────────────────────────────────
@@ -237,28 +240,44 @@
   # hardware.sensor.iio is provided by nixos-hardware lenovo-thinkpad-t480s preset
   # No need to set it here; the preset enables it automatically.
 
-  # ── WirePlumber Camera Priority ───────────────────────────────────────
-  # Prioritize the RGB webcam (0x2113) over the IR facial recognition camera (0x2123)
+  # ── WirePlumber Camera Priority & Exclusion ───────────────────────────
+  # Disable the 160x120 IR camera (Port 5) in WirePlumber so desktop apps
+  # (GNOME Snapshot / Camera, browsers, etc.) only see and use the 720p HD
+  # Integrated Camera (Port 8), preventing IR blinking and low-res feeds.
   services.pipewire.wireplumber.extraConfig = {
     "10-camera-priority" = {
       "monitor.v4l2.rules" = [
         {
           matches = [
-            { "device.product.id" = "0x0b09"; } # SunplusIT SPCA2085 PC Camera (Port 5)
+            { "node.name" = "~v4l2_input.*0_5_1.0*"; }
           ];
           actions = {
             update-props = {
+              "node.disabled" = true;
               "priority.session" = 500;
             };
           };
         }
         {
           matches = [
-            { "device.product.id" = "0x2115"; } # SunplusIT Integrated Camera (Port 8)
+            { "node.name" = "~v4l2_input.*0_8_1.0*"; }
           ];
           actions = {
             update-props = {
+              "node.disabled" = false;
               "priority.session" = 1500;
+            };
+          };
+        }
+      ];
+      "monitor.libcamera.rules" = [
+        {
+          matches = [
+            { "device.name" = "~libcamera_device.*HS05*"; }
+          ];
+          actions = {
+            update-props = {
+              "device.disabled" = true;
             };
           };
         }
