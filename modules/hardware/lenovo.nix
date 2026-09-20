@@ -244,7 +244,7 @@
       "monitor.v4l2.rules" = [
         {
           matches = [
-            { "device.product.id" = "0x2123"; } # SunplusIT Integrated IR Camera
+            { "device.product.id" = "0x0b09"; } # SunplusIT SPCA2085 PC Camera (Port 5)
           ];
           actions = {
             update-props = {
@@ -254,7 +254,7 @@
         }
         {
           matches = [
-            { "device.product.id" = "0x2113"; } # SunplusIT Integrated RGB Camera
+            { "device.product.id" = "0x2115"; } # SunplusIT Integrated Camera (Port 8)
           ];
           actions = {
             update-props = {
