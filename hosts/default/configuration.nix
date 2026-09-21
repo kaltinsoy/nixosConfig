@@ -109,15 +109,15 @@
     (writeShellScriptBin "nrt" ''exec sudo nixos-rebuild test --flake /home/koray/nixos-config#sumatra "$@"'')
     (writeShellScriptBin "nclean" ''
       set -e
-      echo "🧹 [1/4] Removing obsolete user profile generations..."
+      echo ":: [1/4] Removing obsolete user profile generations..."
       nix-collect-garbage -d "$@"
-      echo "🧹 [2/4] Removing obsolete system generations..."
+      echo ":: [2/4] Removing obsolete system generations..."
       sudo nix-collect-garbage -d "$@"
-      echo "🧹 [3/4] Updating bootloader entries..."
+      echo ":: [3/4] Updating bootloader entries..."
       sudo /run/current-system/bin/switch-to-configuration boot
-      echo "🧹 [4/4] Optimising nix store (hardlinking duplicate files)..."
+      echo ":: [4/4] Optimising nix store (hardlinking duplicate files)..."
       nix store optimise
-      echo "✨ Cleanup complete!"
+      echo ":: Cleanup complete!"
     '')
     (writeShellScriptBin "ncg" ''exec nclean "$@"'')
 
