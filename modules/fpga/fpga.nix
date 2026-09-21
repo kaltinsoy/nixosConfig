@@ -20,17 +20,20 @@ let
       # Java (Vivado 2022+ bundles its own, but some versions need system Java)
       temurin-bin-17
     ];
-    runScript = ''
+    runScript = pkgs.writeScript "vivado-run" ''
       #!/bin/bash
+      if [ $# -gt 0 ]; then
+        exec "$@"
+      fi
       XILINX_ROOT="''${XILINX_ROOT:-/opt/Xilinx}"
       if [ ! -d "$XILINX_ROOT/Vivado" ]; then
         echo "ERROR: Xilinx tools not found at $XILINX_ROOT"
-        echo "       Set XILINX_ROOT or install Vivado to /opt/Xilinx"
+        echo "       To run the installer, use: vivado <path-to-installer.bin>"
         exit 1
       fi
       # Source Vivado settings
       source "$XILINX_ROOT/Vivado/$(ls "$XILINX_ROOT/Vivado" | sort -V | tail -1)/settings64.sh"
-      exec vivado "$@"
+      exec vivado
     '';
   };
 
@@ -42,15 +45,18 @@ let
       libxext libxcb ncurses5 zlib
       coreutils bash which
     ];
-    runScript = ''
+    runScript = pkgs.writeScript "gowin-run" ''
       #!/bin/bash
+      if [ $# -gt 0 ]; then
+        exec "$@"
+      fi
       GOWIN_ROOT="''${GOWIN_ROOT:-/opt/gowin}"
       if [ ! -d "$GOWIN_ROOT" ]; then
         echo "ERROR: Gowin EDA not found at $GOWIN_ROOT"
-        echo "       Set GOWIN_ROOT or install Gowin EDA to /opt/gowin"
+        echo "       To run the installer, use: gowin-eda <path-to-installer>"
         exit 1
       fi
-      exec "$GOWIN_ROOT/IDE/bin/gw_ide" "$@"
+      exec "$GOWIN_ROOT/IDE/bin/gw_ide"
     '';
   };
 
