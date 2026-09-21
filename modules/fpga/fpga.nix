@@ -5,35 +5,83 @@ let
   # Vivado and Gowin EDA ship bundled binaries that expect a "normal" Linux
   # filesystem layout. buildFHSEnv creates a chroot that satisfies that.
 
+  vivadoPkgs = p: with p; [
+    # C/C++ runtime & build tools
+    glibc glibc.dev glib gcc-unwrapped.lib
+    # Graphics & X11 (including all libraries required by installLibs.sh)
+    libGL libGLU libx11 libxrender libxtst libxi
+    libxext libxcb libxft libxcursor libxfixes
+    libxcomposite libxscrnsaver motif
+    gtk3 gdk-pixbuf
+    # Audio
+    alsa-lib
+    # Crypto & Security
+    openssl libsecret nss libxcrypt-legacy
+    # Utilities, parsing, and graph visualization (used by Vivado schematics)
+    graphviz libyaml nettools procps
+    unzip zip
+    # Terminal, fonts & legacy libs
+    ncurses5 zlib freetype fontconfig
+    coreutils bash which
+    # Java (Vivado 2022+ bundles its own, but some versions need system Java)
+    temurin-bin-17
+  ];
+
   vivadoFHS = pkgs.buildFHSEnv {
     name = "vivado";
-    targetPkgs = p: with p; [
-      # C/C++ runtime
-      glibc glibc.dev glib gcc-unwrapped.lib
-      # Graphics
-      libGL libGLU libx11 libxrender libxtst libxi
-      libxext libxcb libxft libxcursor libxfixes
-      libxcomposite motif
-      # Misc
-      ncurses5 zlib freetype fontconfig
-      coreutils bash which
-      # Java (Vivado 2022+ bundles its own, but some versions need system Java)
-      temurin-bin-17
-    ];
+    targetPkgs = vivadoPkgs;
     runScript = pkgs.writeScript "vivado-run" ''
       #!/bin/bash
-      if [ $# -gt 0 ]; then
-        exec "$@"
+      # If the first argument is an executable file or script, run it directly
+      if [ $# -gt 0 ] && [ -f "$1" ] && [ -x "$1" ]; then
+        exec -- "$@"
       fi
+
       XILINX_ROOT="''${XILINX_ROOT:-/opt/Xilinx}"
-      if [ ! -d "$XILINX_ROOT/Vivado" ]; then
-        echo "ERROR: Xilinx tools not found at $XILINX_ROOT"
-        echo "       To run the installer, use: vivado <path-to-installer.bin>"
+      if [ -f "$XILINX_ROOT/Vivado/settings64.sh" ]; then
+        SETTINGS="$XILINX_ROOT/Vivado/settings64.sh"
+      elif [ -f "$XILINX_ROOT/2026.1/Vivado/settings64.sh" ]; then
+        SETTINGS="$XILINX_ROOT/2026.1/Vivado/settings64.sh"
+      else
+        SETTINGS=$(find "$XILINX_ROOT" -maxdepth 3 -name "settings64.sh" -path "*/Vivado/*" 2>/dev/null | sort -V | tail -1)
+      fi
+
+      if [ -z "$SETTINGS" ] || [ ! -f "$SETTINGS" ]; then
+        echo "ERROR: Vivado settings64.sh not found under $XILINX_ROOT"
+        echo "       Set XILINX_ROOT or verify your installation in /opt/Xilinx"
         exit 1
       fi
-      # Source Vivado settings
-      source "$XILINX_ROOT/Vivado/$(ls "$XILINX_ROOT/Vivado" | sort -V | tail -1)/settings64.sh"
-      exec vivado
+      source "$SETTINGS"
+      exec vivado "$@"
+    '';
+  };
+
+  vitisFHS = pkgs.buildFHSEnv {
+    name = "vitis";
+    targetPkgs = vivadoPkgs;
+    runScript = pkgs.writeScript "vitis-run" ''
+      #!/bin/bash
+      # If the first argument is an executable file or script, run it directly
+      if [ $# -gt 0 ] && [ -f "$1" ] && [ -x "$1" ]; then
+        exec -- "$@"
+      fi
+
+      XILINX_ROOT="''${XILINX_ROOT:-/opt/Xilinx}"
+      if [ -f "$XILINX_ROOT/Vitis/settings64.sh" ]; then
+        SETTINGS="$XILINX_ROOT/Vitis/settings64.sh"
+      elif [ -f "$XILINX_ROOT/2026.1/Vitis/settings64.sh" ]; then
+        SETTINGS="$XILINX_ROOT/2026.1/Vitis/settings64.sh"
+      else
+        SETTINGS=$(find "$XILINX_ROOT" -maxdepth 3 -path "*/Vitis/settings64.sh" 2>/dev/null | sort -V | tail -1)
+      fi
+
+      if [ -z "$SETTINGS" ] || [ ! -f "$SETTINGS" ]; then
+        echo "ERROR: Vitis settings64.sh not found under $XILINX_ROOT"
+        echo "       Set XILINX_ROOT or verify your installation in /opt/Xilinx"
+        exit 1
+      fi
+      source "$SETTINGS"
+      exec vitis "$@"
     '';
   };
 
@@ -139,6 +187,7 @@ in
 
     # FHS wrappers for proprietary tools
     vivadoFHS
+    vitisFHS
     gowinFHS
   ];
 
