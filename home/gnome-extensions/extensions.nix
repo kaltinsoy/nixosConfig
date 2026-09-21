@@ -39,7 +39,7 @@
       gtk-theme           = "Adwaita";
       icon-theme          = "Adwaita";
       cursor-theme        = "Adwaita";
-      cursor-size         = 32;
+      cursor-size         = 24;
       font-name           = "Inter 11";
       monospace-font-name = "JetBrainsMono Nerd Font Mono 11";
       document-font-name  = "Source Serif Pro 11";
