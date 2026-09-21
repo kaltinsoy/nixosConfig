@@ -140,13 +140,18 @@
       User root
 
     # Cloudflare Access SSH Proxy
-    # Route any *.anilkoray.tr host through Cloudflare Access
-    Host *.anilkoray.tr
+    Host sshl.ras-pi.tr
       ProxyCommand cloudflared access ssh --hostname %h
 
-    # Match any Cloudflare Access host pattern (e.g., ssh.yourdomain.com)
-    # Host cf-*
-    #   ProxyCommand cloudflared access ssh --hostname %h
+    Host ssh.ras-pi.tr
+      ProxyCommand cloudflared access ssh --hostname %h
+
+    Host server.anilkoray.tr
+      ProxyCommand cloudflared access ssh --hostname %h
+
+    # Route any *.anilkoray.tr or *.ras-pi.tr host through Cloudflare Access
+    Host *.anilkoray.tr *.ras-pi.tr
+      ProxyCommand cloudflared access ssh --hostname %h
 
     Host *
       AddKeysToAgent yes
