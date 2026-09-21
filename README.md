@@ -1,28 +1,27 @@
 # ThinkPad T480s — NixOS Workstation Configuration
 
-A modular, production-ready NixOS flake configuration tailored for the **Lenovo ThinkPad T480s** running **GNOME on Wayland**.
+A modular, reproducible, production-ready NixOS flake configuration tailored specifically for the **Lenovo ThinkPad T480s (`sumatra`)** running **GNOME on Wayland**.
 
 Engineered for:
-- **Cybersecurity Research & Penetration Testing**
-- **FPGA Development & Hardware Design** (Open-source tools + Vivado/Gowin FHS wrappers)
-- **Virtualization & Container Labs** (QEMU/KVM, Docker, Distrobox)
-- **High-Performance Daily Driving** (NvChad, Zen Browser, Bitwarden, polished GNOME desktop)
+- **FPGA Development & Hardware Design**: Open-source tools (Yosys, Nextpnr, Verilator) + full FHS wrappers for AMD/Xilinx Vivado 2026.1, Vitis 2026.1, and Gowin EDA.
+- **Cybersecurity & Penetration Testing**: Distrobox / VM-isolated ParrotOS lab keeping the NixOS host clean.
+- **Virtualization & Container Labs**: QEMU/KVM, UEFI/OVMF, swtpm, Docker, Distrobox, Looking Glass.
+- **Gaming & Media**: Steam, Gamescope, GameMode, Protontricks, Spicetify.
+- **High-Performance Daily Driving**: NvChad (Neovim), Zen Browser, Bitwarden, Anki, Nextcloud, and tailored ThinkPad hardware tuning.
 
 ---
 
-## Quick Start
+## Quick Command Reference
 
-```bash
-# 1. Clone repository
-git clone <this-repo> ~/nixos-config
-cd ~/nixos-config
+Your system includes custom shell binaries and aliases configured in `$PATH`:
 
-# 2. Generate actual hardware configuration (if setting up a fresh install)
-sudo nixos-generate-config --show-hardware-config > hosts/default/hardware-configuration.nix
-
-# 3. Apply the system configuration (hostname: sumatra)
-sudo nixos-rebuild switch --flake ~/nixos-config#sumatra
-```
+| Command | Full Action | When to Use |
+| :--- | :--- | :--- |
+| **`nrs`** | `sudo nixos-rebuild switch --flake ~/nixos-config#sumatra` | **Apply config changes** (instant, safe, does not change pinned package versions). |
+| **`nrb`** | `sudo nixos-rebuild boot --flake ~/nixos-config#sumatra` | Build and set as default for next boot without switching immediately. |
+| **`nrt`** | `sudo nixos-rebuild test --flake ~/nixos-config#sumatra` | Test a configuration in the current session without adding a bootloader entry. |
+| **`nfu`** | `nix flake update --flake ~/nixos-config` | **Update `flake.lock`** to fetch latest package versions from upstream. |
+| **`nclean`** / **`ncg`** | Profile GC + System GC + Bootloader refresh + Store optimise | **Reclaim disk space** (run occasionally, e.g. once a month; **not** after every update). |
 
 ---
 
@@ -30,378 +29,199 @@ sudo nixos-rebuild switch --flake ~/nixos-config#sumatra
 
 ```
 nixos-config/
-├── flake.nix                       # Flake inputs (nixpkgs, home-manager, nixos-hardware, zen-browser, spicetify)
+├── flake.nix                       # Flake inputs (nixpkgs, home-manager, nixos-hardware, zen-browser, spicetify, 06cb-009a)
+├── flake.lock                      # Pinned dependency revisions (guarantees 100% reproducible builds)
 ├── hosts/
 │   └── default/
-│       ├── configuration.nix       # Base host configuration, system packages & users
-│       └── hardware-configuration.nix # T480s hardware configuration (Intel CPU, NVMe, graphics)
+│       ├── configuration.nix       # Base host configuration, system packages, users, & nrs/nclean scripts
+│       └── hardware-configuration.nix # T480s hardware configuration (Intel 8th-gen, NVMe SSD, graphics)
 ├── modules/
 │   ├── system/
 │   │   ├── boot.nix                # systemd-boot, latest Linux kernel, IOMMU, tmpfs
 │   │   ├── networking.nix          # NetworkManager, WireGuard, firewall, SSH, Avahi
 │   │   ├── locale.nix              # Timezone (Europe/Istanbul), UTF-8, Turkish Q keyboard
-│   │   ├── security.nix            # PAM (fingerprint authentication), sudo, polkit, sysctl
+│   │   ├── security.nix            # PAM (06cb:009a fingerprint + Howdy face unlock), sudo, polkit
 │   │   └── services.nix            # PipeWire audio, Bluetooth, CUPS printing, fwupd, Flatpak
 │   ├── desktop/
 │   │   ├── gnome.nix               # GNOME Wayland desktop, GDM, core utilities, bloat exclusion
-│   │   └── fonts.nix               # Nerd Fonts (JetBrainsMono, FiraCode), Inter, Noto Color Emoji
+│   │   ├── fonts.nix               # Nerd Fonts (JetBrainsMono, FiraCode), Inter, Noto Color Emoji, grayscale AA
+│   │   └── steam.nix               # Steam, Gamescope session, GameMode daemon, Protontricks, firewall rules
 │   ├── hardware/
-│   │   └── lenovo.nix              # TLP power management, throttled undervolt, thinkfan, fprintd, WWAN
+│   │   └── lenovo.nix              # TLP power & battery thresholds, throttled undervolt, thinkfan, WWAN, 06cb:009a
 │   ├── virt/
 │   │   └── qemu-kvm.nix            # Libvirt/QEMU, UEFI/OVMF, swtpm, Docker, Distrobox, Looking Glass
 │   ├── fpga/
-│   │   └── fpga.nix                # OSS FPGA suite (Yosys, Nextpnr, Verilator), Vivado & Gowin FHS wrappers
+│   │   └── fpga.nix                # OSS FPGA suite (Yosys, Nextpnr, Verilator), Vivado & Vitis & Gowin FHS wrappers
 │   └── security-tools/
-│       └── cybersec.nix            # Penetration testing, RE, binary exploitation & forensics suite
+│       └── cybersec.nix            # Containerized / VM-isolated ParrotOS security research lab
 └── home/
-    ├── home.nix                    # Home Manager root: desktop apps, Git, SSH, pointers & themes
+    ├── home.nix                    # Home Manager root: packages (Anki, Cloudflared, EasyEffects), Git, SSH, aliases
     ├── neovim/
-    │   └── neovim.nix              # NvChad (pinned starter) + LSP servers + formatters + linters
+    │   └── neovim.nix              # NvChad (pinned starter) + LSP servers + formatters (clang-format, shfmt, ruff)
     ├── apps/
     │   ├── browsers.nix            # Zen Browser, hardened Firefox profile, Tor Browser
     │   └── media.nix               # Spicetify (Catppuccin Mocha theme + Spotify extensions)
     └── gnome-extensions/
-        └── extensions.nix          # dconf declarative settings for 14 GNOME Shell extensions
+        └── extensions.nix          # dconf declarative settings (150% volume over-amplification, grayscale font AA)
 ```
 
 ---
 
 ## Complete Application & Tool Directory
 
-Here is a detailed breakdown of every application installed in this system and its exact role:
-
 ### 1. Core Desktop & Terminal Emulators
 
 | Application | Purpose |
-|---|---|
-| **GNOME 48 (Wayland)** | Clean, modern desktop environment with full Wayland session and fractional scaling. |
-| **Ghostty** | Ultra-fast, GPU-accelerated terminal emulator with native Wayland support and tabs. |
-| **Alacritty** | Minimalist, blazing-fast GPU terminal emulator used as a lightweight fallback. |
-| **Tmux & Zellij** | Terminal multiplexers for session persistence, split panes, and detachable workspaces. |
-| **Fastfetch & Btop** | Fast system info splash tool and modern interactive terminal resource monitor. |
-| **Bat & Eza** | Modern replacements for `cat` (with syntax highlighting) and `ls` (with tree/icons). |
-| **Ripgrep (`rg`) & Fd** | High-performance search tools replacing `grep` and `find`. |
-| **Delta & Difftastic** | Structural syntax-highlighting pagers for Git diffs and code review. |
+| :--- | :--- |
+| **GNOME 48 (Wayland)** | Native Wayland desktop with 125% fractional scaling and grayscale antialiasing. |
+| **Ghostty & Alacritty** | Blazing-fast GPU-accelerated terminals with native Wayland support and tabs. |
+| **Tmux & Zellij** | Terminal multiplexers for persistent, detachable sessions and split panes. |
+| **Fastfetch & Btop** | Instant system information splash and modern interactive resource monitor. |
+| **Bat, Eza, Ripgrep, Fd** | Modern CLI replacements for `cat`, `ls`, `grep`, and `find`. |
+| **Delta & Difftastic** | Syntax-highlighted and AST-aware diff pagers for Git code review. |
 
 ### 2. Editor & IDE (NvChad Neovim)
 
 | Component | Purpose |
-|---|---|
-| **Neovim (NvChad)** | Fast, extensible modal text editor configured with the Catppuccin Mocha theme. |
-| **LSP Servers** | In-editor autocompletion and diagnostics: `nixd` (Nix), `pyright` (Python), `clang-tools` (C/C++), `rust-analyzer` (Rust), `typescript-language-server` (TS/JS), `bash-language-server` (Bash), `yaml-language-server` (YAML), `taplo` (TOML), `marksman` (Markdown). |
-| **Linters & Formatters** | Automatic code formatting on save: `nixfmt` (Nix), `stylua` (Lua), `black` & `isort` (Python), `ruff` (Python linter), `rustfmt` (Rust), `prettier` (Web/JSON), `verilator` (Verilog/SystemVerilog linting). |
+| :--- | :--- |
+| **Neovim (NvChad)** | Extensible modal text editor configured with the Catppuccin Mocha theme. |
+| **LSP Servers** | `nixd` (Nix), `pyright` (Python), `clang-tools` (C/C++), `rust-analyzer` (Rust), `typescript-language-server` (TS/JS), `bash-language-server` (Bash), `yaml-language-server` (YAML), `taplo` (TOML), `marksman` (Markdown). |
+| **Formatters & Linters** | `nixfmt`, `clang-format`, `shfmt`, `shellcheck`, `stylua`, `black`, `isort`, `ruff`, `rustfmt`, `prettier`, `verilator`. |
 
-### 3. Web Browsers & Daily Drivers
+### 3. Web Browsers, Productivity & Daily Drivers
 
 | Application | Purpose |
-|---|---|
-| **Zen Browser** | Fast, privacy-centric Firefox fork featuring vertical tabs and split-view workspaces. |
-| **Firefox** | Hardened secondary browser with strict tracking protection and telemetry disabled. |
-| **Tor Browser** | Anonymous web browsing routing traffic through the onion network. |
-| **Bitwarden (`bitwarden-desktop` + `bitwarden-cli`)** | Open-source password manager with desktop app and terminal CLI (`bw`). |
-| **Obsidian** | Markdown knowledge base and note-taking application. |
-| **LibreOffice** | Complete office productivity suite (Writer, Calc, Impress). |
-| **GIMP & Inkscape** | Raster image editor and vector graphics design application. |
-| **MPV & VLC** | High-performance video and media players with broad codec support. |
-| **Spotify (Spicetify)** | Spotify client customized with Catppuccin Mocha theme, ad-block, and lyrics extensions. |
-| **Vesktop & Element** | Discord client (with Vencord plugin) and Matrix encrypted messaging client. |
-| **Nextcloud Client** | Native background client for Nextcloud file sync. |
-| **QOwnNotes** | Open-source markdown note taking application with Nextcloud integration. |
-| **Xournal++** | Handwriting, PDF annotation, and sketching application. |
+| :--- | :--- |
+| **Zen Browser** | Fast, privacy-centric Firefox fork featuring vertical tabs and split workspaces. |
+| **Firefox & Tor Browser** | Hardened secondary browser profile and anonymous onion-routed browsing. |
+| **Bitwarden Desktop & CLI** | Open-source password manager with biometric unlock integration and `bw` CLI. |
+| **Anki** | Spaced repetition flashcard app for learning and memorization. |
+| **Obsidian & QOwnNotes** | Markdown note-taking suites with Nextcloud synchronization. |
+| **Xournal++** | Handwriting, PDF annotation, and sketching tool. |
+| **LibreOffice** | Full office productivity suite (Writer, Calc, Impress). |
+| **GIMP & Inkscape** | Raster image editing and vector graphic design. |
+| **MPV & VLC** | Ultra-efficient video and media players. |
+| **Spotify (Spicetify)** | Custom Spotify client with Catppuccin Mocha theme and extensions. |
+| **Vesktop & Element** | Discord client (with Vencord) and encrypted Matrix messaging client. |
+| **Cloudflared** | Cloudflare Tunnel daemon and SSH Access proxy (`*.anilkoray.tr`). |
 
-### 4. Virtualization & Container Labs
+### 4. Gaming & Graphics
 
-| Tool | Purpose |
-|---|---|
-| **QEMU / KVM** | Hardware-accelerated hypervisor for near-native VM performance. |
-| **Virt-Manager** | Desktop GUI for creating, configuring, and managing KVM virtual machines. |
-| **OVMF (UEFI) & swtpm** | UEFI firmware and software TPM 2.0 emulation (enables running Windows 11 VMs). |
-| **Docker & Docker Compose** | Container engine and multi-container orchestration platform. |
-| **Distrobox** | Run any Linux distribution (Ubuntu, Arch, Fedora, Kali) inside a container with full GUI and home directory integration. |
-| **Lazydocker & Ctop** | Interactive terminal UIs for managing Docker containers, images, and resource usage. |
-| **Looking Glass Client** | Ultra-low latency KVM frame-relay display client for GPU passthrough setups. |
+| Component | Purpose |
+| :--- | :--- |
+| **Steam** | 32-bit graphics support, controller hardware udev rules, and remote play firewall ports. |
+| **GameMode** | Feral Interactive daemon optimizing CPU governor and scheduler priority while gaming. |
+| **Gamescope** | Micro-compositor session for resolution scaling, HDR, and window sandboxing. |
+| **Protontricks & Winetricks** | Wine/Proton prefix utility for installing Windows game dependencies. |
 
-### 5. Cybersecurity & Penetration Testing (ParrotOS Lab)
+### 5. Audio Enhancement (ThinkPad T480s Speakers)
 
-All security testing, penetration testing, reverse engineering, and forensics tools are run inside **ParrotOS** rather than directly on the host NixOS system. This keeps the NixOS host clean, eliminates dependency bloat, and provides a fully isolated testing environment.
-
-#### Running ParrotOS
-
-**Option A: Distrobox Container (Instant, shares GUI & home dir)**
-```bash
-# Create a persistent ParrotOS Security container with full GUI and network access
-distrobox create -i parrotsec/security:latest -n parrot
-
-# Enter the container (all ParrotOS tools available inside)
-distrobox enter parrot
-
-# Export any Parrot GUI app (e.g. Burp Suite, Wireshark) directly to your GNOME app launcher:
-distrobox-export --app burpsuite
-distrobox-export --app wireshark
-```
-
-**Option B: Full QEMU/KVM Virtual Machine (Isolated network & kernel)**
-1. Download the [Parrot Security ISO](https://parrotsec.org/download/).
-2. Open **Virt-Manager** (`Super` + search "Virtual Machine Manager").
-3. Create a new VM with VirtIO drivers and hardware acceleration for near-native performance.
-
-#### Tools Provided by ParrotOS
-ParrotOS Security includes the entire pentesting suite pre-installed and pre-configured:
-- **Network Scanning & MITM**: Nmap, Masscan, Rustscan, Wireshark, Tshark, Termshark, Mitmproxy, Bettercap, Ettercap, Tcpdump.
-- **Web Application Pentesting**: Burp Suite, SQLmap, FFuF, Gobuster, Feroxbuster, Nikto, Wfuzz.
-- **Password Recovery & Cracking**: THC-Hydra, John the Ripper, Hashcat, Medusa, Crunch, RockYou wordlists.
-- **Exploitation & RE**: Metasploit Framework, Ghidra, Radare2, GDB, Pwntools, Binwalk, ImHex, Checksec, Yara.
-- **Wireless, Forensics & OSINT**: Aircrack-ng, Volatility 3, Autopsy, Sleuthkit, Bulk Extractor, Maltego, TheHarvester, Amass.
-- **Privacy & Anonymity**: AnonSurf (system-wide Tor proxy), Tor, Torsocks, Proxychains-NG, OnionShare.
+| Component | Purpose |
+| :--- | :--- |
+| **150% Over-amplification** | Enabled in GNOME settings to bypass the quiet 100% volume ceiling on the ALC257 codec. |
+| **EasyEffects** | Installed with tailored laptop DSP presets (`~/.local/share/easyeffects/output/`):<br>• **`Laptop`** (Digitalone1 LoudnessEqualizer): Upward compressor, multiband EQ, and limiter to boost clarity and vocal presence without distortion.<br>• **`Loudness+Autogain`**: Bass enhancer + autogain + compressor for extra loudness.<br>*(Autostart daemon is disabled; launch manually with `easyeffects` when needed).* |
 
 ### 6. FPGA Development & Hardware Design
 
 | Tool | Purpose |
-|---|---|
-| **Yosys** | Open-source synthesis suite for Verilog and SystemVerilog. |
-| **Nextpnr** | Timing-driven place-and-route tool supporting iCE40, ECP5, and Nexus FPGAs. |
-| **Icestorm & Trellis** | Open-source bitstream generation and documentation for Lattice FPGAs. |
+| :--- | :--- |
+| **Vivado 2026.1 (FHS)** | AMD / Xilinx Vivado ML Standard installed in `/opt/Xilinx/2026.1/Vivado`. Runs in a dedicated bubblewrap FHS container with full graphics, X11 (`libXtst`, `libXi`), `graphviz`, and legacy libraries. Launch via `vivado`. |
+| **Vitis 2026.1 (FHS)** | Embedded development suite in `/opt/Xilinx/2026.1/Vitis`. Launch via `vitis`. |
+| **Gowin EDA (FHS)** | FHS sandbox for Gowin IDE (`/opt/gowin`). Launch via `gowin-eda`. |
+| **Yosys & Nextpnr** | Open-source synthesis and place-and-route suite (iCE40, ECP5, Nexus). |
 | **GHDL, Verilator, Iverilog** | VHDL simulator, high-speed C++ Verilog simulator, and Icarus Verilog compiler. |
-| **Sby (SymbiYosys), Yices, Z3** | Formal verification frontend paired with SMT solvers for hardware assertion proofs. |
-| **GTKWave** | Graphical waveform viewer for inspecting VCD simulation dump files. |
-| **OpenFPGALoader & OpenOCD** | Universal programmer for FPGA boards (Xilinx, Gowin, Digilent) and JTAG debuggers. |
-| **Cocotb, Migen, Amaranth** | Python-based HDL cosimulation testbenches and modern hardware description languages. |
-| **Vivado FHS Wrapper** | Bubblewrap/chroot environment allowing proprietary Xilinx Vivado to run seamlessly on NixOS. |
-| **Gowin EDA FHS Wrapper** | Bubblewrap/chroot environment allowing Gowin IDE (`gw_ide`) to run on NixOS. |
+| **Sby, Yices, Z3** | Formal verification suite with SMT solvers. |
+| **GTKWave** | Waveform viewer for inspecting VCD simulation files. |
+| **OpenFPGALoader & OpenOCD** | Universal FPGA programmer (Xilinx, Gowin, Digilent) and JTAG debugger. |
+| **RISC-V Toolchains** | Bare-metal `riscv32-none-elf` and `riscv64-none-elf` GCC, binutils, and multiarch GDB. |
 
-### 7. ThinkPad T480s Hardware Management
+### 7. Virtualization & Container Labs
 
 | Tool | Purpose |
-|---|---|
-| **TLP** | Advanced Linux power management optimized for single battery (`BAT0`) charge thresholds (20% start, 80% stop). |
-| **Throttled** | Intel CPU voltage and thermal throttling controller (undervolts CPU core/cache to reduce heat). |
-| **Thinkfan** | Custom fan-speed curve daemon monitoring temperature sensors via ACPI. |
-| **Fprintd** | Synaptics `06cb:00bd` fingerprint reader service integrated into PAM for login, sudo, and polkit. |
-| **ModemManager & libqmi** | Cellular modem daemon managing Sierra EM7455 and Fibocom L850-GL with automated FCC unlock. |
-| **Brightnessctl** | Safe, permission-free backlight and keyboard backlight brightness control. |
-| **TrackPoint Tuning** | Kernel sysfs rules adjusting sensitivity, speed, and inertia for the red TrackPoint cap. |
-| **ZRAM** | Compressed in-memory swap using `zstd` (50% RAM), sparing NVMe SSD wear. |
-
-### 8. GNOME Extensions & Desktop Themes
-
-#### Desktop Themes & Visual Styling (Default GNOME)
-| Component | Setting | Description |
-|---|---|---|
-| **GTK Theme** | `Adwaita` (Dark) | Native GNOME Libadwaita dark theme; clean, fast, and rock-solid. |
-| **Icon Theme** | `Adwaita` | Default GNOME SVG icon theme. |
-| **Cursor Theme** | `Adwaita` (24px) | Default GNOME cursor theme; consistent across Wayland, XWayland, and GTK. |
-| **Monospace Font** | `JetBrainsMono Nerd Font Mono 11` | Fixed-pitch coding font with programming ligatures and developer icons; strictly fixed-width to avoid terminal column misalignment. |
-| **UI Font** | `Inter 11` | Highly readable, modern sans-serif typography optimized for computer displays. |
-| **Document Font** | `Source Serif Pro 11` | Elegant serif typeface used for document reading and PDF viewers. |
-
-#### GNOME Extensions (Lightweight & Essential)
-| Extension | Role & Configuration |
-|---|---|
-| **Dash to Dock** | Moves the dash out of the overview into a permanent, auto-hiding dock pinned to the **left screen edge** with 40px icons, running app dots, and click-to-minimize. |
-| **AppIndicator Support** | Restores the system tray in the top bar for background apps like Discord/Vesktop, Bitwarden, Steam, Telegram, and Nextcloud. |
-| **Caffeine** | One-click top bar toggle to prevent the screen from dimming, sleeping, or locking during long builds, tests, or presentations. |
-| **Clipboard Indicator** | Top bar clipboard history manager with searchable entries, quick paste, and private mode. |
-| **Just Perfection** | Declutters the shell: hides the redundant "Activities" text button, removes workspace switcher delays, and smooths animations. |
-| **Vitals** | Real-time hardware telemetry in the top bar: CPU temperature & load, RAM usage, battery percentage, fan RPM, and network download/upload speeds. |
-| **Grand Theft Focus** | Eliminates the "Window is ready" notification popup and focuses newly launched applications immediately. |
+| :--- | :--- |
+| **QEMU / KVM & Virt-Manager** | Hardware-accelerated hypervisor with desktop management GUI. |
+| **OVMF (UEFI) & swtpm** | Software TPM 2.0 and UEFI firmware (enables Windows 11 VMs). |
+| **Docker & Docker Compose** | Container runtime and orchestration platform. |
+| **Distrobox** | Run any Linux distribution (Ubuntu, Arch, Fedora, Kali) with native GUI and home integration. |
+| **Looking Glass Client** | Ultra-low latency KVM frame-relay display client for GPU passthrough. |
 
 ---
 
 ## Hardware Management Reference
 
 ### 1. Fingerprint Reader (Synaptics `06cb:009a`)
-The ThinkPad T480s sensor (`06cb:009a`) is a proprietary "Match-on-Host" device managed via the community flake [ahbnr/nixos-06cb-009a-fingerprint-sensor](https://github.com/ahbnr/nixos-06cb-009a-fingerprint-sensor).
+The T480s sensor is a Match-on-Host device driven by the `nixos-06cb-009a-fingerprint-sensor` flake with native `libfprint-tod` PAM integration.
 
-#### Stage 1: Enrollment & Calibration Generation
-After rebuilding your system with `sudo nixos-rebuild switch --flake ~/nixos-config#sumatra`:
-```bash
-# 1. Download sensor firmware if required (run as root):
-sudo validity-sensors-firmware
-sudo systemctl restart python3-validity
+- **PAM Anti-Freeze Protection**: PAM is configured with `max-tries=1` and `timeout=10` in [security.nix](file:///home/koray/nixos-config/modules/system/security.nix). Because the `06cb:009a` hardware controller cannot handle immediate back-to-back re-activation without locking up, `max-tries=1` ensures that a failed scan immediately drops to password authentication without freezing the terminal.
+- **Enrolling fingers**:
+  ```bash
+  fprintd-enroll
+  fprintd-verify
+  ```
 
-# 2. Enroll your fingerprint:
-fprintd-enroll
+### 2. Facial Recognition (Howdy)
+Configured using the 720p HD Integrated Camera (`/dev/v4l/by-path/pci-0000:00:14.0-usb-0:8:1.0-video-index0` / `/dev/video2`).
 
-# 3. Verify enrollment:
-fprintd-verify
-```
+- **Enroll your face**:
+  ```bash
+  sudo howdy add
+  sudo howdy test
+  sudo howdy list
+  ```
+- *Note*: `linux-enable-ir-emitter` is disabled because the T480s 160x120 IR sensor cannot stream frames under Linux UVC and triggers camera LED latching.
 
-#### Stage 2: Native libfprint-tod PAM Integration (GDM Login & sudo)
-Enrolling in Stage 1 generates a calibration file at `/var/lib/python-validity/calib-data.bin`.
-To enable native GDM screenlock / login and `sudo` authentication without workarounds:
-```bash
-# Copy calibration file into your nixos-config repository:
-cp /var/lib/python-validity/calib-data.bin ~/nixos-config/modules/hardware/calib-data.bin
-```
-Then in `modules/hardware/lenovo.nix`, switch the backend:
-```nix
-services."06cb-009a-fingerprint-sensor" = {
-  enable = true;
-  backend = "libfprint-tod";
-  calib-data-file = ./calib-data.bin;
-};
-```
-Rebuild (`sudo nixos-rebuild switch --flake ~/nixos-config#sumatra`) and run `fprintd-enroll` once more.
+### 3. Battery Management & Calibration (TLP)
+The single internal battery (`BAT0`) is configured in **Conservation Mode** (starts charging below 75%, stops at 80%) in [lenovo.nix](file:///home/koray/nixos-config/modules/hardware/lenovo.nix).
 
-### 2. Facial Recognition (Howdy / Windows Hello style)
-Howdy is configured to use the 720p Integrated Camera (`/dev/v4l/by-path/pci-0000:00:14.0-usb-0:8:1.0-video-index0`) for high-accuracy face recognition.
+- **Check Battery Health & Status**:
+  ```bash
+  sudo tlp-stat -b
+  ```
+- **New Battery Calibration**:
+  Plug in the AC charger (keep it connected) and run:
+  ```bash
+  sudo tlp recalibrate BAT0
+  ```
+  *(TLP will charge to 100%, use the ThinkPad ACPI circuit to discharge to ~0%, and recharge to 100% uninterrupted, automatically restoring 75%/80% thresholds).*
+- **Force One-Time Full Charge (100%)**:
+  ```bash
+  sudo tlp fullcharge BAT0
+  ```
 
-#### Enrolling Your Face:
-```bash
-# 1. Add your face model (look directly at the camera above the screen):
-sudo howdy add
-
-# 2. Test facial recognition live:
-sudo howdy test
-
-# 3. List enrolled face models:
-sudo howdy list
-```
-*When prompted for authentication (`sudo`, lockscreen, or Bitwarden), Howdy will automatically activate the camera and authenticate you immediately.*
-
-> [!NOTE]
-> **First Login Keyring Unlock**: When logging in on cold boot, logging in with your password automatically unlocks the GNOME Keyring for the session. If you log in via fingerprint or face on cold boot, PAM cannot decrypt your password-protected keyring without your password, so GNOME Keyring will prompt for your password once. Once unlocked, all subsequent lockscreens (`Win + L`), `sudo`, and Bitwarden unlocks use fingerprint or face without any prompts.
-
-### 3. Bitwarden Biometric Unlock (Fingerprint & Face)
-Bitwarden Desktop uses **Polkit** (`polkit-1`) for biometrics on Linux. We have configured `polkit-1` with `sufficient` rules for both `howdy` (face) and `fprintd` (fingerprint).
-
-#### How to Enable in Bitwarden:
-1. Open **Bitwarden Desktop** and log in with your master password.
-2. Go to **Settings** &rarr; **Security** &rarr; check **"Unlock with biometrics"**.
-3. When prompted by the system Polkit dialog, glance at the IR camera or swipe your enrolled finger.
-4. *(Optional)* In your browser extension (e.g. Zen / Firefox / Chrome):
-   - In Bitwarden Desktop: Check **"Enable browser integration"**.
-   - In Bitwarden Browser Extension Settings: Check **"Unlock with biometrics"**.
-
-### 4. SIM Card / Mobile Broadband (WWAN)
-```bash
-# Check modem status
-mmcli -L
-mmcli -m 0
-
-# Connect mobile data (or connect via GNOME Settings → Network)
-nmcli connection add type gsm ifname '*' con-name "LTE" apn "internet"
-```
-
-### 3. Battery Thresholds & Full Charging
-
-The battery is configured in "Conservation Mode" (starts charging below 75%, stops at 80%) to prolong battery life when plugged into AC for long sessions.
-
-```bash
-# Check battery health, status, and thresholds:
-tlp-stat -b
-cat /sys/class/power_supply/BAT0/charge_control_start_threshold
-cat /sys/class/power_supply/BAT0/charge_control_end_threshold
-
-# ── Force One-Time Full Charge (100%) ──────────────────────────────
-# When preparing for travel or needing full capacity, charge to 100% once:
-sudo tlp fullcharge BAT0
-
-# Or temporarily set thresholds manually to 100%:
-sudo tlp setcharge 96 100 BAT0
-
-# ── Restore Conservation Mode (75% - 80%) ─────────────────────────
-sudo tlp setcharge 75 80 BAT0
-# Or restart TLP service to restore defaults:
-sudo systemctl restart tlp
-```
-
-### 4. WireGuard VPN Import (GNOME)
-1. Open **GNOME Settings** &rarr; **Network**.
-2. Click **`+`** next to **VPN**.
-3. Select **"Import from file..."** and pick your `.conf` configuration file.
-4. Toggle VPN on/off anytime from the top-right GNOME Quick Settings menu.
-
-### 5. Vivado & Gowin EDA
-- **Vivado**: Install to `/opt/Xilinx` &rarr; launch simply by running `vivado`.
-- **Gowin EDA**: Extract to `/opt/gowin` &rarr; launch by running `gowin-eda`.
+### 4. CPU Undervolting & Thermals (`throttled` + `thinkfan`)
+- **Undervolting**: Configured in [lenovo.nix](file:///home/koray/nixos-config/modules/hardware/lenovo.nix) (`-100mV` Core/Cache on AC, `-80mV` on Battery) to eliminate 8th-gen thermal throttling.
+- **Fan Control**: `thinkfan` controls fan speeds via ACPI temperature sensor curves.
 
 ---
 
-## Package Management & System Updates
+## Updating & Maintenance Guide
 
-### 1. Searching for Applications
-You can search for packages directly in your terminal or online:
+### 1. Normal Day-to-Day Workflow
+When you edit files in `~/nixos-config` (e.g. adding packages, tweaking dotfiles):
 ```bash
-# Search using nix cli:
-nix search nixpkgs <app-name>
-
-# Example: search for telegram
-nix search nixpkgs telegram
-```
-You can also browse all available packages with options and descriptions at **[search.nixos.org](https://search.nixos.org/packages)**.
-
-### 2. Installing Applications Permanently
-
-In NixOS, applications are declared in configuration files so they are always reproducible across installs:
-
-* **For User & Desktop Apps (e.g. Discord, Spotify, LibreOffice):**
-  1. Open [`home/home.nix`](file:///home/koray/nixos-config/home/home.nix).
-  2. Add the package name under `home.packages = with pkgs; [ ... ];`.
-  3. Rebuild and apply:
-     ```bash
-     sudo nixos-rebuild switch --flake ~/nixos-config#sumatra
-     ```
-
-* **For System Tools & Daemons (e.g. Wireshark, Docker, CLI utilities):**
-  1. Open [`hosts/default/configuration.nix`](file:///home/koray/nixos-config/hosts/default/configuration.nix) (or the relevant module in `modules/`).
-  2. Add the package name under `environment.systemPackages = with pkgs; [ ... ];`.
-  3. Rebuild and apply:
-     ```bash
-     sudo nixos-rebuild switch --flake ~/nixos-config#sumatra
-     ```
-
-### 3. Trying an App Temporarily (Without Installing)
-If you only need a tool once and don't want it permanently taking up space:
-```bash
-# Run an app immediately without installing:
-nix run nixpkgs#htop
-
-# Or open an isolated shell with the tool available:
-nix-shell -p htop
-# (When you type `exit`, the tool is removed from your PATH)
+nrs
 ```
 
-### 4. Updating Applications & the Entire System
-
-Because this system uses Nix Flakes, updating is atomic, predictable, and safe:
-
+### 2. Upgrading System Packages (Weekly / Monthly)
+To update the flake lockfile and pull down newer packages from upstream:
 ```bash
-# 1. Update all packages and dependencies to their latest versions:
-nix flake update ~/nixos-config
-
-# Or update only nixpkgs (leaving other flakes untouched):
-nix flake lock --update-input nixpkgs ~/nixos-config
-
-# 2. Rebuild and switch to the updated system:
-sudo nixos-rebuild switch --flake ~/nixos-config#sumatra
+nfu && nrs
 ```
 
-### 5. Instant Rollback (If an Update Ever Causes an Issue)
-
-NixOS creates a new generation every time you rebuild. If any update ever causes an issue:
-
+### 3. Reclaiming Disk Space (Occasional)
+To delete old generations, clean the Nix store, and update bootloader entries:
 ```bash
-# Rollback immediately to the previous working generation:
+nclean
+# (or: ncg)
+```
+> [!IMPORTANT]
+> Do **not** run `nclean` after every update. Keeping previous generations preserves your ability to roll back if a new kernel or package update ever introduces a bug.
+
+### 4. Rolling Back
+If an update ever breaks anything:
+```bash
+# Instant rollback in the terminal:
 sudo nixos-rebuild switch --rollback
 
-# List all system generations:
-nixos-rebuild list-generations
-```
-*You can also select any previous working generation directly from the systemd-boot menu upon rebooting!*
-
----
-
-## Helpful Commands
-
-```bash
-# System rebuild
-sudo nixos-rebuild switch --flake ~/nixos-config#sumatra
-
-# Clean old generations & garbage collect
-nix-collect-garbage -d
-sudo /run/current-system/bin/switch-to-configuration boot
-
-# Check active virtual machines
-virsh list --all
+# Or reboot and pick any previous working generation from the systemd-boot menu!
 ```
