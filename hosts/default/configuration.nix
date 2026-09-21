@@ -12,6 +12,7 @@
 
     ../../modules/desktop/gnome.nix
     ../../modules/desktop/fonts.nix
+    ../../modules/desktop/steam.nix
 
     ../../modules/hardware/lenovo.nix
 
