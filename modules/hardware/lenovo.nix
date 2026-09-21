@@ -181,6 +181,9 @@
     # Power / Backlight
     brightnessctl   # backlight control (replaces light)
     tlp-pd          # tlpctl CLI and D-Bus bridge
+
+    # Logitech Gaming Mouse GUI (libratbag / ratbagd frontend)
+    piper
   ];
 
   # ── Thermald + fwupd ──────────────────────────────────────────────────
@@ -283,4 +286,13 @@
       ];
     };
   };
+
+  # ── Logitech Wireless Devices & Mouse Configuration ──────────────────
+  hardware.logitech.wireless = {
+    enable          = true;
+    enableGraphical = true; # Solaar GUI for pairing, battery indicator & status
+  };
+
+  # ratbagd daemon for Logitech gaming mice (DPI, buttons, onboard profiles)
+  services.ratbagd.enable = true;
 }
