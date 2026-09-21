@@ -30,6 +30,10 @@
       howdy.enable  = true;
       howdy.control = "sufficient";
       fprintAuth    = true;
+      rules.auth.fprintd = {
+        order = 11400;
+        args = [ "max-tries=1" "timeout=10" ];
+      };
     };
 
     # Sudo authentication with biometrics
@@ -37,13 +41,16 @@
       howdy.enable  = true;
       howdy.control = "sufficient";
       fprintAuth    = true;
+      rules.auth.fprintd = {
+        order = 11400;
+        args = [ "max-tries=1" "timeout=10" ];
+      };
     };
 
     # GDM password / login / lockscreen with biometrics
     gdm-password = {
       howdy.enable  = true;
       howdy.control = "sufficient";
-      fprintAuth    = true;
     };
   };
 
