@@ -64,7 +64,8 @@
       gimp
       inkscape
 
-      # Misc
+      # Audio / Video & Misc
+      easyeffects    # DSP audio effects (manual launch)
       mpv
       vlc
       calibre        # ebook manager
@@ -160,9 +161,11 @@
   };
 
   # ── EasyEffects Audio Enhancement ─────────────────────────────────────
-  # DSP audio effects (EQ, limiter, loudness) for ThinkPad laptop speakers
+  # DSP audio effects (EQ, limiter, loudness) for ThinkPad laptop speakers.
+  # Autostart service is disabled so it does not launch on boot/login.
+  # Launch manually via 'easyeffects' when desired.
   services.easyeffects = {
-    enable = true;
+    enable = false;
   };
 
   # ── Bash shell configuration ──────────────────────────────────────────
