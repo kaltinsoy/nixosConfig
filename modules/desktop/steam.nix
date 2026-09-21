@@ -12,4 +12,10 @@
 
   # Feral Interactive GameMode for system optimizations during gaming
   programs.gamemode.enable = true;
+
+  # ── Steam & XWayland Scaling (125% Fractional Scale) ──────────────────
+  environment.sessionVariables = {
+    STEAM_FORCE_DESKTOPUI_SCALING = "1.25";
+    XCURSOR_SIZE                  = "32";
+  };
 }
