@@ -48,6 +48,8 @@
     nrs = "sudo nixos-rebuild switch --flake /home/koray/nixos-config#sumatra";
     nrb = "sudo nixos-rebuild boot --flake /home/koray/nixos-config#sumatra";
     nrt = "sudo nixos-rebuild test --flake /home/koray/nixos-config#sumatra";
+    nclean = "nclean";
+    ncg = "nclean";
   };
 
   # ── Prune old NixOS system generations (keep last 3) ──────────────────
@@ -105,6 +107,19 @@
     (writeShellScriptBin "nrs" ''exec sudo nixos-rebuild switch --flake /home/koray/nixos-config#sumatra "$@"'')
     (writeShellScriptBin "nrb" ''exec sudo nixos-rebuild boot --flake /home/koray/nixos-config#sumatra "$@"'')
     (writeShellScriptBin "nrt" ''exec sudo nixos-rebuild test --flake /home/koray/nixos-config#sumatra "$@"'')
+    (writeShellScriptBin "nclean" ''
+      set -e
+      echo "🧹 [1/4] Removing obsolete user profile generations..."
+      nix-collect-garbage -d "$@"
+      echo "🧹 [2/4] Removing obsolete system generations..."
+      sudo nix-collect-garbage -d "$@"
+      echo "🧹 [3/4] Updating bootloader entries..."
+      sudo /run/current-system/bin/switch-to-configuration boot
+      echo "🧹 [4/4] Optimising nix store (hardlinking duplicate files)..."
+      nix store optimise
+      echo "✨ Cleanup complete!"
+    '')
+    (writeShellScriptBin "ncg" ''exec nclean "$@"'')
 
     # Terminal multiplexer
     tmux zellij

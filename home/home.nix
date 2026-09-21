@@ -176,6 +176,8 @@
       nrb = "sudo nixos-rebuild boot --flake /home/koray/nixos-config#sumatra";
       nrt = "sudo nixos-rebuild test --flake /home/koray/nixos-config#sumatra";
       nfu = "nix flake update --flake /home/koray/nixos-config";
+      nclean = "nclean";
+      ncg = "nclean";
     };
     initExtra = ''
       # Automatically update window size on terminal resize (prevents typing wrap glitches)
