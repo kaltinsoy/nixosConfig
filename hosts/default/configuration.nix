@@ -127,8 +127,8 @@
     # Archive
     zip unzip xz gzip bzip2 zstd
 
-    # System info
-    lshw inxi pciutils usbutils dmidecode
+    # System info & hardware diagnostics
+    lshw inxi pciutils usbutils dmidecode v4l-utils
   ];
 
   system.stateVersion = "25.05";
