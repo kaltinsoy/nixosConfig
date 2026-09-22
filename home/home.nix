@@ -69,14 +69,27 @@
       calibre        # ebook manager
     ];
 
-    # ── Pointer cursor (default Adwaita) ──────────────────────────────
+    # ── Pointer cursor (consistent across GTK, X11, Wayland) ──────────
+    # Under GNOME Wayland with 125% fractional scaling:
+    # - Native Wayland/GTK apps use size 24 (scaled to 30px on screen).
+    # - X11/XWayland apps (OnlyOffice, Steam, GIMP, etc.) are rendered by Mutter
+    #   at 2x (192 DPI) and downscaled by 1.6x (0.625). Setting X11 cursor size
+    #   to 48 ensures 48 / 1.6 = 30px on screen, perfectly matching native apps.
     pointerCursor = {
       enable     = true;
       gtk.enable = true;
-      x11.enable = true;
+      x11 = {
+        enable = true;
+        size   = 48;
+      };
       package    = pkgs.adwaita-icon-theme;
       name       = "Adwaita";
       size       = 24;
+    };
+
+    # ── Session Variables ──────────────────────────────────────────────
+    sessionVariables = {
+      QT_CURSOR_SIZE = "24"; # Ensures native Wayland Qt apps maintain 24px
     };
   };
 
