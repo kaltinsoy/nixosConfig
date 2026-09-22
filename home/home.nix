@@ -6,9 +6,6 @@
     ./apps/browsers.nix
     ./apps/media.nix
     ./gnome-extensions/extensions.nix
-
-    # Spicetify module
-    spicetify-nix.homeManagerModules.default
   ];
 
   home = {
@@ -58,6 +55,7 @@
 
       # Office
       libreoffice
+      onlyoffice-desktopeditors # OnlyOffice desktop editors
       qownnotes      # markdown note taking with Nextcloud integration
 
       # Image / design
@@ -89,6 +87,27 @@
       enable              = true;
       createDirectories   = true;
       setSessionVariables = false;   # new default in HM 26.05+
+    };
+
+    # Default application associations
+    mimeApps = {
+      enable = true;
+      defaultApplications = {
+        # Word documents -> OnlyOffice
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/msword"                                                      = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.oasis.opendocument.text"                                 = [ "onlyoffice-desktopeditors.desktop" ];
+
+        # Spreadsheets -> OnlyOffice
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"       = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.ms-excel"                                                = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.oasis.opendocument.spreadsheet"                          = [ "onlyoffice-desktopeditors.desktop" ];
+
+        # Presentations -> OnlyOffice
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation" = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.ms-powerpoint"                                           = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.oasis.opendocument.presentation"                         = [ "onlyoffice-desktopeditors.desktop" ];
+      };
     };
 
     # Link Caffeine icons so St.IconTheme and GNOME Shell load the proper coffee cup

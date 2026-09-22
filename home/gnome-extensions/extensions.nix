@@ -284,6 +284,7 @@
       name = "Office";
       apps = [
         "startcenter.desktop"
+        "onlyoffice-desktopeditors.desktop"
         "writer.desktop"
         "calc.desktop"
         "impress.desktop"
