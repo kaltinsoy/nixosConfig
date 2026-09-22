@@ -200,17 +200,15 @@ let
     for f in ${pkgs.pkgsCross.riscv32-embedded.buildPackages.gcc}/bin/riscv32-none-elf-*; do
       base=$(basename "$f")
       ln -s "$f" "$out/bin/''${base/riscv32-none-elf/riscv32-unknown-elf}"
-      ln -s "$f" "$out/bin/''${base/riscv32-none-elf/riscv-none-embed}"
     done
     for f in ${pkgs.pkgsCross.riscv64-embedded.buildPackages.gcc}/bin/riscv64-none-elf-*; do
       base=$(basename "$f")
       ln -s "$f" "$out/bin/''${base/riscv64-none-elf/riscv64-unknown-elf}"
-      ln -s "$f" "$out/bin/''${base/riscv64-none-elf/riscv-none-embed}"
     done
-    # Add riscv-none-embed-gdb and riscv64-unknown-elf-gdb pointing to multiarch gdb
+    # Multiarch GDB aliases
+    ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv32-none-elf-gdb
+    ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv64-none-elf-gdb
     ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv-none-embed-gdb
-    ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv32-unknown-elf-gdb
-    ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv64-unknown-elf-gdb
   '';
 
 in
