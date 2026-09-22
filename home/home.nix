@@ -71,10 +71,18 @@
 
     # ── Pointer cursor (consistent across GTK, X11, Wayland) ──────────
     # Under GNOME Wayland with 125% fractional scaling:
-    # - Native Wayland/GTK apps use size 24 (scaled to 30px on screen).
-    # - X11/XWayland apps (OnlyOffice, Steam, GIMP, etc.) are rendered by Mutter
-    #   at 2x (192 DPI) and downscaled by 1.6x (0.625). Setting X11 cursor size
-    #   to 48 ensures 48 / 1.6 = 30px on screen, perfectly matching native apps.
+    # - Native Wayland apps (Anki/Qt6, GTK4, Zen, etc.) use base size 24
+    #   (which Mutter scales by 1.25x to 30px on screen).
+    # - X11/XWayland apps (OnlyOffice, Steam, GIMP, etc.) use xrdb where
+    #   Mutter sets Xcursor.size = 48 (which Mutter scales down by 1.6x
+    #   to 30px on screen).
+    # - Setting XCURSOR_SIZE in the environment overrides xrdb and breaks
+    #   either XWayland apps (if set to 24 -> 15px tiny pointer) or
+    #   Wayland Qt apps like Anki (if set to 48 -> 60px giant pointer).
+    # - By setting x11.size = 48 (for .Xresources) and explicitly unsetting
+    #   XCURSOR_SIZE (XCURSOR_SIZE = null), XWayland apps read 48 from xrdb,
+    #   and Wayland apps read 24 from GSettings/compositor. Both result in
+    #   an identical 30px cursor on screen across all installed and future apps!
     pointerCursor = {
       enable     = true;
       gtk.enable = true;
@@ -89,7 +97,7 @@
 
     # ── Session Variables ──────────────────────────────────────────────
     sessionVariables = {
-      QT_CURSOR_SIZE = "24"; # Ensures native Wayland Qt apps maintain 24px
+      XCURSOR_SIZE = pkgs.lib.mkForce null; # Do NOT export XCURSOR_SIZE to environment
     };
   };
 
