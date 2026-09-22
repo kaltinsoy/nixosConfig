@@ -288,10 +288,8 @@
   };
 
   # ── Logitech Wireless Devices & Mouse Configuration ──────────────────
-  hardware.logitech.wireless = {
-    enable          = true;
-    enableGraphical = true; # Solaar GUI for pairing, battery indicator & status
-  };
+  hardware.logitech.wireless.enable = true;
+  programs.solaar.enable            = true; # Solaar GUI for pairing, battery indicator & status
 
   # ratbagd daemon for Logitech gaming mice (DPI, buttons, onboard profiles)
   services.ratbagd.enable = true;
