@@ -276,6 +276,8 @@
         "imhex.desktop"
         "org.radare.iaito.desktop"
         "gtkwave.desktop"
+        "xilinx-ise.desktop"
+        "xilinx-impact.desktop"
         "looking-glass-client.desktop"
       ];
     };

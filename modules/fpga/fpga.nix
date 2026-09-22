@@ -126,15 +126,11 @@ let
     runScript = pkgs.writeScript "ise-run" ''
       #!/bin/bash
       export LD_LIBRARY_PATH=/lib:/usr/lib:/lib64:/usr/lib64''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
-      if [ $# -gt 0 ] && [ -f "$1" ] && [ -x "$1" ]; then
-        exec -- "$@"
-      fi
-
       ISE_ROOT="''${ISE_ROOT:-/opt/Xilinx/14.7/ISE_DS}"
       if [ -f "$ISE_ROOT/settings64.sh" ]; then
-        source "$ISE_ROOT/settings64.sh"
+        source "$ISE_ROOT/settings64.sh" "$ISE_ROOT" >/dev/null 2>&1
       elif [ -f "$ISE_ROOT/settings32.sh" ]; then
-        source "$ISE_ROOT/settings32.sh"
+        source "$ISE_ROOT/settings32.sh" "$ISE_ROOT" >/dev/null 2>&1
       fi
 
       if [ $# -gt 0 ]; then
@@ -163,10 +159,37 @@ let
       export LD_LIBRARY_PATH=/lib:/usr/lib:/lib64:/usr/lib64''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
       ISE_ROOT="''${ISE_ROOT:-/opt/Xilinx/14.7/ISE_DS}"
       if [ -f "$ISE_ROOT/settings64.sh" ]; then
-        source "$ISE_ROOT/settings64.sh"
+        source "$ISE_ROOT/settings64.sh" "$ISE_ROOT" >/dev/null 2>&1
+      elif [ -f "$ISE_ROOT/settings32.sh" ]; then
+        source "$ISE_ROOT/settings32.sh" "$ISE_ROOT" >/dev/null 2>&1
       fi
-      exec impact "$@"
+
+      if [ $# -gt 0 ]; then
+        exec impact "$@"
+      else
+        exec impact
+      fi
     '';
+  };
+
+  iseDesktopItem = pkgs.makeDesktopItem {
+    name = "xilinx-ise";
+    desktopName = "Xilinx ISE 14.7";
+    comment = "Xilinx ISE WebPACK / Design Suite";
+    exec = "ise";
+    icon = "/opt/Xilinx/14.7/ISE_DS/ISE/data/images/pn-ise.png";
+    categories = [ "Development" "Engineering" ];
+    terminal = false;
+  };
+
+  impactDesktopItem = pkgs.makeDesktopItem {
+    name = "xilinx-impact";
+    desktopName = "Xilinx iMPACT";
+    comment = "Xilinx JTAG Programming & Configuration Environment";
+    exec = "impact";
+    icon = "/opt/Xilinx/14.7/ISE_DS/ISE/data/images/impact.png";
+    categories = [ "Development" "Engineering" ];
+    terminal = false;
   };
 
   # ── RISC-V compatibility aliases ──────────────────────────────────────
@@ -182,13 +205,12 @@ let
     for f in ${pkgs.pkgsCross.riscv64-embedded.buildPackages.gcc}/bin/riscv64-none-elf-*; do
       base=$(basename "$f")
       ln -s "$f" "$out/bin/''${base/riscv64-none-elf/riscv64-unknown-elf}"
+      ln -s "$f" "$out/bin/''${base/riscv64-none-elf/riscv-none-embed}"
     done
-    # Multiarch GDB aliases
-    ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv32-none-elf-gdb
-    ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv32-unknown-elf-gdb
-    ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv64-none-elf-gdb
-    ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv64-unknown-elf-gdb
+    # Add riscv-none-embed-gdb and riscv64-unknown-elf-gdb pointing to multiarch gdb
     ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv-none-embed-gdb
+    ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv32-unknown-elf-gdb
+    ln -s ${pkgs.gdb}/bin/gdb $out/bin/riscv64-unknown-elf-gdb
   '';
 
 in
@@ -203,7 +225,7 @@ in
     ];
   };
 
-  # ── OSS FPGA toolchain ────────────────────────────────────────────────
+  # ── System-wide FPGA & Hardware Packages ───────────────────────────────
   environment.systemPackages = with pkgs; [
     # Synthesis
     yosys            # open-source synthesis suite
@@ -220,9 +242,6 @@ in
     ghdl              # VHDL simulator
     verilator         # Verilog/SystemVerilog simulator
     iverilog          # Icarus Verilog
-
-    # Digital logic design & simulation
-    logisim-evolution # Logisim-evolution (modern digital logic designer & simulator)
 
     # Formal verification
     sby               # formal verification front-end (formerly symbiyosys)
@@ -259,6 +278,8 @@ in
     gowinFHS
     iseFHS
     impactFHS
+    iseDesktopItem
+    impactDesktopItem
   ];
 
   # ── udev rules for FPGA programmers ──────────────────────────────────
