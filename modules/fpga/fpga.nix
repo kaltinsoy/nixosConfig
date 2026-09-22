@@ -161,8 +161,7 @@ in
     iverilog          # Icarus Verilog
 
     # Digital logic design & simulation
-    logisim-evolution # modern digital logic designer & simulator (VHDL/Verilog export, FPGA boards)
-    logisim           # classic educational digital logic circuit simulator
+    logisim-evolution # Logisim-evolution (modern digital logic designer & simulator)
 
     # Formal verification
     sby               # formal verification front-end (formerly symbiyosys)

@@ -183,6 +183,8 @@
       nfu = "nix flake update --flake /home/koray/nixos-config";
       nclean = "nclean";
       ncg = "nclean";
+      logisim-evo = "logisim-evolution";
+      logisim     = "logisim-evolution";
     };
     initExtra = ''
       # Automatically update window size on terminal resize (prevents typing wrap glitches)
