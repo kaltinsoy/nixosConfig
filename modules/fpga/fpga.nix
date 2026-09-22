@@ -108,6 +108,63 @@ let
     '';
   };
 
+  iseFHS = pkgs.buildFHSEnv {
+    name = "ise";
+    targetPkgs = p: with p; [
+      glibc glibc.dev glib gcc-unwrapped.lib
+      libGL libGLU libx11 libxrender libxtst libxi
+      libxext libxcb libxft libxcursor libxfixes
+      libxcomposite libxscrnsaver motif
+      libpng12 xorg.libXp
+      gtk2 gtk3 gdk-pixbuf
+      ncurses5 zlib freetype fontconfig
+      coreutils bash which gnumake nettools procps
+      libusb-compat libusb1
+      perl python3
+    ];
+    runScript = pkgs.writeScript "ise-run" ''
+      #!/bin/bash
+      if [ $# -gt 0 ] && [ -f "$1" ] && [ -x "$1" ]; then
+        exec -- "$@"
+      fi
+
+      ISE_ROOT="''${ISE_ROOT:-/opt/Xilinx/14.7/ISE_DS}"
+      if [ -f "$ISE_ROOT/settings64.sh" ]; then
+        source "$ISE_ROOT/settings64.sh"
+      elif [ -f "$ISE_ROOT/settings32.sh" ]; then
+        source "$ISE_ROOT/settings32.sh"
+      fi
+
+      if [ $# -gt 0 ]; then
+        exec "$@"
+      else
+        exec ise
+      fi
+    '';
+  };
+
+  impactFHS = pkgs.buildFHSEnv {
+    name = "impact";
+    targetPkgs = p: with p; [
+      glibc glibc.dev glib gcc-unwrapped.lib
+      libGL libGLU libx11 libxrender libxtst libxi
+      libxext libxcb libxft libxcursor libxfixes
+      libxcomposite libxscrnsaver motif
+      libpng12 xorg.libXp
+      ncurses5 zlib freetype fontconfig
+      coreutils bash which nettools procps
+      libusb-compat libusb1
+    ];
+    runScript = pkgs.writeScript "impact-run" ''
+      #!/bin/bash
+      ISE_ROOT="''${ISE_ROOT:-/opt/Xilinx/14.7/ISE_DS}"
+      if [ -f "$ISE_ROOT/settings64.sh" ]; then
+        source "$ISE_ROOT/settings64.sh"
+      fi
+      exec impact "$@"
+    '';
+  };
+
   # ── RISC-V compatibility aliases ──────────────────────────────────────
   # Provides riscv32-unknown-elf-*, riscv64-unknown-elf-*, and
   # riscv-none-embed-* symlinks for build systems that expect those triplets.
@@ -188,14 +245,33 @@ in
     gdb                                                # Multiarch GDB (supports riscv32/riscv64)
     riscvCompatAliases                                 # riscv{32,64}-unknown-elf-*, riscv-none-embed-*, and gdb aliases
 
+    # Hardware programming tools
+    xc3sprog                                           # Spartan-3/3E/6 and CPLD programmer
+    fxload                                             # Cypress FX2 USB microcontroller firmware loader
+
     # FHS wrappers for proprietary tools
     vivadoFHS
     vitisFHS
     gowinFHS
+    iseFHS
+    impactFHS
   ];
 
   # ── udev rules for FPGA programmers ──────────────────────────────────
   services.udev.extraRules = ''
+    # Xilinx Cypress FX2 (Spartan-3E Starter Kit on-board USB JTAG)
+    # Stage 1: Uninitialized Cypress FX2 -> load firmware via fxload
+    ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0007", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -I /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -D %N"
+    ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0009", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -I /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -D %N"
+    ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="000b", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -I /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -D %N"
+    ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="000d", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -I /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -D %N"
+    ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="000f", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -I /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -D %N"
+    # Stage 2: Initialized Cypress FX2 / Xilinx Platform Cable USB
+    ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0008", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+
+    # Digilent Adept USB devices (JTAG cables & boards)
+    ATTRS{idVendor}=="1443", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+
     # Xilinx USB cable (Platform Cable USB II)
     ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", MODE="0660", GROUP="plugdev", TAG+="uaccess"
     ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6011", MODE="0660", GROUP="plugdev", TAG+="uaccess"
