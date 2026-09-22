@@ -115,11 +115,11 @@ let
       libGL libGLU libx11 libxrender libxtst libxi
       libxext libxcb libxft libxcursor libxfixes
       libxcomposite libxscrnsaver motif
-      libpng12 xorg.libXp
+      libpng12 libxp
       gtk2 gtk3 gdk-pixbuf
       ncurses5 zlib freetype fontconfig
       coreutils bash which gnumake nettools procps
-      libusb-compat libusb1
+      p."libusb-compat-0_1" libusb1
       perl python3
     ];
     runScript = pkgs.writeScript "ise-run" ''
@@ -150,10 +150,10 @@ let
       libGL libGLU libx11 libxrender libxtst libxi
       libxext libxcb libxft libxcursor libxfixes
       libxcomposite libxscrnsaver motif
-      libpng12 xorg.libXp
+      libpng12 libxp
       ncurses5 zlib freetype fontconfig
       coreutils bash which nettools procps
-      libusb-compat libusb1
+      p."libusb-compat-0_1" libusb1
     ];
     runScript = pkgs.writeScript "impact-run" ''
       #!/bin/bash
