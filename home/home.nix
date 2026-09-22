@@ -106,7 +106,28 @@
     mimeApps = {
       enable = true;
       defaultApplications = {
-        # Word documents -> OnlyOffice
+        # Web & HTML -> Zen Browser (primary) with Firefox fallback
+        "text/html"                                                               = [ "zen-beta.desktop" "firefox.desktop" ];
+        "application/xhtml+xml"                                                   = [ "zen-beta.desktop" "firefox.desktop" ];
+        "x-scheme-handler/http"                                                   = [ "zen-beta.desktop" "firefox.desktop" ];
+        "x-scheme-handler/https"                                                  = [ "zen-beta.desktop" "firefox.desktop" ];
+        "x-scheme-handler/about"                                                  = [ "zen-beta.desktop" "firefox.desktop" ];
+        "x-scheme-handler/unknown"                                                = [ "zen-beta.desktop" "firefox.desktop" ];
+
+        # Plain Text, Markdown & Markup -> Text Editor / Obsidian
+        "text/plain"                                                              = [ "org.gnome.TextEditor.desktop" ];
+        "text/x-markdown"                                                         = [ "obsidian.desktop" "org.gnome.TextEditor.desktop" ];
+        "text/markdown"                                                           = [ "obsidian.desktop" "org.gnome.TextEditor.desktop" ];
+        "application/xml"                                                         = [ "org.gnome.TextEditor.desktop" ];
+        "text/xml"                                                                = [ "org.gnome.TextEditor.desktop" ];
+
+        # PDF Documents -> GNOME Papers / Evince
+        "application/pdf"                                                         = [ "org.gnome.Papers.desktop" "org.gnome.Evince.desktop" ];
+
+        # Rich Text & Word documents -> OnlyOffice
+        "text/rtf"                                                                = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/rtf"                                                         = [ "onlyoffice-desktopeditors.desktop" ];
+        "application/vnd.ms-word.document.macroenabled.12"                        = [ "onlyoffice-desktopeditors.desktop" ];
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document" = [ "onlyoffice-desktopeditors.desktop" ];
         "application/msword"                                                      = [ "onlyoffice-desktopeditors.desktop" ];
         "application/vnd.oasis.opendocument.text"                                 = [ "onlyoffice-desktopeditors.desktop" ];
@@ -120,6 +141,12 @@
         "application/vnd.openxmlformats-officedocument.presentationml.presentation" = [ "onlyoffice-desktopeditors.desktop" ];
         "application/vnd.ms-powerpoint"                                           = [ "onlyoffice-desktopeditors.desktop" ];
         "application/vnd.oasis.opendocument.presentation"                         = [ "onlyoffice-desktopeditors.desktop" ];
+
+        # E-books (only genuine ebook formats) -> Calibre E-book viewer
+        "application/epub+zip"                                                    = [ "calibre-ebook-viewer.desktop" ];
+        "application/x-mobipocket-ebook"                                          = [ "calibre-ebook-viewer.desktop" ];
+        "application/x-mobi8-ebook"                                               = [ "calibre-ebook-viewer.desktop" ];
+        "text/fb2+xml"                                                            = [ "calibre-ebook-viewer.desktop" ];
       };
     };
 
