@@ -4,6 +4,9 @@
   # ── Steam & Gaming ────────────────────────────────────────────────────
   programs.steam = {
     enable = true;
+    extraCompatPackages = with pkgs; [
+      proton-ge-bin
+    ];
     package = pkgs.steam.override {
       extraEnv = {
         STEAM_FORCE_DESKTOPUI_SCALING = "1.25";
@@ -19,4 +22,9 @@
 
   # Feral Interactive GameMode for system optimizations during gaming
   programs.gamemode.enable = true;
+
+  # Gaming utilities (ProtonUp-Qt for managing Proton/Wine versions)
+  environment.systemPackages = with pkgs; [
+    protonup-qt
+  ];
 }
