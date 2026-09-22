@@ -138,10 +138,11 @@
       blur = true;
     };
     "org/gnome/shell/extensions/blur-my-shell/panel" = {
-      blur          = true;
+      blur          = false; # Disabled on top panel to prevent Vitals white box artifacts and notification banner glitches
       brightness    = 0.6;
       corner-radius = 0;
       sigma         = 30;
+      static-blur   = true;
     };
     "org/gnome/shell/extensions/blur-my-shell/window-list" = {
       brightness = 0.6;
