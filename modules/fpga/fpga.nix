@@ -115,6 +115,7 @@ let
       libGL libGLU libx11 libxrender libxtst libxi
       libxext libxcb libxft libxcursor libxfixes
       libxcomposite libxscrnsaver motif
+      libSM libICE libXrandr
       libpng12 libxp
       gtk2 gtk3 gdk-pixbuf
       ncurses5 zlib freetype fontconfig
@@ -124,6 +125,7 @@ let
     ];
     runScript = pkgs.writeScript "ise-run" ''
       #!/bin/bash
+      export LD_LIBRARY_PATH=/lib:/usr/lib:/lib64:/usr/lib64''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
       if [ $# -gt 0 ] && [ -f "$1" ] && [ -x "$1" ]; then
         exec -- "$@"
       fi
@@ -150,6 +152,7 @@ let
       libGL libGLU libx11 libxrender libxtst libxi
       libxext libxcb libxft libxcursor libxfixes
       libxcomposite libxscrnsaver motif
+      libSM libICE libXrandr
       libpng12 libxp
       ncurses5 zlib freetype fontconfig
       coreutils bash which nettools procps
@@ -157,6 +160,7 @@ let
     ];
     runScript = pkgs.writeScript "impact-run" ''
       #!/bin/bash
+      export LD_LIBRARY_PATH=/lib:/usr/lib:/lib64:/usr/lib64''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
       ISE_ROOT="''${ISE_ROOT:-/opt/Xilinx/14.7/ISE_DS}"
       if [ -f "$ISE_ROOT/settings64.sh" ]; then
         source "$ISE_ROOT/settings64.sh"
