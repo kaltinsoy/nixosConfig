@@ -48,6 +48,18 @@
     };
   };
 
+  # ── UPower — Battery policy & recalibration ───────────────────────────
+  # Allow discharging past 2% so the battery fuel gauge can be recalibrated
+  # without GNOME/UPower forcing an unexpected shutdown/sleep.
+  services.upower = {
+    enable                        = true;
+    percentageLow                 = 5;
+    percentageCritical            = 2;
+    percentageAction              = 1;
+    criticalPowerAction           = "Ignore";
+    allowRiskyCriticalPowerAction = true;
+  };
+
   # ── throttled — Intel 8th-gen undervolting ────────────────────────────
   services.throttled = {
     enable = true;
