@@ -140,7 +140,7 @@ let
       done
       export LD_LIBRARY_PATH="$COMPAT_DIR:/lib:/usr/lib:/lib64:/usr/lib64''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
       # Ensure Qt4 configuration exists for comfortable UI font scaling on HiDPI/1080p
-      FONT_SIZE="''${ISE_FONT_SIZE:-13}"
+      FONT_SIZE="''${ISE_FONT_SIZE:-9}"
       if [ -f "$HOME/.config/Trolltech.conf" ]; then
         if grep -q "^font=" "$HOME/.config/Trolltech.conf"; then
           [ -n "$ISE_FONT_SIZE" ] && sed -i "s/^font=.*/font=\"DejaVu Sans,$FONT_SIZE,-1,5,50,0,0,0,0,0\"/" "$HOME/.config/Trolltech.conf"
@@ -202,7 +202,7 @@ EOF
       done
       export LD_LIBRARY_PATH="$COMPAT_DIR:/lib:/usr/lib:/lib64:/usr/lib64''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
       # Ensure Qt4 configuration exists for comfortable UI font scaling on HiDPI/1080p
-      FONT_SIZE="''${ISE_FONT_SIZE:-13}"
+      FONT_SIZE="''${ISE_FONT_SIZE:-9}"
       if [ -f "$HOME/.config/Trolltech.conf" ]; then
         if grep -q "^font=" "$HOME/.config/Trolltech.conf"; then
           [ -n "$ISE_FONT_SIZE" ] && sed -i "s/^font=.*/font=\"DejaVu Sans,$FONT_SIZE,-1,5,50,0,0,0,0,0\"/" "$HOME/.config/Trolltech.conf"

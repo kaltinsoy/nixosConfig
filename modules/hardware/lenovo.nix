@@ -209,6 +209,8 @@
   systemd.tmpfiles.rules = [
     # Ensure /etc/howdy points to /etc/static/howdy for Howdy CLI and PAM
     "L+ /etc/howdy - - - - /etc/static/howdy"
+    # Ensure /etc/tlp.conf is available for TLP CLI commands
+    "L+ /etc/tlp.conf - - - - /etc/static/tlp.conf"
   ];
 
   # ── Backlight, Fingerprint, TrackPoint + udev ─────────────────────────
@@ -220,6 +222,10 @@
     ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="intel_backlight", \
       RUN+="${pkgs.coreutils}/bin/chgrp video /sys/class/backlight/%k/brightness", \
       RUN+="${pkgs.coreutils}/bin/chmod g+w   /sys/class/backlight/%k/brightness"
+
+    # ThinkPad battery charge threshold access without root (for tlp-profile / ac-bypass)
+    ACTION=="add|change", SUBSYSTEM=="power_supply", KERNEL=="BAT[0-9]*", \
+      RUN+="${pkgs.coreutils}/bin/chmod 0666 /sys/class/power_supply/%k/charge_control_start_threshold /sys/class/power_supply/%k/charge_control_end_threshold /sys/class/power_supply/%k/charge_start_threshold /sys/class/power_supply/%k/charge_stop_threshold"
 
     # Fingerprint reader — Synaptics 06cb:009a (disable USB autosuspend)
     ATTRS{idVendor}=="06cb", ATTRS{idProduct}=="009a", \

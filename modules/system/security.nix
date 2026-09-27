@@ -6,6 +6,33 @@
     enable         = true;
     wheelNeedsPassword = true;
     execWheelOnly  = true;
+    extraRules = [
+      {
+        groups = [ "wheel" ];
+        commands = [
+          {
+            command = "${pkgs.tlp}/bin/tlp";
+            options = [ "NOPASSWD" ];
+          }
+          {
+            command = "${pkgs.tlp}/bin/tlp-stat";
+            options = [ "NOPASSWD" ];
+          }
+          {
+            command = "/run/current-system/sw/bin/tlp";
+            options = [ "NOPASSWD" ];
+          }
+          {
+            command = "/home/koray/.local/bin/tlp-profile";
+            options = [ "NOPASSWD" ];
+          }
+          {
+            command = "/home/koray/bin/tlp-profile";
+            options = [ "NOPASSWD" ];
+          }
+        ];
+      }
+    ];
   };
 
   # ── polkit ────────────────────────────────────────────────────────────

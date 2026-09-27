@@ -254,6 +254,8 @@
       logisim     = "logisim-evolution";
     };
     initExtra = ''
+      # User bin directories in PATH
+      export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
       # Automatically update window size on terminal resize (prevents typing wrap glitches)
       shopt -s checkwinsize
       # Ensure terminal auto-wrap mode is active

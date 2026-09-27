@@ -170,10 +170,36 @@ Configured using the 720p HD Integrated Camera (`/dev/v4l/by-path/pci-0000:00:14
   ```
 - *Note*: `linux-enable-ir-emitter` is disabled because the T480s 160x120 IR sensor cannot stream frames under Linux UVC and triggers camera LED latching.
 
-### 3. Battery Management & Calibration (TLP)
+### 3. Battery Management & Calibration (TLP + `tlp-profile`)
 The single internal battery (`BAT0`) is configured in **Conservation Mode** (starts charging below 75%, stops at 80%) in [lenovo.nix](file:///home/koray/nixos-config/modules/hardware/lenovo.nix).
 
-- **Check Battery Health & Status**:
+A custom [`tlp-profile`](file:///home/koray/.local/bin/tlp-profile) script (also aliased as `ac-bypass`) provides manual one-command profile switching:
+
+| Command | Profile | Thresholds | Use case |
+| :--- | :--- | :--- | :--- |
+| `tlp-profile raw-ac` | **Raw AC Bypass** | 25% → 30% | Full AC pass-through, battery idle (≥30%) |
+| `tlp-profile normal` | **Normal Longevity** | 75% → 80% | Daily use, battery health preserved |
+| `tlp-profile full` | **Full Charge** | 96% → 100% | Travel / long sessions away from power |
+| `tlp-profile status` | — | — | Show current power source, level, thresholds |
+
+```bash
+# Check current state
+tlp-profile status
+
+# Enable pure AC mode (laptop runs off adapter, battery idles)
+tlp-profile raw-ac      # or: ac-bypass on
+
+# Restore normal healthy charging
+tlp-profile normal      # or: ac-bypass off
+
+# Charge to 100% before travel
+tlp-profile full
+```
+
+> [!NOTE]
+> All three profiles switch instantly without rebooting. Thresholds persist in hardware until next change.
+
+- **Check detailed battery health**:
   ```bash
   sudo tlp-stat -b
   ```
