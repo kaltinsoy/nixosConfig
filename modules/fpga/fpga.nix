@@ -115,17 +115,30 @@ let
       libGL libGLU libx11 libxrender libxtst libxi
       libxext libxcb libxft libxcursor libxfixes
       libxcomposite libxscrnsaver motif
+      libxt libxmu
       libSM libICE libXrandr
       libpng12 libxp
       gtk2 gtk3 gdk-pixbuf
       ncurses5 zlib freetype fontconfig
       coreutils bash which gnumake nettools procps
       p."libusb-compat-0_1" libusb1
+      util-linux.lib
+      libxcrypt-legacy
       perl python3
     ];
     runScript = pkgs.writeScript "ise-run" ''
       #!/bin/bash
-      export LD_LIBRARY_PATH=/lib:/usr/lib:/lib64:/usr/lib64''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+      export _JAVA_AWT_WM_NONREPARENTING=1
+      export GDK_BACKEND=x11
+      COMPAT_DIR="/tmp/ise-compat-libs"
+      mkdir -p "$COMPAT_DIR"
+      for xm in /usr/lib64/libXm.so.4 /usr/lib/libXm.so.4 /lib64/libXm.so.4 /lib/libXm.so.4; do
+        if [ -f "$xm" ]; then
+          ln -sf "$xm" "$COMPAT_DIR/libXm.so.3"
+          break
+        fi
+      done
+      export LD_LIBRARY_PATH="$COMPAT_DIR:/lib:/usr/lib:/lib64:/usr/lib64''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
       ISE_ROOT="''${ISE_ROOT:-/opt/Xilinx/14.7/ISE_DS}"
       if [ -f "$ISE_ROOT/settings64.sh" ]; then
         source "$ISE_ROOT/settings64.sh" "$ISE_ROOT" >/dev/null 2>&1
@@ -133,10 +146,12 @@ let
         source "$ISE_ROOT/settings32.sh" "$ISE_ROOT" >/dev/null 2>&1
       fi
 
-      if [ $# -gt 0 ]; then
-        exec "$@"
-      else
+      if [ $# -eq 0 ]; then
         exec ise
+      elif [[ "$1" == -* ]]; then
+        exec ise "$@"
+      else
+        exec "$@"
       fi
     '';
   };
@@ -148,15 +163,28 @@ let
       libGL libGLU libx11 libxrender libxtst libxi
       libxext libxcb libxft libxcursor libxfixes
       libxcomposite libxscrnsaver motif
+      libxt libxmu
       libSM libICE libXrandr
       libpng12 libxp
       ncurses5 zlib freetype fontconfig
       coreutils bash which nettools procps
       p."libusb-compat-0_1" libusb1
+      util-linux.lib
+      libxcrypt-legacy
     ];
     runScript = pkgs.writeScript "impact-run" ''
       #!/bin/bash
-      export LD_LIBRARY_PATH=/lib:/usr/lib:/lib64:/usr/lib64''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+      export _JAVA_AWT_WM_NONREPARENTING=1
+      export GDK_BACKEND=x11
+      COMPAT_DIR="/tmp/ise-compat-libs"
+      mkdir -p "$COMPAT_DIR"
+      for xm in /usr/lib64/libXm.so.4 /usr/lib/libXm.so.4 /lib64/libXm.so.4 /lib/libXm.so.4; do
+        if [ -f "$xm" ]; then
+          ln -sf "$xm" "$COMPAT_DIR/libXm.so.3"
+          break
+        fi
+      done
+      export LD_LIBRARY_PATH="$COMPAT_DIR:/lib:/usr/lib:/lib64:/usr/lib64''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
       ISE_ROOT="''${ISE_ROOT:-/opt/Xilinx/14.7/ISE_DS}"
       if [ -f "$ISE_ROOT/settings64.sh" ]; then
         source "$ISE_ROOT/settings64.sh" "$ISE_ROOT" >/dev/null 2>&1
@@ -164,10 +192,12 @@ let
         source "$ISE_ROOT/settings32.sh" "$ISE_ROOT" >/dev/null 2>&1
       fi
 
-      if [ $# -gt 0 ]; then
+      if [ $# -eq 0 ]; then
+        exec impact
+      elif [[ "$1" == -* ]]; then
         exec impact "$@"
       else
-        exec impact
+        exec "$@"
       fi
     '';
   };
