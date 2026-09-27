@@ -178,9 +178,10 @@
     libmbim
     libqmi
 
-    # Power / Backlight
+    # Power / Backlight / Audio
     brightnessctl   # backlight control (replaces light)
     tlp-pd          # tlpctl CLI and D-Bus bridge
+    pulseaudio      # pactl CLI for audio routing and LED sync
 
     # Logitech Gaming Mouse GUI (libratbag / ratbagd frontend)
     piper
@@ -299,4 +300,119 @@
 
   # ratbagd daemon for Logitech gaming mice (DPI, buttons, onboard profiles)
   services.ratbagd.enable = true;
+
+  # ── ThinkPad Audio Mute & Mic Mute LED Synchronization ────────────────
+  # ThinkPad F1 (speaker mute) and F4 (mic mute) LEDs are hardware-driven
+  # by ALSA's kernel driver watching the internal Realtek ALC257 sound card.
+  # When using Bluetooth (e.g. earbuds) or USB audio, WirePlumber toggles the
+  # default endpoint while leaving the internal sound card out of sync, causing
+  # the F4 mic mute LED to get stuck ON and the F1 mute LED to stay OFF.
+  # This lightweight systemd user service watches PipeWire/PulseAudio events
+  # and mirrors mute state between default endpoints, the internal card, and LEDs.
+  systemd.user.services.thinkpad-mute-led = {
+    description = "ThinkPad Audio Mute and Mic Mute LED Synchronization";
+    wantedBy = [ "default.target" ];
+    after = [ "pipewire.service" "pipewire-pulse.service" "wireplumber.service" ];
+    partOf = [ "pipewire.service" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.writeScript "thinkpad-mute-led" ''
+        #!${pkgs.python3}/bin/python3
+        import subprocess, time, os, sys
+
+        PACTL = "${pkgs.pulseaudio}/bin/pactl"
+        BRIGHTNESSCTL = "${pkgs.brightnessctl}/bin/brightnessctl"
+        STDBUF = "${pkgs.coreutils}/bin/stdbuf"
+
+        def find_internal(kind):
+            try:
+                out = subprocess.run([PACTL, "list", "short", f"{kind}s"], capture_output=True, text=True).stdout
+                prefix = "alsa_output." if kind == "sink" else "alsa_input."
+                candidates = []
+                for line in out.splitlines():
+                    parts = line.split()
+                    if len(parts) >= 2:
+                        name = parts[1]
+                        if name.startswith(prefix) and not name.endswith(".monitor"):
+                            candidates.append(name)
+                for c in candidates:
+                    if "analog-stereo" in c:
+                        return c
+                return candidates[0] if candidates else None
+            except Exception:
+                return None
+
+        def get_mute(kind, target):
+            try:
+                res = subprocess.run([PACTL, f"get-{kind}-mute", target], capture_output=True, text=True).stdout
+                return "yes" in res.lower()
+            except Exception:
+                return False
+
+        def set_mute(kind, target, mute):
+            try:
+                subprocess.run([PACTL, f"set-{kind}-mute", target, "1" if mute else "0"], capture_output=True)
+            except Exception:
+                pass
+
+        def set_led(dev_name, val):
+            if os.path.exists(f"/sys/class/leds/{dev_name}"):
+                try:
+                    subprocess.run([BRIGHTNESSCTL, f"--device={dev_name}", "set", str(val)], capture_output=True)
+                except Exception:
+                    pass
+
+        def sync_all():
+            # Sink (speaker mute - F1)
+            int_sink = find_internal("sink")
+            sink_mute = get_mute("sink", "@DEFAULT_SINK@")
+            set_led("platform::mute", 1 if sink_mute else 0)
+            if int_sink:
+                cur_sink = get_mute("sink", int_sink)
+                if cur_sink != sink_mute:
+                    set_mute("sink", int_sink, sink_mute)
+
+            # Source (mic mute - F4)
+            int_src = find_internal("source")
+            src_mute = get_mute("source", "@DEFAULT_SOURCE@")
+            set_led("platform::micmute", 1 if src_mute else 0)
+            if int_src:
+                cur_src = get_mute("source", int_src)
+                if cur_src != src_mute:
+                    set_mute("source", int_src, src_mute)
+
+        def main():
+            while True:
+                proc = None
+                try:
+                    sync_all()
+                    proc = subprocess.Popen(
+                        [STDBUF, "-oL", PACTL, "subscribe"],
+                        stdout=subprocess.PIPE,
+                        text=True,
+                        bufsize=1,
+                    )
+                    while True:
+                        line = proc.stdout.readline()
+                        if not line:
+                            break
+                        if any(f"on {k}" in line for k in ["sink", "source", "server"]):
+                            sync_all()
+                except Exception:
+                    pass
+                finally:
+                    if proc:
+                        try:
+                            proc.terminate()
+                            proc.wait(timeout=1)
+                        except Exception:
+                            pass
+                time.sleep(2)
+
+        if __name__ == "__main__":
+            main()
+      ''}";
+      Restart = "on-failure";
+      RestartSec = "3s";
+    };
+  };
 }

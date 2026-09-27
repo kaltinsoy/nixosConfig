@@ -245,6 +245,11 @@ The workstation includes plug-and-play USB and JTAG rules configured in [fpga.ni
 - **HiDPI Scaling for Xilinx ISE**:
   - Run `ise-scaled` to launch ISE inside a Gamescope sandbox with integer/FSR scaling for 1080p/HiDPI screens.
 
+### 6. ThinkPad Audio Mute & Mic Mute LED Synchronization
+The ThinkPad hardware keyboard LEDs (**F1** for speaker mute and **F4** for microphone mute) are kernel-driven via ALSA triggers tracking the internal Realtek ALC257 codec:
+- **The Problem**: When connecting Bluetooth audio (e.g. Redmi Buds 3 Pro) or external USB DACs, PipeWire/WirePlumber controls mute on the active external device, leaving the inactive internal sound card out of sync. This causes the orange F4 microphone LED to become permanently stuck ON and the F1 speaker mute LED to stay OFF.
+- **The Solution**: A lightweight user service (`systemd.user.services.thinkpad-mute-led`) in [lenovo.nix](file:///home/koray/nixos-config/modules/hardware/lenovo.nix) listens to real-time PipeWire/PulseAudio events via `pactl subscribe`. When mute status toggles or default audio routes change, it seamlessly mirrors the mute state to the internal ALSA codec and hardware LED (`brightnessctl`), ensuring LEDs remain 100% accurate across all internal, Bluetooth, and USB devices with 0% idle CPU overhead.
+
 ---
 
 ## Updating & Maintenance Guide
