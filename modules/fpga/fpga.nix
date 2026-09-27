@@ -108,9 +108,15 @@ let
     '';
   };
 
+  xusbFirmware = pkgs.runCommand "xusb-firmware" {} ''
+    mkdir -p $out/share
+    cp ${./firmware}/*.hex $out/share/
+  '';
+
   iseFHS = pkgs.buildFHSEnv {
     name = "ise";
     targetPkgs = p: with p; [
+      xusbFirmware
       glibc glibc.dev glib gcc-unwrapped.lib
       libGL libGLU libx11 libxrender libxtst libxi
       libxext libxcb libxft libxcursor libxfixes
@@ -132,6 +138,8 @@ let
       export GDK_BACKEND=x11
       COMPAT_DIR="/tmp/ise-compat-libs"
       mkdir -p "$COMPAT_DIR"
+      export XIL_IMPACT_USE_LIBUSB=1
+      export XIL_CSE_DISABLE_FXLOAD_CHECK=1
       for xm in /usr/lib64/libXm.so.4 /usr/lib/libXm.so.4 /lib64/libXm.so.4 /lib/libXm.so.4; do
         if [ -f "$xm" ]; then
           ln -sf "$xm" "$COMPAT_DIR/libXm.so.3"
@@ -175,6 +183,7 @@ EOF
   impactFHS = pkgs.buildFHSEnv {
     name = "impact";
     targetPkgs = p: with p; [
+      xusbFirmware
       glibc glibc.dev glib gcc-unwrapped.lib
       libGL libGLU libx11 libxrender libxtst libxi
       libxext libxcb libxft libxcursor libxfixes
@@ -194,6 +203,8 @@ EOF
       export GDK_BACKEND=x11
       COMPAT_DIR="/tmp/ise-compat-libs"
       mkdir -p "$COMPAT_DIR"
+      export XIL_IMPACT_USE_LIBUSB=1
+      export XIL_CSE_DISABLE_FXLOAD_CHECK=1
       for xm in /usr/lib64/libXm.so.4 /usr/lib/libXm.so.4 /lib64/libXm.so.4 /lib/libXm.so.4; do
         if [ -f "$xm" ]; then
           ln -sf "$xm" "$COMPAT_DIR/libXm.so.3"
@@ -331,6 +342,7 @@ in
     # Hardware programming tools
     xc3sprog                                           # Spartan-3/3E/6 and CPLD programmer
     fxload                                             # Cypress FX2 USB microcontroller firmware loader
+    xusbFirmware
 
     # FHS wrappers for proprietary tools
     vivadoFHS
@@ -342,39 +354,67 @@ in
     impactDesktopItem
   ];
 
+  # ── Cable firmware files for iMPACT / hotplug ────────────────────────
+  environment.etc = {
+    "hotplug/usb/xusbdfwu.fw/xusbdfwu.hex".source = ./firmware/xusbdfwu.hex;
+    "hotplug/usb/xusbdfwu.fw/xusb_emb.hex".source = ./firmware/xusb_emb.hex;
+    "hotplug/usb/xusbdfwu.fw/xusb_xlp.hex".source = ./firmware/xusb_xlp.hex;
+    "hotplug/usb/xusbdfwu.fw/xusb_xp2.hex".source = ./firmware/xusb_xp2.hex;
+    "hotplug/usb/xusbdfwu.fw/xusb_xpr.hex".source = ./firmware/xusb_xpr.hex;
+    "hotplug/usb/xusbdfwu.fw/xusb_xse.hex".source = ./firmware/xusb_xse.hex;
+    "hotplug/usb/xusbdfwu.fw/xusb_xup.hex".source = ./firmware/xusb_xup.hex;
+  };
+
   # ── udev rules for FPGA programmers ──────────────────────────────────
   services.udev.extraRules = ''
-    # Xilinx Cypress FX2 (on-board USB JTAG) — Stage 1: load firmware
-    # fxload >= 1.0 uses -p bus,addr instead of legacy -D /dev/... flag
-    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0007", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -p $env{BUSNUM},$env{DEVNUM}"
-    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0009", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -p $env{BUSNUM},$env{DEVNUM}"
-    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="000b", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -p $env{BUSNUM},$env{DEVNUM}"
-    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="000d", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -p $env{BUSNUM},$env{DEVNUM}"
-    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="000f", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -p $env{BUSNUM},$env{DEVNUM}"
+    # Xilinx Cypress FX2 (Spartan-3E Starter Kit on-board USB JTAG)
+    # Stage 1: Uninitialized Cypress FX2 -> load firmware via fxload
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0007", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i ${./firmware}/xusbdfwu.hex -p $env{BUSNUM},$env{DEVNUM}"
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0009", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i ${./firmware}/xusb_xup.hex -p $env{BUSNUM},$env{DEVNUM}"
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="000b", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i ${./firmware}/xusb_emb.hex -p $env{BUSNUM},$env{DEVNUM}"
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="000d", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i ${./firmware}/xusb_emb.hex -p $env{BUSNUM},$env{DEVNUM}"
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="000f", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i ${./firmware}/xusb_xlp.hex -p $env{BUSNUM},$env{DEVNUM}"
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0013", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i ${./firmware}/xusb_xp2.hex -p $env{BUSNUM},$env{DEVNUM}"
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0015", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i ${./firmware}/xusb_xse.hex -p $env{BUSNUM},$env{DEVNUM}"
+
     # Stage 2: Initialized Cypress FX2 / Xilinx Platform Cable USB (re-enumerates as 03fd:0008)
-    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0008", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTR{idVendor}=="03fd", ATTR{idProduct}=="0008", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0008", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+
+    # Fallback for all 03fd Xilinx devices
+    SUBSYSTEM=="usb", ATTR{idVendor}=="03fd", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", MODE="0666", GROUP="plugdev", TAG+="uaccess"
 
     # Digilent Adept USB devices (JTAG cables & boards)
-    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="1443", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTR{idVendor}=="1443", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="1443", MODE="0666", GROUP="plugdev", TAG+="uaccess"
 
     # Xilinx USB cable (Platform Cable USB II — FTDI-based)
-    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", MODE="0660", GROUP="plugdev", TAG+="uaccess"
-    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6011", MODE="0660", GROUP="plugdev", TAG+="uaccess"
-    # Fallback: any remaining 03fd device (after firmware load)
-    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", MODE="0660", GROUP="plugdev", TAG+="uaccess"
-    # Gowin Tang Nano / Tang Primer (WCH CH347)
-    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55dd", MODE="0660", GROUP="plugdev", TAG+="uaccess"
-    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55de", MODE="0660", GROUP="plugdev", TAG+="uaccess"
-    # Digilent JTAG (Arty, Nexys, etc.)
-    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6014", MODE="0660", GROUP="plugdev", TAG+="uaccess"
-    # OpenOCD generic FTDI
-    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", MODE="0660", GROUP="plugdev", TAG+="uaccess"
-  '';
+    SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="6010", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="6011", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6011", MODE="0666", GROUP="plugdev", TAG+="uaccess"
 
+    # Gowin Tang Nano / Tang Primer (WCH CH347)
+    SUBSYSTEM=="usb", ATTR{idVendor}=="1a86", ATTR{idProduct}=="55dd", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55dd", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTR{idVendor}=="1a86", ATTR{idProduct}=="55de", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55de", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+
+    # Digilent JTAG (Arty, Nexys, etc.)
+    SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="6014", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6014", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+
+    # OpenOCD generic FTDI
+    SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="6001", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+  '';
 
   # ── Environment variables ─────────────────────────────────────────────
   environment.sessionVariables = {
-    XILINX_ROOT   = "/opt/Xilinx";     # point to your Vivado install
-    GOWIN_ROOT     = "/opt/gowin";      # point to your Gowin EDA install
+    XILINX_ROOT = "/opt/Xilinx";     # point to your Vivado install
+    GOWIN_ROOT  = "/opt/gowin";      # point to your Gowin EDA install
+    XIL_IMPACT_USE_LIBUSB = "1";
+    XIL_CSE_DISABLE_FXLOAD_CHECK = "1";
   };
 }
