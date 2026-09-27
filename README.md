@@ -127,12 +127,13 @@ nixos-config/
 | :--- | :--- |
 | **Vivado 2026.1 (FHS)** | AMD / Xilinx Vivado ML Standard installed in `/opt/Xilinx/2026.1/Vivado`. Runs in a dedicated bubblewrap FHS container with full graphics, X11 (`libXtst`, `libXi`), `graphviz`, and legacy libraries. Launch via `vivado`. |
 | **Vitis 2026.1 (FHS)** | Embedded development suite in `/opt/Xilinx/2026.1/Vitis`. Launch via `vitis`. |
+| **Xilinx ISE 14.7 & iMPACT (FHS)** | Legacy FPGA toolchain for Spartan-3/3E/6 and CoolRunner CPLDs (`/opt/Xilinx/14.7/ISE_DS`). Native `libusb` support, bundled cable firmware, automatic Cypress FX2 loading via `fxload`, and automatic Qt4 font scaling. Launch via `ise`, `impact`, or `ise-scaled` (HiDPI Gamescope). |
 | **Gowin EDA (FHS)** | FHS sandbox for Gowin IDE (`/opt/gowin`). Launch via `gowin-eda`. |
 | **Yosys & Nextpnr** | Open-source synthesis and place-and-route suite (iCE40, ECP5, Nexus). |
 | **GHDL, Verilator, Iverilog** | VHDL simulator, high-speed C++ Verilog simulator, and Icarus Verilog compiler. |
 | **Sby, Yices, Z3** | Formal verification suite with SMT solvers. |
 | **GTKWave** | Waveform viewer for inspecting VCD simulation files. |
-| **OpenFPGALoader & OpenOCD** | Universal FPGA programmer (Xilinx, Gowin, Digilent) and JTAG debugger. |
+| **OpenFPGALoader, OpenOCD, XC3SProg** | Universal FPGA programmer (Xilinx, Gowin, Digilent, Lattice), JTAG debugger, and Spartan-3/3E dedicated programmer. |
 | **RISC-V Toolchains** | Bare-metal `riscv32-none-elf` and `riscv64-none-elf` GCC, binutils, and multiarch GDB. |
 
 ### 7. Virtualization & Container Labs
@@ -217,6 +218,32 @@ tlp-profile full
 ### 4. CPU Undervolting & Thermals (`throttled` + `thinkfan`)
 - **Undervolting**: Configured in [lenovo.nix](file:///home/koray/nixos-config/modules/hardware/lenovo.nix) (`-100mV` Core/Cache on AC, `-80mV` on Battery) to eliminate 8th-gen thermal throttling.
 - **Fan Control**: `thinkfan` controls fan speeds via ACPI temperature sensor curves.
+
+### 5. FPGA Hardware Programming & JTAG Cables
+The workstation includes plug-and-play USB and JTAG rules configured in [fpga.nix](file:///home/koray/nixos-config/modules/fpga/fpga.nix) for legacy and modern boards:
+
+- **Supported Hardware**:
+  - **Spartan-3E Starter Kit** (`XC3S500E` + `XC2C64A` CPLD + `XCF04S` Platform Flash PROM)
+  - **Xilinx Platform Cable USB / USB II** (`03fd:0008`)
+  - **Digilent Adept JTAG** (`1443:*`)
+  - **FTDI-based JTAG** (Digilent JTAG-HS, Arty, Nexys — `0403:6010`, `6011`, `6014`)
+  - **Gowin Tang Nano / Tang Primer** (WCH CH347 — `1a86:55dd`, `55de`)
+- **Native LibUsb Operation (No `windrvr6`)**:
+  - Automatically loads Cypress FX2 firmware using modern `fxload -i <hex> -p <bus,dev>`.
+  - On device attach, firmware re-enumerates as `03fd:0008` and grants `0666` permissions + `uaccess` ACLs to the `plugdev` group.
+  - Bundled firmware in `/usr/share/xusb*.hex` satisfies iMPACT's version 1030 check.
+  - Bypasses legacy Jungo kernel drivers by setting `XIL_IMPACT_USE_LIBUSB=1` and `XIL_CSE_DISABLE_FXLOAD_CHECK=1`.
+- **Quick JTAG Chain Scan (Batch CLI)**:
+  ```bash
+  impact -batch << 'EOF'
+  setMode -bs
+  setCable -port auto
+  identify
+  quit
+  EOF
+  ```
+- **HiDPI Scaling for Xilinx ISE**:
+  - Run `ise-scaled` to launch ISE inside a Gamescope sandbox with integer/FSR scaling for 1080p/HiDPI screens.
 
 ---
 
