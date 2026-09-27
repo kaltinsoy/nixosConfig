@@ -378,37 +378,49 @@ in
     ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0015", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i ${./firmware}/xusb_xse.hex -p $env{BUSNUM},$env{DEVNUM}"
 
     # Stage 2: Initialized Cypress FX2 / Xilinx Platform Cable USB (re-enumerates as 03fd:0008)
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0008", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTR{idVendor}=="03fd", ATTR{idProduct}=="0008", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0008", MODE="0666", GROUP="plugdev", TAG+="uaccess"
 
     # Fallback for all 03fd Xilinx devices
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="03fd", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTR{idVendor}=="03fd", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", MODE="0666", GROUP="plugdev", TAG+="uaccess"
 
     # Digilent Adept USB devices (JTAG cables & boards)
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1443", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTR{idVendor}=="1443", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTRS{idVendor}=="1443", MODE="0666", GROUP="plugdev", TAG+="uaccess"
 
     # Xilinx USB cable (Platform Cable USB II — FTDI-based)
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="6010", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6011", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="6011", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6011", MODE="0666", GROUP="plugdev", TAG+="uaccess"
 
     # Gowin Tang Nano / Tang Primer (WCH CH347)
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55dd", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTR{idVendor}=="1a86", ATTR{idProduct}=="55dd", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55dd", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55de", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTR{idVendor}=="1a86", ATTR{idProduct}=="55de", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55de", MODE="0666", GROUP="plugdev", TAG+="uaccess"
 
     # Digilent JTAG (Arty, Nexys, etc.)
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6014", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="6014", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6014", MODE="0666", GROUP="plugdev", TAG+="uaccess"
 
     # OpenOCD generic FTDI
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="6001", MODE="0666", GROUP="plugdev", TAG+="uaccess"
     SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", MODE="0666", GROUP="plugdev", TAG+="uaccess"
   '';
+
+  # ── Groups for hardware programmers ──────────────────────────────────
+  users.groups.plugdev = {};
 
   # ── Environment variables ─────────────────────────────────────────────
   environment.sessionVariables = {

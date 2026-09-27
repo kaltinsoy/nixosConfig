@@ -89,6 +89,8 @@
     ];
   };
 
+  users.groups.plugdev = {};
+
   # ── Essential system packages ─────────────────────────────────────────
   environment.systemPackages = with pkgs; [
     # Dev essentials
