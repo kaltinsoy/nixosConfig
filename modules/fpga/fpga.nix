@@ -344,32 +344,33 @@ in
 
   # ── udev rules for FPGA programmers ──────────────────────────────────
   services.udev.extraRules = ''
-    # Xilinx Cypress FX2 (Spartan-3E Starter Kit on-board USB JTAG)
-    # Stage 1: Uninitialized Cypress FX2 -> load firmware via fxload
-    ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0007", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -I /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -D %N"
-    ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0009", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -I /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -D %N"
-    ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="000b", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -I /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -D %N"
-    ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="000d", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -I /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -D %N"
-    ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="000f", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -I /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -D %N"
-    # Stage 2: Initialized Cypress FX2 / Xilinx Platform Cable USB
-    ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0008", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    # Xilinx Cypress FX2 (on-board USB JTAG) — Stage 1: load firmware
+    # fxload >= 1.0 uses -p bus,addr instead of legacy -D /dev/... flag
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0007", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -p $env{BUSNUM},$env{DEVNUM}"
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0009", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -p $env{BUSNUM},$env{DEVNUM}"
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="000b", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -p $env{BUSNUM},$env{DEVNUM}"
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="000d", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -p $env{BUSNUM},$env{DEVNUM}"
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="000f", RUN+="${pkgs.fxload}/bin/fxload -v -t fx2 -i /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/xusb_emb.hex -p $env{BUSNUM},$env{DEVNUM}"
+    # Stage 2: Initialized Cypress FX2 / Xilinx Platform Cable USB (re-enumerates as 03fd:0008)
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", ATTRS{idProduct}=="0008", MODE="0666", GROUP="plugdev", TAG+="uaccess"
 
     # Digilent Adept USB devices (JTAG cables & boards)
-    ATTRS{idVendor}=="1443", MODE="0666", GROUP="plugdev", TAG+="uaccess"
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="1443", MODE="0666", GROUP="plugdev", TAG+="uaccess"
 
-    # Xilinx USB cable (Platform Cable USB II)
-    ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", MODE="0660", GROUP="plugdev", TAG+="uaccess"
-    ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6011", MODE="0660", GROUP="plugdev", TAG+="uaccess"
-    # Xilinx FTDI-based cables
-    ATTRS{idVendor}=="03fd", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+    # Xilinx USB cable (Platform Cable USB II — FTDI-based)
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6011", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+    # Fallback: any remaining 03fd device (after firmware load)
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="03fd", MODE="0660", GROUP="plugdev", TAG+="uaccess"
     # Gowin Tang Nano / Tang Primer (WCH CH347)
-    ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55dd", MODE="0660", GROUP="plugdev", TAG+="uaccess"
-    ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55de", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55dd", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55de", MODE="0660", GROUP="plugdev", TAG+="uaccess"
     # Digilent JTAG (Arty, Nexys, etc.)
-    ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6014", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6014", MODE="0660", GROUP="plugdev", TAG+="uaccess"
     # OpenOCD generic FTDI
-    ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+    ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", MODE="0660", GROUP="plugdev", TAG+="uaccess"
   '';
+
 
   # ── Environment variables ─────────────────────────────────────────────
   environment.sessionVariables = {
