@@ -139,6 +139,22 @@ let
         fi
       done
       export LD_LIBRARY_PATH="$COMPAT_DIR:/lib:/usr/lib:/lib64:/usr/lib64''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+      # Ensure Qt4 configuration exists for comfortable UI font scaling on HiDPI/1080p
+      FONT_SIZE="''${ISE_FONT_SIZE:-13}"
+      if [ -f "$HOME/.config/Trolltech.conf" ]; then
+        if grep -q "^font=" "$HOME/.config/Trolltech.conf"; then
+          [ -n "$ISE_FONT_SIZE" ] && sed -i "s/^font=.*/font=\"DejaVu Sans,$FONT_SIZE,-1,5,50,0,0,0,0,0\"/" "$HOME/.config/Trolltech.conf"
+        else
+          sed -i "/^\[Qt\]/a font=\"DejaVu Sans,$FONT_SIZE,-1,5,50,0,0,0,0,0\"\nfontPath=@Invalid()" "$HOME/.config/Trolltech.conf"
+        fi
+      else
+        mkdir -p "$HOME/.config"
+        cat <<EOF > "$HOME/.config/Trolltech.conf"
+[Qt]
+font="DejaVu Sans,$FONT_SIZE,-1,5,50,0,0,0,0,0"
+fontPath=@Invalid()
+EOF
+      fi
       ISE_ROOT="''${ISE_ROOT:-/opt/Xilinx/14.7/ISE_DS}"
       if [ -f "$ISE_ROOT/settings64.sh" ]; then
         source "$ISE_ROOT/settings64.sh" "$ISE_ROOT" >/dev/null 2>&1
@@ -185,6 +201,22 @@ let
         fi
       done
       export LD_LIBRARY_PATH="$COMPAT_DIR:/lib:/usr/lib:/lib64:/usr/lib64''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+      # Ensure Qt4 configuration exists for comfortable UI font scaling on HiDPI/1080p
+      FONT_SIZE="''${ISE_FONT_SIZE:-13}"
+      if [ -f "$HOME/.config/Trolltech.conf" ]; then
+        if grep -q "^font=" "$HOME/.config/Trolltech.conf"; then
+          [ -n "$ISE_FONT_SIZE" ] && sed -i "s/^font=.*/font=\"DejaVu Sans,$FONT_SIZE,-1,5,50,0,0,0,0,0\"/" "$HOME/.config/Trolltech.conf"
+        else
+          sed -i "/^\[Qt\]/a font=\"DejaVu Sans,$FONT_SIZE,-1,5,50,0,0,0,0,0\"\nfontPath=@Invalid()" "$HOME/.config/Trolltech.conf"
+        fi
+      else
+        mkdir -p "$HOME/.config"
+        cat <<EOF > "$HOME/.config/Trolltech.conf"
+[Qt]
+font="DejaVu Sans,$FONT_SIZE,-1,5,50,0,0,0,0,0"
+fontPath=@Invalid()
+EOF
+      fi
       ISE_ROOT="''${ISE_ROOT:-/opt/Xilinx/14.7/ISE_DS}"
       if [ -f "$ISE_ROOT/settings64.sh" ]; then
         source "$ISE_ROOT/settings64.sh" "$ISE_ROOT" >/dev/null 2>&1
