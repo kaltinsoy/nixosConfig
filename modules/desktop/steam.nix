@@ -23,8 +23,9 @@
   # Feral Interactive GameMode for system optimizations during gaming
   programs.gamemode.enable = true;
 
-  # Gaming utilities (ProtonUp-Qt for managing Proton/Wine versions)
+  # Gaming & Windows compatibility utilities
   environment.systemPackages = with pkgs; [
-    protonup-qt
+    protonup-qt     # Manage Proton-GE and Luxtorpeda versions
+    bottles         # Wine prefix and environment manager for Windows apps & games
   ];
 }

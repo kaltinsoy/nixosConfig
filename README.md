@@ -113,6 +113,7 @@ nixos-config/
 | **GameMode** | Feral Interactive daemon optimizing CPU governor and scheduler priority while gaming. |
 | **Gamescope** | Micro-compositor session for resolution scaling, HDR, and window sandboxing. |
 | **Protontricks & Winetricks** | Wine/Proton prefix utility for installing Windows game dependencies. |
+| **Bottles & ProtonUp-Qt** | Graphical Wine prefix manager for Windows applications/games and Proton version management. |
 
 ### 5. Audio Enhancement (ThinkPad T480s Speakers)
 
