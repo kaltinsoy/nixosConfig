@@ -21,6 +21,26 @@
         "type": "github"
       }
     },
+    "claude-desktop": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790632875,
+        "narHash": "sha256-ovY0ssXI4mfcLMa/bS5azndpke3qa0QOOxJgmj7sAXw=",
+        "owner": "poeck",
+        "repo": "claude-desktop-nix-flake",
+        "rev": "55ba585546fe222bf18f391a98c1ee60f79684d2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "poeck",
+        "repo": "claude-desktop-nix-flake",
+        "type": "github"
+      }
+    },
     "flake-utils": {
       "inputs": {
         "systems": "systems"
@@ -46,11 +66,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790819692,
-        "narHash": "sha256-rvubAPbh3QCliic3sAK+CXTrPCGgJstY52OTs/5H1J4=",
+        "lastModified": 1790883051,
+        "narHash": "sha256-g84X5VU81CZAgY7Q0m1RrdvwNIoFd4UzKG9YaORuRFE=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "c8ecc29e5175452bee4a2aa1ba2383856d795338",
+        "rev": "d85475546a5f6696233bba981933e2227a584047",
         "type": "github"
       },
       "original": {
@@ -135,11 +155,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1790689126,
-        "narHash": "sha256-ilerN1WLSvF+HMjziC/Wv99J5y02maDH+6hZPwsORKg=",
+        "lastModified": 1790822859,
+        "narHash": "sha256-69xHQhAeMAD2wDXO7T2pcOZIF9Sga2W+JkmY2a11Ops=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "b4fd65b198c599cbe814fcb9f42d25d021595ec9",
+        "rev": "c59305bab2065cfecc4944690d9eedbb56f3a9fa",
         "type": "github"
       },
       "original": {
@@ -168,6 +188,7 @@
     "root": {
       "inputs": {
         "antigravity-nix": "antigravity-nix",
+        "claude-desktop": "claude-desktop",
         "home-manager": "home-manager",
         "nixos-06cb-009a-fingerprint-sensor": "nixos-06cb-009a-fingerprint-sensor",
         "nixos-hardware": "nixos-hardware",

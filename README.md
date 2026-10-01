@@ -85,7 +85,7 @@ nixos-config/
 | Component | Purpose |
 | :--- | :--- |
 | **Neovim (NvChad)** | Extensible modal text editor configured with the Catppuccin Mocha theme. |
-| **Claude Code & Antigravity** | Autonomous AI coding assistants (`claude` CLI and Antigravity IDE) for pair-programming and refactoring. |
+| **Claude Desktop, Claude Code & Antigravity** | Anthropic's Claude Desktop GUI, Claude Code CLI (`claude`), and Antigravity IDE for AI-assisted programming. |
 | **LSP Servers** | `nixd` (Nix), `pyright` (Python), `clang-tools` (C/C++), `rust-analyzer` (Rust), `typescript-language-server` (TS/JS), `bash-language-server` (Bash), `yaml-language-server` (YAML), `taplo` (TOML), `marksman` (Markdown). |
 | **Formatters & Linters** | `nixfmt`, `clang-format`, `shfmt`, `shellcheck`, `stylua`, `black`, `isort`, `ruff`, `rustfmt`, `prettier`, `verilator`. |
 

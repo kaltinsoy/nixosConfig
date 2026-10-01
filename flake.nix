@@ -46,9 +46,15 @@
       url = "github:jacopone/antigravity-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # ── Claude Desktop ────────────────────────────────────────────────────
+    claude-desktop = {
+      url = "github:poeck/claude-desktop-nix-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-hardware, zen-browser, spicetify-nix, nvchad-starter, nixos-06cb-009a-fingerprint-sensor, antigravity-nix, ... } @ inputs:
+  outputs = { self, nixpkgs, home-manager, nixos-hardware, zen-browser, spicetify-nix, nvchad-starter, nixos-06cb-009a-fingerprint-sensor, antigravity-nix, claude-desktop, ... } @ inputs:
     let
       system = "x86_64-linux";
       pkgs   = nixpkgs.legacyPackages.${system};
@@ -70,6 +76,8 @@
           # Synaptics 06cb:009a Match-on-Host fingerprint reader module
           nixos-06cb-009a-fingerprint-sensor.nixosModules."06cb-009a-fingerprint-sensor"
 
+          claude-desktop.nixosModules.default
+
           ./hosts/default/configuration.nix
 
           home-manager.nixosModules.home-manager
@@ -79,7 +87,7 @@
               useUserPackages     = true;
               backupFileExtension = "backup";
               extraSpecialArgs = {
-                inherit inputs username spicetify-nix zen-browser nvchad-starter antigravity-nix;
+                inherit inputs username spicetify-nix zen-browser nvchad-starter antigravity-nix claude-desktop;
               };
               users.${username} = import ./home/home.nix;
             };

@@ -72,6 +72,7 @@
   nixpkgs = {
     config.allowUnfree = true;
     overlays = [
+      inputs.claude-desktop.overlays.default
       (final: prev: {
         # Upstream verilator 5.052 test suite links against systemc with C++20 ABI mismatch
         verilator = prev.verilator.overrideAttrs (_: {
@@ -80,6 +81,9 @@
       })
     ];
   };
+
+  # ── Claude Desktop ────────────────────────────────────────────────────
+  programs.claude-desktop.enable = true;
 
   # ── User account ──────────────────────────────────────────────────────
   users.users.${username} = {
