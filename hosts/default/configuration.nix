@@ -69,7 +69,17 @@
     };
   };
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs = {
+    config.allowUnfree = true;
+    overlays = [
+      (final: prev: {
+        # Upstream verilator 5.052 test suite links against systemc with C++20 ABI mismatch
+        verilator = prev.verilator.overrideAttrs (_: {
+          doCheck = false;
+        });
+      })
+    ];
+  };
 
   # ── User account ──────────────────────────────────────────────────────
   users.users.${username} = {
