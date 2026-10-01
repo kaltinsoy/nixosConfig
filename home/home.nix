@@ -17,6 +17,7 @@
     packages = with pkgs; [
       # Dev tools & IDEs
       antigravity-nix.packages.${pkgs.system}.default
+      claude-code    # Anthropic's agentic coding CLI (claude)
       gh             # GitHub CLI
       git-credential-oauth
       lazygit
