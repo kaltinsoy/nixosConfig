@@ -38,9 +38,6 @@
     openocd                # JTAG / SWD probes
   ];
 
-  # ── Firmware update (fwupd) — see lenovo.nix for more ────────────────
-  services.fwupd.enable = true;
-
   # ── Flatpak (optional; useful for Burp Suite Pro, etc.) ───────────────
   services.flatpak.enable = true;
   xdg.portal = {
@@ -53,7 +50,4 @@
 
   # ── Keybase (optional) ────────────────────────────────────────────────
   # services.keybase.enable = true;
-
-  # ── Thermald (Intel thermal daemon) ──────────────────────────────────
-  services.thermald.enable = true;
 }

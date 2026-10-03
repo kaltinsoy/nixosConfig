@@ -1,6 +1,6 @@
 # ThinkPad T480s — NixOS Workstation Configuration
 
-A modular, reproducible, production-ready NixOS flake configuration tailored specifically for the **Lenovo ThinkPad T480s (`sumatra`)** running **GNOME on Wayland**.
+A modular, reproducible, production-ready NixOS flake configuration tailored specifically for the **Lenovo ThinkPad T480s (`sumatra`)** (single internal battery, `BAT0`) running **GNOME on Wayland**.
 
 Engineered for:
 - **FPGA Development & Hardware Design**: Open-source tools (Yosys, Nextpnr, Verilator) + full FHS wrappers for AMD/Xilinx Vivado 2026.1, Vitis 2026.1, and Gowin EDA.
@@ -13,7 +13,7 @@ Engineered for:
 
 ## Quick Command Reference
 
-Your system includes custom shell binaries and aliases configured in `$PATH`:
+Your system includes custom shell scripts (installed system-wide from `configuration.nix`, so they also work with `sudo` and in non-interactive shells):
 
 | Command | Full Action | When to Use |
 | :--- | :--- | :--- |
@@ -37,17 +37,18 @@ nixos-config/
 │       └── hardware-configuration.nix # T480s hardware configuration (Intel 8th-gen, NVMe SSD, graphics)
 ├── modules/
 │   ├── system/
-│   │   ├── boot.nix                # systemd-boot, latest Linux kernel, IOMMU, tmpfs
+│   │   ├── boot.nix                # systemd-boot, default stable Linux kernel, IOMMU, tmpfs
 │   │   ├── networking.nix          # NetworkManager, WireGuard, firewall, SSH, Avahi
 │   │   ├── locale.nix              # Timezone (Europe/Istanbul), UTF-8, Turkish Q keyboard
 │   │   ├── security.nix            # PAM (06cb:009a fingerprint + Howdy face unlock), sudo, polkit
-│   │   └── services.nix            # PipeWire audio, Bluetooth, CUPS printing, fwupd, Flatpak
+│   │   └── services.nix            # PipeWire audio, Bluetooth, CUPS printing, Flatpak
 │   ├── desktop/
 │   │   ├── gnome.nix               # GNOME Wayland desktop, GDM, core utilities, bloat exclusion
 │   │   ├── fonts.nix               # Nerd Fonts (JetBrainsMono, FiraCode), Inter, Noto Color Emoji, grayscale AA
 │   │   └── steam.nix               # Steam, Gamescope session, GameMode daemon, Protontricks, firewall rules
 │   ├── hardware/
-│   │   └── lenovo.nix              # TLP power & battery thresholds, throttled undervolt, thinkfan, WWAN, 06cb:009a
+│   │   ├── lenovo.nix              # TLP power & battery thresholds, throttled undervolt, thinkfan, WWAN, 06cb:009a
+│   │   └── tlp-profile.sh          # `tlp-profile` / `ac-bypass` charge-threshold presets
 │   ├── virt/
 │   │   └── qemu-kvm.nix            # Libvirt/QEMU, UEFI/OVMF, swtpm, Docker, Distrobox, Looking Glass
 │   ├── fpga/
@@ -55,7 +56,7 @@ nixos-config/
 │   └── security-tools/
 │       └── cybersec.nix            # Containerized / VM-isolated ParrotOS security research lab
 └── home/
-    ├── home.nix                    # Home Manager root: packages (Anki, Cloudflared, EasyEffects), Git, SSH, aliases
+    ├── home.nix                    # Home Manager root: packages (Anki, Cloudflared, EasyEffects), Git, SSH, shell config
     ├── neovim/
     │   └── neovim.nix              # NvChad (pinned starter) + LSP servers + formatters (clang-format, shfmt, ruff)
     ├── apps/
@@ -174,9 +175,9 @@ Configured using the 720p HD Integrated Camera (`/dev/v4l/by-path/pci-0000:00:14
 - *Note*: `linux-enable-ir-emitter` is disabled because the T480s 160x120 IR sensor cannot stream frames under Linux UVC and triggers camera LED latching.
 
 ### 3. Battery Management & Calibration (TLP + `tlp-profile`)
-The single internal battery (`BAT0`) is configured in **Conservation Mode** (starts charging below 75%, stops at 80%) in [lenovo.nix](file:///home/koray/nixos-config/modules/hardware/lenovo.nix).
+The single internal battery (`BAT0`) defaults to **Raw AC mode** (starts charging below 25%, stops at 30%) in [lenovo.nix](file:///home/koray/nixos-config/modules/hardware/lenovo.nix), since the laptop lives on a dock at home and uses a USB-C PD powerbank outside.
 
-A custom [`tlp-profile`](file:///home/koray/.local/bin/tlp-profile) script (also aliased as `ac-bypass`) provides manual one-command profile switching:
+A custom [`tlp-profile`](modules/hardware/tlp-profile.sh) script (packaged by [lenovo.nix](modules/hardware/lenovo.nix); also available as `ac-bypass`) provides manual one-command profile switching. It needs no `sudo`: the udev rule in `lenovo.nix` makes the threshold files writable.
 
 | Command | Profile | Thresholds | Use case |
 | :--- | :--- | :--- | :--- |
@@ -200,7 +201,7 @@ tlp-profile full
 ```
 
 > [!NOTE]
-> All three profiles switch instantly without rebooting. Thresholds persist in hardware until next change.
+> All three profiles switch instantly without rebooting. They are temporary: TLP re-applies the `lenovo.nix` defaults (25/30) on the next boot, resume or power-source event. Change the defaults in `lenovo.nix` to make a profile permanent.
 
 - **Check detailed battery health**:
   ```bash

@@ -70,7 +70,7 @@
         specialArgs = { inherit inputs username hostname; };
 
         modules = [
-          # ThinkPad T480s hardware preset (Intel 8th-gen, dual battery, WWAN slot)
+          # ThinkPad T480s hardware preset (Intel 8th-gen, single battery, WWAN slot)
           nixos-hardware.nixosModules.lenovo-thinkpad-t480s
 
           # Synaptics 06cb:009a Match-on-Host fingerprint reader module

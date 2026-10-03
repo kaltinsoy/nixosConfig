@@ -1,5 +1,8 @@
 { inputs, username, hostname, pkgs, lib, config, ... }:
 
+let
+  flakeDir = "/home/${username}/nixos-config";
+in
 {
   imports = [
     ./hardware-configuration.nix   # Replace with: nixos-generate-config output
@@ -41,15 +44,6 @@
       dates     = "weekly";
       options   = "--delete-older-than 7d";
     };
-  };
-
-  # ── Shell Aliases ─────────────────────────────────────────────────────
-  environment.shellAliases = {
-    nrs = "sudo nixos-rebuild switch --flake /home/koray/nixos-config#sumatra";
-    nrb = "sudo nixos-rebuild boot --flake /home/koray/nixos-config#sumatra";
-    nrt = "sudo nixos-rebuild test --flake /home/koray/nixos-config#sumatra";
-    nclean = "nclean";
-    ncg = "nclean";
   };
 
   # ── Prune old NixOS system generations (keep last 3) ──────────────────
@@ -120,9 +114,9 @@
     # Nix tooling & rebuild scripts
     nil nixfmt nix-tree nix-diff
     nix-output-monitor nvd
-    (writeShellScriptBin "nrs" ''exec sudo nixos-rebuild switch --flake /home/koray/nixos-config#sumatra "$@"'')
-    (writeShellScriptBin "nrb" ''exec sudo nixos-rebuild boot --flake /home/koray/nixos-config#sumatra "$@"'')
-    (writeShellScriptBin "nrt" ''exec sudo nixos-rebuild test --flake /home/koray/nixos-config#sumatra "$@"'')
+    (writeShellScriptBin "nrs" ''exec sudo nixos-rebuild switch --flake ${flakeDir}#${hostname} "$@"'')
+    (writeShellScriptBin "nrb" ''exec sudo nixos-rebuild boot --flake ${flakeDir}#${hostname} "$@"'')
+    (writeShellScriptBin "nrt" ''exec sudo nixos-rebuild test --flake ${flakeDir}#${hostname} "$@"'')
     (writeShellScriptBin "nclean" ''
       set -e
       echo ":: [1/4] Removing obsolete user profile generations..."
@@ -136,6 +130,7 @@
       echo ":: Cleanup complete!"
     '')
     (writeShellScriptBin "ncg" ''exec nclean "$@"'')
+    (writeShellScriptBin "nfu" ''exec nix flake update --flake ${flakeDir} "$@"'')
 
     # Terminal multiplexer
     tmux zellij

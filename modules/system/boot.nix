@@ -7,7 +7,6 @@
       enable             = true;
       configurationLimit = 3;
     };
-    grub.configurationLimit = 3;
     efi.canTouchEfiVariables = true;
   };
 
@@ -23,9 +22,7 @@
     "nvme.noacpi=1"
   ];
 
-  # Extra kernel modules — kvm-intel and acpi_call are also set in lenovo.nix;
-  # they merge safely via mkMerge, no conflict.
-  boot.kernelModules      = [ "kvm-intel" ];
+  # kvm-intel comes from hardware-configuration.nix; acpi_call is loaded in lenovo.nix.
   boot.extraModulePackages = with config.boot.kernelPackages; [ acpi_call ];
 
   # ── tmpfs on /tmp ─────────────────────────────────────────────────────

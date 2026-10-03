@@ -12,10 +12,9 @@
       ];
     };
 
-    # Firewall — open only what you need
+    # Firewall — open only what you need (SSH is opened by services.openssh)
     firewall = {
       enable          = true;
-      allowedTCPPorts = [ 22 ];   # SSH
       # WireGuard and VPN connections require loose reverse path filtering;
       # strict (1) drops return traffic when routes/gateways change
       checkReversePath = "loose";

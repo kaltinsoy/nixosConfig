@@ -16,7 +16,7 @@
     # ── Common home packages ──────────────────────────────────────────
     packages = with pkgs; [
       # Dev tools & IDEs
-      antigravity-nix.packages.${pkgs.system}.default
+      antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
       claude-code    # Anthropic's agentic coding CLI (claude)
       gh             # GitHub CLI
       git-credential-oauth
@@ -245,12 +245,6 @@
   programs.bash = {
     enable = true;
     shellAliases = {
-      nrs = "sudo nixos-rebuild switch --flake /home/koray/nixos-config#sumatra";
-      nrb = "sudo nixos-rebuild boot --flake /home/koray/nixos-config#sumatra";
-      nrt = "sudo nixos-rebuild test --flake /home/koray/nixos-config#sumatra";
-      nfu = "nix flake update --flake /home/koray/nixos-config";
-      nclean = "nclean";
-      ncg = "nclean";
       logisim-evo = "logisim-evolution";
       logisim     = "logisim-evolution";
     };

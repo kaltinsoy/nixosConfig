@@ -1,5 +1,16 @@
 { pkgs, lib, config, ... }:
 
+let
+  # Charge-threshold presets (raw-ac / normal / full). Installed from the store so
+  # it is reproducible and root-owned; `ac-bypass on|off` is kept as an alias.
+  tlpProfile = pkgs.writeShellApplication {
+    name          = "tlp-profile";
+    runtimeInputs = [ pkgs.coreutils pkgs.tlp-pd ];
+    excludeShellChecks = [ "SC2015" ];
+    text          = builtins.readFile ./tlp-profile.sh;
+  };
+  acBypass = pkgs.writeShellScriptBin "ac-bypass" ''exec ${tlpProfile}/bin/tlp-profile "$@"'';
+in
 {
   # ══════════════════════════════════════════════════════════════════════
   #  ThinkPad T480s — Hardware Management
@@ -24,11 +35,13 @@
       CPU_HWP_DYN_BOOST_ON_BAT = 0;
 
       # T480s — single battery (BAT0 only)
-      # Equivalent to Lenovo Vantage "Battery Conservation Mode":
-      # Stops charging at 80% on AC to prevent battery degradation;
-      # Re-starts charging when plugged in below 75%.
-      START_CHARGE_THRESH_BAT0 = 75;
-      STOP_CHARGE_THRESH_BAT0  = 80;
+      # Default is "raw AC" (dock at home, powerbank outside): the battery idles
+      # at ~30% and the laptop runs straight from the adapter. TLP re-applies
+      # these on boot/resume/power events, so they must live here — `tlp-profile`
+      # only changes them until the next reset. Use `tlp-profile normal|full`
+      # (75/80, 96/100) before leaving the desk.
+      START_CHARGE_THRESH_BAT0 = 25;
+      STOP_CHARGE_THRESH_BAT0  = 30;
       NATACPI_ENABLE = 1;
       TPACPI_ENABLE  = 1;
       TPSMAPI_ENABLE = 0;   # T480s uses ACPI, not SMAPI
@@ -181,6 +194,8 @@
     # Power / Backlight / Audio
     brightnessctl   # backlight control (replaces light)
     tlp-pd          # tlpctl CLI and D-Bus bridge
+    tlpProfile      # tlp-profile: raw-ac / normal / full charge presets
+    acBypass        # ac-bypass on|off
     pulseaudio      # pactl CLI for audio routing and LED sync
 
     # Logitech Gaming Mouse GUI (libratbag / ratbagd frontend)
@@ -202,7 +217,7 @@
   boot.kernelModules = [
     "acpi_call"     # battery/fan ACPI control
     "thinkpad_acpi" # ThinkPad extras (fan, hotkeys, LED)
-    # kvm-intel already set in boot.nix
+    # kvm-intel is set in hardware-configuration.nix
   ];
   # acpi_call is already added to boot.extraModulePackages in boot.nix
 
@@ -224,7 +239,7 @@
       RUN+="${pkgs.coreutils}/bin/chgrp video /sys/class/backlight/%k/brightness", \
       RUN+="${pkgs.coreutils}/bin/chmod g+w   /sys/class/backlight/%k/brightness"
 
-    # ThinkPad battery charge threshold access without root (for tlp-profile / ac-bypass)
+    # ThinkPad battery charge threshold access without root (tlp-profile writes these directly)
     ACTION=="add|change", SUBSYSTEM=="power_supply", KERNEL=="BAT[0-9]*", \
       RUN+="${pkgs.coreutils}/bin/chmod 0666 /sys/class/power_supply/%k/charge_control_start_threshold /sys/class/power_supply/%k/charge_control_end_threshold /sys/class/power_supply/%k/charge_start_threshold /sys/class/power_supply/%k/charge_stop_threshold"
 
