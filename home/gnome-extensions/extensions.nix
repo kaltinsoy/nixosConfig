@@ -249,9 +249,11 @@
     "org/gnome/desktop/app-folders" = {
       folder-children = [
         "Internet"
+        "Communication"
         "Development"
         "Office"
         "Media"
+        "Gaming"
         "Utilities"
         "System"
       ];
@@ -262,10 +264,9 @@
       apps = [
         "zen-beta.desktop"
         "zen-browser.desktop"
+        "chromium-browser.desktop"
         "firefox.desktop"
         "tor-browser.desktop"
-        "vesktop.desktop"
-        "element-desktop.desktop"
         "bitwarden.desktop"
         "org.onionshare.OnionShare.desktop"
         "com.nextcloud.desktopclient.nextcloud.desktop"
@@ -273,23 +274,47 @@
       ];
     };
 
+    "org/gnome/desktop/app-folders/folders/Communication" = {
+      name = "Communication";
+      apps = [
+        "org.telegram.desktop.desktop"
+        "signal.desktop"
+        "zapfast.desktop"
+        "vesktop.desktop"
+        "element-desktop.desktop"
+      ];
+    };
+
     "org/gnome/desktop/app-folders/folders/Development" = {
       name = "Development";
       apps = [
-        "dev.zed.Zed.desktop"
         "antigravity.desktop"
+        "com.anthropic.Claude.desktop"
         "nvim.desktop"
         "com.mitchellh.ghostty.desktop"
         "Alacritty.desktop"
         "org.gnome.Console.desktop"
         "org.gnome.Terminal.desktop"
+        "dev.zed.Zed.desktop"
         "ghidra.desktop"
         "imhex.desktop"
         "org.radare.iaito.desktop"
         "gtkwave.desktop"
         "xilinx-ise.desktop"
+        "xilinx-ise-scaled.desktop"
         "xilinx-impact.desktop"
         "looking-glass-client.desktop"
+        "in-network-ml.desktop"
+      ];
+    };
+
+    "org/gnome/desktop/app-folders/folders/Gaming" = {
+      name = "Gaming";
+      apps = [
+        "steam.desktop"
+        "com.usebottles.bottles.desktop"
+        "protonup-qt.desktop"
+        "protontricks.desktop"
       ];
     };
 
@@ -305,14 +330,16 @@
         "math.desktop"
         "base.desktop"
         "obsidian.desktop"
+        "md.obsidian.Obsidian.desktop"
         "PBE.QOwnNotes.desktop"
         "qownnotes.desktop"
+        "com.github.xournalpp.xournalpp.desktop"
+        "xournalpp.desktop"
+        "anki.desktop"
         "calibre-gui.desktop"
         "calibre-ebook-edit.desktop"
         "calibre-ebook-viewer.desktop"
         "calibre-lrfviewer.desktop"
-        "com.github.xournalpp.xournalpp.desktop"
-        "xournalpp.desktop"
       ];
     };
 
@@ -320,14 +347,18 @@
       name = "Media";
       apps = [
         "spotify.desktop"
+        "spotifast.desktop"
+        "com.github.wwmm.easyeffects.desktop"
         "vlc.desktop"
         "mpv.desktop"
         "gimp.desktop"
         "org.inkscape.Inkscape.desktop"
         "com.obsproject.Studio.desktop"
-        "org.gnome.Showtime.desktop"
-        "org.gnome.eog.desktop"
         "org.flameshot.Flameshot.desktop"
+        "org.gnome.Showtime.desktop"
+        "org.gnome.Decibels.desktop"
+        "org.gnome.Loupe.desktop"
+        "org.gnome.eog.desktop"
       ];
     };
 
@@ -342,12 +373,17 @@
         "org.gnome.Characters.desktop"
         "org.gnome.FileRoller.desktop"
         "org.gnome.Evince.desktop"
+        "org.gnome.Papers.desktop"
         "org.gnome.SimpleScan.desktop"
         "org.gnome.Snapshot.desktop"
         "ca.desrt.dconf-editor.desktop"
         "com.mattjakeman.ExtensionManager.desktop"
         "org.gnome.Extensions.desktop"
         "org.gnome.tweaks.desktop"
+        "org.gnome.ColorProfileViewer.desktop"
+        "org.gnome.font-viewer.desktop"
+        "org.gnome.seahorse.Application.desktop"
+        "howdy.desktop"
       ];
     };
 
@@ -356,10 +392,16 @@
       apps = [
         "org.gnome.Settings.desktop"
         "org.gnome.SystemMonitor.desktop"
+        "gnome-system-monitor-kde.desktop"
         "org.gnome.DiskUtility.desktop"
+        "org.gnome.baobab.desktop"
+        "org.gnome.Logs.desktop"
+        "org.gnome.Nautilus.desktop"
         "io.github.thetumultuousunicornofdarkness.cpu-x.desktop"
         "virt-manager.desktop"
         "remote-viewer.desktop"
+        "solaar.desktop"
+        "org.freedesktop.Piper.desktop"
         "htop.desktop"
         "btop.desktop"
         "bottom.desktop"
@@ -368,6 +410,7 @@
         "nm-connection-editor.desktop"
         "cups.desktop"
         "xterm.desktop"
+        "nixos-manual.desktop"
       ];
     };
   };
