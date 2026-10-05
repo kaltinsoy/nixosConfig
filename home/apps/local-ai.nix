@@ -83,7 +83,10 @@ in
         };
       };
     };
-    instructions = [ "${config.xdg.configHome}/opencode/memory-instructions.md" ];
+    instructions = [
+      "${config.xdg.configHome}/opencode/memory-instructions.md"
+      "${config.xdg.configHome}/opencode/web-instructions.md"
+    ];
     mcp.searxng = {
       type        = "local";
       command     = [ "${pkgs.nodejs}/bin/npx" "-y" "mcp-searxng" ];
@@ -112,5 +115,19 @@ in
       Keep each observation to one short sentence.
     - When the user says "remember ..." save it; when they say "forget ..." delete it.
     - If a stored fact turns out to be wrong, delete or correct it.
+  '';
+
+  xdg.configFile."opencode/web-instructions.md".text = ''
+    # Web research
+
+    - Search with the `searxng` tool, then fetch the most relevant pages.
+    - Stack Overflow / Stack Exchange pages return 403 to WebFetch (bot protection).
+      Do not retry them; use the official Stack Exchange API instead (JSON, no key needed):
+      - question: https://api.stackexchange.com/2.3/questions/{id}?site=stackoverflow&filter=withbody
+      - answers:  https://api.stackexchange.com/2.3/questions/{id}/answers?site=stackoverflow&filter=withbody&sort=votes
+      (for other sites change `site=`, e.g. superuser, askubuntu, unix)
+    - GitHub files: prefer raw.githubusercontent.com URLs.
+    - If a page stays blocked, say so and move on to another source; do not try to
+      bypass bot protection or CAPTCHAs.
   '';
 }

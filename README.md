@@ -95,7 +95,7 @@ nixos-config/
 | Application | Purpose |
 | :--- | :--- |
 | **Zen Browser** | Fast, privacy-centric Firefox fork featuring vertical tabs and split workspaces. |
-| **Firefox & Tor Browser** | Hardened secondary browser profile and anonymous onion-routed browsing. |
+| **Firefox, Chromium & Tor Browser** | Hardened secondary browser profiles, Chromium, and anonymous onion-routed browsing. |
 | **Bitwarden Desktop & CLI** | Open-source password manager with biometric unlock integration and `bw` CLI. |
 | **Anki** | Spaced repetition flashcard app for learning and memorization. |
 | **Obsidian & QOwnNotes** | Markdown note-taking suites with Nextcloud synchronization. |
