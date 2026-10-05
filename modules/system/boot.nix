@@ -33,4 +33,7 @@
 
   # ── Plymouth boot splash ──────────────────────────────────────────────
   boot.plymouth.enable = true;
+
+  # ── Supported Filesystems ─────────────────────────────────────────────
+  boot.supportedFilesystems = [ "nfs" ];
 }
