@@ -293,6 +293,20 @@ in
       glibc glib gcc-unwrapped.lib stdenv.cc.cc
       libGL libx11 libxrender zlib ncurses5
       openssl libxml2 libxslt
+
+      # X11, input & windowing libraries (needed by SDL2, Ren'Py, games)
+      libxi
+      libxcursor
+      libxrandr
+      libxinerama
+      libxext
+      libxfixes
+      libxscrnsaver
+      libxkbcommon
+
+      # Audio & multimedia
+      alsa-lib
+      libpulseaudio
     ];
   };
 
