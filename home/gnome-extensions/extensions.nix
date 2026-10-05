@@ -16,6 +16,7 @@
         "Vitals@CoreCoding.com"
         "grand-theft-focus@zalckos.github.com"
         "just-perfection-desktop@just-perfection"
+        "display-brightness-ddcutil@themightydeity.github.com"
       ];
       disabled-extensions = [
         "forge@jmmaranan.com"
@@ -160,6 +161,13 @@
       user-enabled           = false;
     };
 
+    # ── Brightness control using ddcutil (external monitors) ──────────
+    "org/gnome/shell/extensions/display-brightness-ddcutil" = {
+      button-location = 1; # 0 = top bar, 1 = Quick Settings (next to built-in slider)
+      # Serialised wrapper (see gnome.nix): parallel ddcutil calls drop monitors
+      ddcutil-binary-path = "/run/current-system/sw/bin/ddcutil-serial";
+    };
+
     # ── Just Perfection ────────────────────────────────────────────────
     "org/gnome/shell/extensions/just-perfection" = {
       activities-button              = false;
@@ -174,6 +182,9 @@
     # ── Mutter ─────────────────────────────────────────────────────────
     "org/gnome/mutter" = {
       overlay-key = "Super_L";
+      # Drag a window to the top edge to maximize, to left/right edges to half-tile.
+      # Tiling-manager extensions (Forge, Pop Shell) switch this off and can leave it off.
+      edge-tiling = true;
     };
 
     # ── Vitals ────────────────────────────────────────────────────────

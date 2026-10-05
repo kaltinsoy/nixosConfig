@@ -5,6 +5,7 @@
     ./neovim/neovim.nix
     ./apps/browsers.nix
     ./apps/media.nix
+    ./apps/local-ai.nix
     ./gnome-extensions/extensions.nix
   ];
 
@@ -49,6 +50,9 @@
       # Communication & Sync
       vesktop        # Discord (Vencord)
       element-desktop # Matrix client
+      telegram-desktop # Telegram (no autostart: do not enable "Launch at system start")
+      signal-desktop   # Signal (no autostart: keep "Open at login" off)
+      inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.default # ZapFast: native WhatsApp client (unofficial; no autostart)
       nextcloud-client
 
       # Password manager
@@ -206,6 +210,12 @@
       Hostname 192.168.122.100
       IdentityFile ~/.ssh/id_ed25519
       User root
+
+    # Fedora AI server (Ollama, Open WebUI, llama.cpp, Samba/NFS)
+    Host ryzenserver
+      Hostname 192.168.0.133
+      IdentityFile ~/.ssh/id_ed25519
+      User koray
 
     # Cloudflare Access SSH Proxy
     Host sshl.ras-pi.tr

@@ -93,6 +93,7 @@ in
       "dialout"       # USB/JTAG serial
       "plugdev"       # USB devices (openFPGALoader, Gowin)
       "video"         # backlight control via brightnessctl
+      "i2c"           # external monitor brightness via ddcutil (DDC/CI)
       "input"         # fingerprint reader udev access
     ];
   };

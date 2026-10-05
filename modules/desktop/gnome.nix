@@ -51,7 +51,23 @@
     gnomeExtensions.vitals
     gnomeExtensions.grand-theft-focus
     gnomeExtensions.blur-my-shell
+    gnomeExtensions.brightness-control-using-ddcutil
+
+    # External monitor brightness over DDC/CI (CLI + used by the extension)
+    ddcutil
+
+    # The brightness extension probes every monitor with parallel ddcutil
+    # processes, and ddcutil randomly answers "No monitor detected" for one of
+    # them. Serialising the calls behind a lock makes detection reliable.
+    (writeShellScriptBin "ddcutil-serial" ''
+      exec ${util-linux}/bin/flock -w 30 "''${XDG_RUNTIME_DIR:-/tmp}/ddcutil.lock" ${ddcutil}/bin/ddcutil "$@"
+    '')
   ];
+
+  # ── External monitor brightness (DDC/CI) ──────────────────────────────
+  # Loads i2c-dev and grants the "i2c" group access to /dev/i2c-*, so ddcutil
+  # can reach the monitors (user is added to "i2c" in configuration.nix).
+  hardware.i2c.enable = true;
 
   # Exclude bloat from GNOME default install
   # (also de-namespaced in nixpkgs-unstable)

@@ -52,6 +52,21 @@
       url = "github:poeck/claude-desktop-nix-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # ── ZapFast (native WhatsApp client, built from source) ───────────────
+    zapfast = {
+      url = "github:crmne/zapfast";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # ── Spotifast (native Spotify client) ─────────────────────────────────
+    # nixpkgs-unstable lags upstream (0.10.1 vs 0.12.0), so build from the release tag.
+    # Bump the tag to update: `nix flake lock --override-input spotifast github:crmne/spotifast/vX.Y.Z`
+    spotifast = {
+      url = "github:crmne/spotifast/v0.12.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.rust-overlay.follows = "zapfast/rust-overlay";
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, nixos-hardware, zen-browser, spicetify-nix, nvchad-starter, nixos-06cb-009a-fingerprint-sensor, antigravity-nix, claude-desktop, ... } @ inputs:
