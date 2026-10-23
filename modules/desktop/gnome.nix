@@ -51,6 +51,7 @@
     gnomeExtensions.vitals
     gnomeExtensions.grand-theft-focus
     gnomeExtensions.blur-my-shell
+    gnomeExtensions.top-panel-workspace-scroll   # scroll on the top bar to switch workspaces
     gnomeExtensions.brightness-control-using-ddcutil
 
     # External monitor brightness over DDC/CI (CLI + used by the extension)

@@ -175,14 +175,14 @@ Configured using the 720p HD Integrated Camera (`/dev/v4l/by-path/pci-0000:00:14
 - *Note*: `linux-enable-ir-emitter` is disabled because the T480s 160x120 IR sensor cannot stream frames under Linux UVC and triggers camera LED latching.
 
 ### 3. Battery Management & Calibration (TLP + `tlp-profile`)
-The single internal battery (`BAT0`) defaults to **Raw AC mode** (starts charging below 25%, stops at 30%) in [lenovo.nix](file:///home/koray/nixos-config/modules/hardware/lenovo.nix), since the laptop lives on a dock at home and uses a USB-C PD powerbank outside.
+The single internal battery (`BAT0`) defaults to **40% → 80%** (charges only when the battery is below 40%, then stops at 80%) in [lenovo.nix](file:///home/koray/nixos-config/modules/hardware/lenovo.nix), so docking never triggers a charge unless the battery actually needs it; above 40% the laptop just runs from AC. Outside it uses a USB-C PD powerbank.
 
 A custom [`tlp-profile`](modules/hardware/tlp-profile.sh) script (packaged by [lenovo.nix](modules/hardware/lenovo.nix); also available as `ac-bypass`) provides manual one-command profile switching. It needs no `sudo`: the udev rule in `lenovo.nix` makes the threshold files writable.
 
 | Command | Profile | Thresholds | Use case |
 | :--- | :--- | :--- | :--- |
-| `tlp-profile raw-ac` | **Raw AC Bypass** | 25% → 30% | Full AC pass-through, battery idle (≥30%) |
-| `tlp-profile normal` | **Normal Longevity** | 75% → 80% | Daily use, battery health preserved |
+| `tlp-profile normal` | **Normal (default)** | 40% → 80% | Daily use: charge only below 40%, up to 80%; otherwise run from AC |
+| `tlp-profile raw-ac` | **Raw AC Bypass** | 25% → 30% | Long docked sessions: AC pass-through, battery idles at ~30% |
 | `tlp-profile full` | **Full Charge** | 96% → 100% | Travel / long sessions away from power |
 | `tlp-profile status` | — | — | Show current power source, level, thresholds |
 
@@ -212,7 +212,7 @@ tlp-profile full
   ```bash
   sudo tlp recalibrate BAT0
   ```
-  *(TLP will charge to 100%, use the ThinkPad ACPI circuit to discharge to ~0%, and recharge to 100% uninterrupted, automatically restoring 75%/80% thresholds).*
+  *(TLP will charge to 100%, use the ThinkPad ACPI circuit to discharge to ~0%, and recharge to 100% uninterrupted, automatically restoring the 40%/80% thresholds).*
 - **Force One-Time Full Charge (100%)**:
   ```bash
   sudo tlp fullcharge BAT0

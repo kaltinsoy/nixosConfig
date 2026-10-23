@@ -72,6 +72,30 @@ in
         verilator = prev.verilator.overrideAttrs (_: {
           doCheck = false;
         });
+
+        # calibre 9.15.0 self-tests fail on current nixpkgs (4/551: missing speechd
+        # module, polish-container tests) — packaging issue, the app itself is fine.
+        calibre = prev.calibre.overrideAttrs (_: {
+          doInstallCheck = false;
+        });
+
+        # amaranth 0.5.10 pins pyvcd<0.5, but nixpkgs moved pyvcd to 0.5.0 and the
+        # runtime-deps check fails the build. Relax the pin until nixpkgs catches up.
+        pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+          (pyfinal: pyprev: {
+            amaranth = pyprev.amaranth.overridePythonAttrs (old: {
+              pythonRelaxDeps = (old.pythonRelaxDeps or [ ]) ++ [ "pyvcd" ];
+            });
+
+            # pyopenjtalk-plus (calibre → piper-tts dep): one test matches the old
+            # Python TypeError wording ("must be str"); Python 3.14 says "Expected str".
+            pyopenjtalk-plus = pyprev.pyopenjtalk-plus.overridePythonAttrs (old: {
+              disabledTests = (old.disabledTests or [ ]) ++ [
+                "test_run_njd_from_mecab_invalid_input_should_not_break_next_call"
+              ];
+            });
+          })
+        ];
       })
     ];
   };
@@ -102,6 +126,8 @@ in
 
   # ── Essential system packages ─────────────────────────────────────────
   environment.systemPackages = with pkgs; [
+    # ZapFast: native WhatsApp client (unofficial; no autostart), from its flake
+    inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.default
     # Dev essentials
     git git-lfs curl wget unzip p7zip
     htop btop fastfetch

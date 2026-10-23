@@ -22,8 +22,10 @@
     "nvme.noacpi=1"
   ];
 
-  # kvm-intel comes from hardware-configuration.nix; acpi_call is loaded in lenovo.nix.
-  boot.extraModulePackages = with config.boot.kernelPackages; [ acpi_call ];
+  # kvm-intel comes from hardware-configuration.nix.
+  # No acpi_call: the T480s's thinkpad_acpi already exposes charge thresholds and
+  # charge_behaviour (force-discharge / inhibit-charge) natively, and the out-of-tree
+  # module broke the kernel-modules build (nixpkgs now wants a per-module .ko.cer).
 
   # ── tmpfs on /tmp ─────────────────────────────────────────────────────
   boot.tmp = {

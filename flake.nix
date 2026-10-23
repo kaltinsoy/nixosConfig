@@ -54,16 +54,22 @@
     };
 
     # ── ZapFast (native WhatsApp client, built from source) ───────────────
+    # Pinned to a release tag. It MUST follow the system nixpkgs: GUI apps load
+    # the system Mesa from /run/opengl-driver, and a ZapFast built on its own older
+    # nixpkgs (older glibc) can't load that Mesa ("Found no glutin configs").
+    # The cost is a rebuild when `nfu` moves nixpkgs. To update, bump the tag:
+    #   nix flake lock --override-input zapfast github:crmne/zapfast/vX.Y.Z
     zapfast = {
-      url = "github:crmne/zapfast";
+      url = "github:crmne/zapfast/v0.19.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # ── Spotifast (native Spotify client) ─────────────────────────────────
-    # nixpkgs-unstable lags upstream (0.10.1 vs 0.12.0), so build from the release tag.
+    # nixpkgs-unstable lags upstream (upstream releases land there late), so build from the release tag.
     # Bump the tag to update: `nix flake lock --override-input spotifast github:crmne/spotifast/vX.Y.Z`
     spotifast = {
-      url = "github:crmne/spotifast/v0.12.0";
+      url = "github:crmne/spotifast/v0.14.1";
+      # Must follow the system nixpkgs for the same Mesa/glibc reason as ZapFast.
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.rust-overlay.follows = "zapfast/rust-overlay";
     };

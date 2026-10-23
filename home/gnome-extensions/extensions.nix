@@ -17,6 +17,7 @@
         "grand-theft-focus@zalckos.github.com"
         "just-perfection-desktop@just-perfection"
         "display-brightness-ddcutil@themightydeity.github.com"
+        "scroll-workspaces@gfxmonk.net"
       ];
       disabled-extensions = [
         "forge@jmmaranan.com"
@@ -30,7 +31,7 @@
         "zen-beta.desktop"
         "org.gnome.Console.desktop"
         "org.gnome.Nautilus.desktop"
-        "spotify.desktop"
+        "spotifast.desktop"
       ];
     };
 
@@ -271,6 +272,7 @@
         "org.onionshare.OnionShare.desktop"
         "com.nextcloud.desktopclient.nextcloud.desktop"
         "nextcloud.desktop"
+        "org.qbittorrent.qBittorrent.desktop"
       ];
     };
 

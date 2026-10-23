@@ -1,7 +1,8 @@
 # tlp-profile: switch ThinkPad T480s battery charge-threshold presets.
 #
-#   raw-ac   25% / 30%   AC pass-through, battery idles (default in lenovo.nix)
-#   normal   75% / 80%   daily use, battery health preserved
+#   normal   40% / 80%   daily use (default in lenovo.nix): charges only below 40%,
+#                        up to 80%; above 40% on AC the battery just idles
+#   raw-ac   25% / 30%   AC pass-through for long docked sessions, battery idles at ~30%
 #   full     96% / 100%  travel / long sessions away from power
 #   status               show power source, level, thresholds
 #
@@ -48,7 +49,7 @@ set_thresholds() {
     fi
 
     # The kernel rejects start >= stop, so write whichever bound moves away
-    # from the other one first (e.g. 25/30 -> 75/80 must raise stop first).
+    # from the other one first (e.g. 25/30 -> 40/80 must raise stop first).
     cur_stop=$(read_threshold end stop)
     if [[ "$cur_stop" =~ ^[0-9]+$ ]] && [ "$stop" -gt "$cur_stop" ]; then
         write_sysfs "$BAT_DIR/charge_control_end_threshold" "$stop"
@@ -69,9 +70,14 @@ set_thresholds() {
     fi
 }
 
-# Drop any manual tlpctl override so TLP follows the power source again.
+# Put the power profile back to the default for the current source
+# (performance on AC, balanced on battery — see TLP_PROFILE_AC/BAT in lenovo.nix).
 reset_power_profile() {
-    tlpctl balanced >/dev/null 2>&1 || true
+    if [ "$(read_sysfs "$AC_DIR/online")" = "1" ]; then
+        tlpctl performance >/dev/null 2>&1 || true
+    else
+        tlpctl balanced >/dev/null 2>&1 || true
+    fi
 }
 
 show_status() {
@@ -106,7 +112,7 @@ show_status() {
     if [ "$stop_th" -le 35 ] && [ "$stop_th" -gt 0 ] 2>/dev/null; then
         echo -e "• Charge Profile:   ${GREEN}RAW-AC / BYPASS${RESET} (AC pass-through, battery idle)"
     elif [ "$stop_th" -ge 70 ] && [ "$stop_th" -le 85 ] 2>/dev/null; then
-        echo -e "• Charge Profile:   ${CYAN}NORMAL LONGEVITY${RESET} (75-80%)"
+        echo -e "• Charge Profile:   ${CYAN}NORMAL${RESET} (charge below 40%, up to 80%)"
     elif [ "$stop_th" -ge 95 ] 2>/dev/null; then
         echo -e "• Charge Profile:   ${YELLOW}FULL CHARGE${RESET} (travel, 100%)"
     else
@@ -139,9 +145,10 @@ apply_raw_ac() {
 
 apply_normal() {
     echo -e "${BOLD}[Setting Profile: Normal Battery Longevity]${RESET}"
-    set_thresholds 75 80
+    set_thresholds 40 80
     reset_power_profile
-    echo -e "${GREEN}✓ Thresholds set: start 75% | stop 80%${RESET}"
+    echo -e "${GREEN}✓ Thresholds set: start 40% | stop 80%${RESET}"
+    echo "  Plugged in above 40% it just runs from AC; below 40% it charges to 80%."
 }
 
 apply_full() {
@@ -157,7 +164,7 @@ print_help() {
     echo ""
     echo "Commands:"
     echo "  raw-ac, bypass, on   AC pass-through, battery idles at 25-30%"
-    echo "  normal, off          Longevity thresholds (75% - 80%)"
+    echo "  normal, off          Default: charge only below 40%, up to 80%"
     echo "  full, 100            Charge to 100% (for travel)"
     echo "  status               Show battery, AC, thresholds and CPU mode"
     echo "  help, -h, --help     Show this help message"

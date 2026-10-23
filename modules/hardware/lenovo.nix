@@ -25,6 +25,12 @@ in
   services.tlp = {
     enable = true;
     settings = {
+      # Power profile per source. AUTO_SWITCH = 1 re-applies these on every AC/battery
+      # change, even after a manual `tlpctl`/GNOME Power Mode choice (2 would keep it).
+      TLP_AUTO_SWITCH = 1;
+      TLP_PROFILE_AC  = "performance";
+      TLP_PROFILE_BAT = "balanced";
+
       CPU_SCALING_GOVERNOR_ON_AC  = "performance";
       CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
       CPU_ENERGY_PERF_POLICY_ON_AC  = "performance";
@@ -35,13 +41,13 @@ in
       CPU_HWP_DYN_BOOST_ON_BAT = 0;
 
       # T480s — single battery (BAT0 only)
-      # Default is "raw AC" (dock at home, powerbank outside): the battery idles
-      # at ~30% and the laptop runs straight from the adapter. TLP re-applies
+      # Default 40/80 (dock at home, powerbank outside): plugging in does NOT start a
+      # charge unless the battery is below 40%; above that the laptop just runs from
+      # AC and the battery idles. When it does charge it stops at 80%. TLP re-applies
       # these on boot/resume/power events, so they must live here — `tlp-profile`
-      # only changes them until the next reset. Use `tlp-profile normal|full`
-      # (75/80, 96/100) before leaving the desk.
-      START_CHARGE_THRESH_BAT0 = 25;
-      STOP_CHARGE_THRESH_BAT0  = 30;
+      # only changes them until the next reset. Presets: `tlp-profile raw-ac|full`.
+      START_CHARGE_THRESH_BAT0 = 40;
+      STOP_CHARGE_THRESH_BAT0  = 80;
       NATACPI_ENABLE = 1;
       TPACPI_ENABLE  = 1;
       TPSMAPI_ENABLE = 0;   # T480s uses ACPI, not SMAPI
@@ -215,11 +221,9 @@ in
 
   # ── Kernel modules ────────────────────────────────────────────────────
   boot.kernelModules = [
-    "acpi_call"     # battery/fan ACPI control
-    "thinkpad_acpi" # ThinkPad extras (fan, hotkeys, LED)
+    "thinkpad_acpi" # ThinkPad extras (fan, hotkeys, LED, battery charge control)
     # kvm-intel is set in hardware-configuration.nix
   ];
-  # acpi_call is already added to boot.extraModulePackages in boot.nix
 
   # ── Howdy symlink ─────────────────────────────────────────────────────
   systemd.tmpfiles.rules = [

@@ -22,7 +22,10 @@ let
     unzip zip
     # Terminal, fonts & legacy libs
     ncurses5 zlib freetype fontconfig
+    ncurses        # libtinfo.so.6 (Vivado 2026.1 tcltasks)
+    libpng pixman  # libpng16.so.16, libpixman-1.so.0 (Vivado 2026.1 core libs)
     coreutils bash which
+    libuuid        # libuuid.so.1 (Vivado 2026.1 binaries link against it)
     # Java (Vivado 2022+ bundles its own, but some versions need system Java)
     temurin-bin-17
   ];
@@ -36,6 +39,11 @@ let
       if [ $# -gt 0 ] && [ -f "$1" ] && [ -x "$1" ]; then
         exec -- "$@"
       fi
+
+      # Vivado dlopens compat names like libncurses.so.5 / libtinfo.so.5. In the FHS
+      # these are symlinks to libncursesw.so.5, and ld.so.cache only indexes SONAMEs,
+      # so let the loader find them by file name.
+      export LD_LIBRARY_PATH="/usr/lib64''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
       XILINX_ROOT="''${XILINX_ROOT:-/opt/Xilinx}"
       if [ -f "$XILINX_ROOT/Vivado/settings64.sh" ]; then
@@ -65,6 +73,9 @@ let
       if [ $# -gt 0 ] && [ -f "$1" ] && [ -x "$1" ]; then
         exec -- "$@"
       fi
+
+      # Same compat-library lookup as the Vivado wrapper.
+      export LD_LIBRARY_PATH="/usr/lib64''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
       XILINX_ROOT="''${XILINX_ROOT:-/opt/Xilinx}"
       if [ -f "$XILINX_ROOT/Vitis/settings64.sh" ]; then

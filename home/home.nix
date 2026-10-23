@@ -26,6 +26,7 @@
       difftastic
       pre-commit
       cloudflared    # Cloudflare Tunnel & SSH Access proxy
+      wakeonlan      # wake ryzenserver (alias: wakeserver)
 
       # Terminal emulators
       ghostty        # fast GPU terminal
@@ -52,7 +53,6 @@
       element-desktop # Matrix client
       telegram-desktop # Telegram (no autostart: do not enable "Launch at system start")
       signal-desktop   # Signal (no autostart: keep "Open at login" off)
-      inputs.zapfast.packages.${pkgs.stdenv.hostPlatform.system}.default # ZapFast: native WhatsApp client (unofficial; no autostart)
       nextcloud-client
 
       # Password manager
@@ -72,6 +72,7 @@
       mpv
       vlc
       calibre        # ebook manager
+      qbittorrent    # BitTorrent client (Qt)
     ];
 
     # ── Pointer cursor (consistent across GTK, X11, Wayland) ──────────
@@ -257,6 +258,11 @@
     shellAliases = {
       logisim-evo = "logisim-evolution";
       logisim     = "logisim-evolution";
+      bbb         = "ssh -t ryzenserver bbb";   # paste BigBlueButton links → downloaded on the server (GPU)
+      wakeserver  = "wakeonlan -i 192.168.0.255 cc:28:aa:38:ac:4a";   # Wake-on-LAN ryzenserver (Realtek enp10s0)
+      # ryzenserver NFS shares → /mnt/ryzenserver/{hdd,bulk} (soft: never hangs if the server is off)
+      mountnfs    = "for d in hdd bulk; do mountpoint -q /mnt/ryzenserver/$d && echo \"already mounted: /mnt/ryzenserver/$d\" || { sudo mkdir -p /mnt/ryzenserver/$d && sudo mount -t nfs4 -o nfsvers=4.2,soft,timeo=150,retrans=2,noatime 192.168.0.133:/srv/$d /mnt/ryzenserver/$d && echo \"mounted: /mnt/ryzenserver/$d\"; }; done";
+      umountnfs   = "for d in hdd bulk; do mountpoint -q /mnt/ryzenserver/$d && sudo umount /mnt/ryzenserver/$d && echo \"unmounted: /mnt/ryzenserver/$d\"; done; true";
     };
     initExtra = ''
       # User bin directories in PATH
